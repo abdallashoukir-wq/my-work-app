@@ -3,71 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Pro - Stable v4</title>
+    <title>WorkTime Pro - Final Sync</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        :root { --primary: #00e676; --bg: #0d0d0d; --card: #1a1a1a; --text: #fff; --gray: #888; }
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+        :root { --primary: #00e676; --bg: #0d0d0d; --card: #1a1a1a; --text: #fff; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
         .page { display: none; padding: 20px; min-height: 100vh; box-sizing: border-box; }
         .page.active { display: block; }
-        .card { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #2a2a2a; max-width: 400px; margin: 15px auto; }
-        input, textarea { width: 100%; padding: 14px; margin: 10px 0; background: #252525; border: 1px solid #333; color: white; border-radius: 12px; font-size: 16px; outline: none; }
-        .btn { background: var(--primary); color: #000; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; display: none; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 1000; }
-        .nav-item { color: #555; text-align: center; flex: 1; font-size: 0.75rem; }
+        .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #2a2a2a; max-width: 400px; margin: auto; }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #333; color: #fff; border-radius: 10px; box-sizing: border-box; }
+        .btn { background: var(--primary); color: #000; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .nav { position: fixed; bottom: 0; width: 100%; background: #000; display: none; justify-content: space-around; padding: 12px 0; border-top: 1px solid #222; }
+        .nav-item { color: #555; text-align: center; flex: 1; font-size: 0.8rem; }
         .nav-item.active { color: var(--primary); }
-        .nav-item i { font-size: 1.5rem; display: block; margin-bottom: 5px; }
-        .rep-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #222; }
-        .total-box { background: rgba(0,230,118,0.1); border: 1px solid var(--primary); border-radius: 12px; padding: 20px; text-align: center; margin-top: 20px; font-size: 1.3rem; font-weight: bold; color: var(--primary); }
+        .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #222; }
     </style>
 </head>
 <body>
 
-    <div id="page-auth" class="page active">
-        <div class="card" style="margin-top: 60px; text-align: center;">
-            <i class="fas fa-user-lock" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
-            <h2>WorkTime Login</h2>
-            <input type="email" id="email" placeholder="Email">
-            <input type="password" id="pass" placeholder="Password">
-            <button class="btn" onclick="handleAuth()">Login / Sign Up</button>
-        </div>
+<div id="p-auth" class="page active">
+    <div class="card" style="margin-top: 50px; text-align: center;">
+        <h2>Login</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="pass" placeholder="Password">
+        <button class="btn" onclick="authAction()">Login</button>
     </div>
+</div>
 
-    <div id="page-add" class="page">
-        <div class="card">
-            <h3 style="margin-top:0">Add Hours</h3>
-            <input type="text" id="user-name" placeholder="Your Full Name">
-            <hr style="border:0; border-top:1px solid #333; margin:15px 0">
-            <input type="date" id="work-date">
-            <input type="number" id="work-hours" placeholder="Total Hours (e.g. 8)">
-            <textarea id="work-note" placeholder="Notes..." rows="2"></textarea>
-            <button class="btn" id="save-btn" onclick="saveData()">SAVE WORK ✅</button>
-        </div>
+<div id="p-add" class="page">
+    <div class="card">
+        <h3>Add Hours</h3>
+        <input type="text" id="u-name" placeholder="Full Name">
+        <input type="date" id="w-date">
+        <input type="number" id="w-hrs" placeholder="Hours">
+        <button class="btn" id="s-btn" onclick="saveData()">SAVE ✅</button>
     </div>
+</div>
 
-    <div id="page-report" class="page" style="padding-bottom: 100px;">
-        <div class="card">
-            <h3 style="text-align:center; color:var(--primary);">Monthly Summary</h3>
-            <div class="rep-row"><span>Name:</span> <span id="res-name" style="color:var(--primary)">---</span></div>
-            <div id="logs-list" style="margin-top:10px"></div>
-            <div class="total-box">TOTAL: <span id="res-total">0.0</span> hrs</div>
-        </div>
-        <button class="btn" style="background:#333; color:#fff;" onclick="sharePDF()">Share Report PDF <i class="fas fa-share"></i></button>
+<div id="p-rep" class="page" style="padding-bottom: 80px;">
+    <div class="card">
+        <h3 style="text-align:center; color:var(--primary)">Report</h3>
+        <p>Name: <span id="r-name" style="color:var(--primary)">---</span></p>
+        <div id="list"></div>
+        <div style="text-align:center; margin-top:15px; font-weight:bold; font-size:1.2rem;">Total: <span id="r-total">0</span> hrs</div>
     </div>
+    <button class="btn" style="background:#333; color:#fff; margin-top:20px;" onclick="sharePDF()">Share PDF</button>
+</div>
 
-    <nav id="navbar" class="bottom-nav">
-        <div class="nav-item active" id="tab-add" onclick="showTab('add')"><i class="fas fa-plus-circle"></i>Add</div>
-        <div class="nav-item" id="tab-rep" onclick="showTab('rep')"><i class="fas fa-file-alt"></i>Report</div>
-    </nav>
+<nav id="nav" class="nav">
+    <div class="nav-item active" id="t-add" onclick="tab('add')">Add</div>
+    <div class="nav-item" id="t-rep" onclick="tab('rep')">Report</div>
+</nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBlUrDFR15XgZdYKcPN9IjLqCc0DmTJ37I",
@@ -82,101 +77,72 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let globalLogs = [];
-
-    window.handleAuth = async () => {
+    window.authAction = async () => {
         const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        try { await signInWithEmailAndPassword(auth, e, p); } 
-        catch { try { await createUserWithEmailAndPassword(auth, e, p); } catch(err){ alert(err.message); } }
+        try { await signInWithEmailAndPassword(auth, e, p); } catch { try { await createUserWithEmailAndPassword(auth, e, p); } catch(err){ alert(err.message); } }
     };
 
-    onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, (user) => {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         if(user) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('page-add').classList.add('active');
-            document.getElementById('navbar').style.display = 'flex';
-            
-            const uSnap = await getDoc(doc(db, "users", user.uid));
-            if(uSnap.exists()) {
-                document.getElementById('user-name').value = uSnap.data().fullname || "";
-                document.getElementById('res-name').innerText = uSnap.data().fullname || "User";
-            }
-            fetchData(user.uid);
-        } else {
-            document.getElementById('page-auth').classList.add('active');
-            document.getElementById('navbar').style.display = 'none';
-        }
+            document.getElementById('p-add').classList.add('active');
+            document.getElementById('nav').style.display = 'flex';
+            loadData(user.uid);
+        } else { document.getElementById('p-auth').classList.add('active'); }
     });
 
-    window.showTab = (t) => {
+    window.tab = (t) => {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        if(t === 'add') { document.getElementById('page-add').classList.add('active'); document.getElementById('tab-add').classList.add('active'); }
-        else { document.getElementById('page-report').classList.add('active'); document.getElementById('tab-rep').classList.add('active'); }
+        document.getElementById('p-' + t).classList.add('active');
+        document.getElementById('t-' + t).classList.add('active');
     };
 
     window.saveData = async () => {
-        const name = document.getElementById('user-name').value;
-        const date = document.getElementById('work-date').value;
-        const hrs = document.getElementById('work-hours').value;
-        const btn = document.getElementById('save-btn');
-
-        if(!name || !date || !hrs) return alert("Please fill all fields!");
-
+        const n = document.getElementById('u-name').value, d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value;
+        if(!n || !d || !h) return alert("Fill all!");
+        const btn = document.getElementById('s-btn');
         btn.disabled = true;
-        btn.innerText = "Saving...";
-
         try {
-            // 1. Update Profile Name
-            await setDoc(doc(db, "users", auth.currentUser.uid), { fullname: name }, { merge: true });
-            
-            // 2. Save Log
-            const logId = `${auth.currentUser.uid}_${date}`;
-            await setDoc(doc(db, "workLogs", logId), {
+            // حفظ مباشر وبسيط
+            await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${d}`), {
                 uid: auth.currentUser.uid,
-                fullname: name, // Save name inside log too to be safe
-                date: date,
-                hours: parseFloat(hrs),
-                timestamp: new Date()
-            }, { merge: true });
-
+                name: n,
+                date: d,
+                hours: parseFloat(h)
+            });
             alert("Saved! ✅");
-            document.getElementById('work-hours').value = "";
-            showTab('rep');
+            tab('rep');
         } catch (e) { alert("Error: " + e.message); }
-        finally { btn.disabled = false; btn.innerText = "SAVE WORK ✅"; }
+        btn.disabled = false;
     };
 
-    function fetchData(uid) {
-        const q = query(collection(db, "workLogs"), where("uid", "==", uid), orderBy("date", "asc"));
+    let logs = [];
+    function loadData(uid) {
+        // حذفنا orderBy مؤقتاً لتجنب مشاكل Indexing
+        const q = query(collection(db, "workLogs"), where("uid", "==", uid));
         onSnapshot(q, (snap) => {
-            const list = document.getElementById('logs-list');
-            list.innerHTML = "";
-            let total = 0;
-            globalLogs = [];
-            snap.forEach(d => {
-                const data = d.data();
+            const list = document.getElementById('list');
+            list.innerHTML = ""; logs = []; let total = 0;
+            snap.forEach(doc => {
+                const data = doc.data();
                 total += data.hours;
-                globalLogs.push([data.date, data.hours.toFixed(1)]);
-                list.innerHTML += `<div class="rep-row"><span>${data.date}</span><b>${data.hours} hrs</b></div>`;
-                if(data.fullname) document.getElementById('res-name').innerText = data.fullname;
+                logs.push([data.date, data.hours.toFixed(1)]);
+                document.getElementById('r-name').innerText = data.name;
+                list.innerHTML += `<div class="row"><span>${data.date}</span><b>${data.hours} hrs</b></div>`;
             });
-            document.getElementById('res-total').innerText = total.toFixed(1);
-        });
+            document.getElementById('r-total').innerText = total.toFixed(1);
+        }, (err) => { alert("Database Error: " + err.message); });
     }
 
     window.sharePDF = async () => {
         const { jsPDF } = window.jspdf;
         const docPDF = new jsPDF();
-        const name = document.getElementById('res-name').innerText;
-        docPDF.text("Work Report", 105, 20, null, null, "center");
-        docPDF.text(`Employee: ${name}`, 20, 35);
-        docPDF.autoTable({ startY: 45, head: [['Date', 'Hours']], body: globalLogs });
-        
+        docPDF.text("Work Report", 20, 20);
+        docPDF.autoTable({ startY: 30, head: [['Date', 'Hours']], body: logs });
         const pdfBlob = docPDF.output('blob');
         const file = new File([pdfBlob], 'Report.pdf', { type: 'application/pdf' });
-        if(navigator.share) await navigator.share({ files: [file], title: 'Work Report' });
-        else docPDF.save('Report.pdf');
+        if(navigator.share) await navigator.share({ files: [file] }); else docPDF.save('Report.pdf');
     };
 </script>
 </body>
