@@ -1,260 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Pro v7.3 - PDF Fixed</title>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    
-    <style>
-        :root { --primary: #007bff; --bg: #000; --card: #1a1a1a; --text: #f5f5f5; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
-        
-        .clock-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 0; overflow: hidden; }
-        .clock-face { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120vw; height: 120vw; max-width: 850px; max-height: 850px; opacity: 0.5; }
-        .clock-number { position: absolute; width: 100%; height: 100%; text-align: center; font-size: 38px; color: rgba(255,255,255,0.2); padding: 25px; box-sizing: border-box; }
-        .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; border-radius: 10px; }
-        .hour { width: 8px; height: 26%; background: #fff; }
-        .minute { width: 5px; height: 36%; background: #ccc; }
-        .second { width: 2px; height: 42%; background: #ff4444; }
-        .center-dot { position: absolute; width: 12px; height: 12px; background: #ff4444; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-
-        .welcome-badge { position: absolute; top: 10%; width: 100%; text-align: center; font-size: 55px; font-weight: 800; color: #fff; z-index: 10; }
-        .page { display: none; padding: 20px; position: relative; z-index: 5; min-height: 100vh; box-sizing: border-box; }
-        .page.active { display: block; }
-        
-        .login-wrap { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 90vh; max-width: 380px; margin: auto; }
-        input, textarea { width: 100%; padding: 18px; margin: 10px 0; background: rgba(255, 255, 255, 0.1); border: 1px solid #333; color: #fff; border-radius: 15px; font-size: 18px; box-sizing: border-box; outline: none; }
-        
-        .btn { background: var(--primary); color: #fff; border: none; padding: 20px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 20px; cursor: pointer; margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .card { background: var(--card); padding: 25px; border-radius: 25px; border: 1px solid #333; margin-top: 30px; }
-        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #222; background: #111; margin-bottom: 8px; border-radius: 12px; }
-
-        .info-header { margin-bottom: 20px; padding: 10px; border-left: 4px solid var(--primary); background: rgba(255,255,255,0.03); border-radius: 0 10px 10px 0; }
-        .info-header p { margin: 5px 0; font-size: 16px; color: #bbb; }
-        .info-header b { color: #fff; }
-
-        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; display: none; justify-content: space-around; padding: 18px 0; border-top: 1px solid #222; z-index: 100; }
-        .nav-item { color: #555; text-align: center; flex: 1; font-size: 14px; cursor: pointer; }
-        .nav-item.active { color: var(--primary); }
-    </style>
-</head>
-<body>
-
-    <div class="clock-bg" id="bg-clock">
-        <div class="clock-face" id="clock-face">
-            <div class="hand hour" id="hour-hand"></div>
-            <div class="hand minute" id="min-hand"></div>
-            <div class="hand second" id="sec-hand"></div>
-            <div class="center-dot"></div>
-        </div>
-    </div>
-
-    <div id="p-auth" class="page active">
-        <div class="welcome-badge">Welcome</div>
-        <div class="login-wrap">
-            <div style="height: 120px;"></div>
-            <input type="email" id="email" placeholder="Email">
-            <input type="password" id="pass" placeholder="Password">
-            <button class="btn" onclick="handleAuth()">Sign In</button>
-            <p onclick="toggleMode()" id="toggle-txt" style="color: #777; margin-top: 25px; text-decoration: underline; cursor: pointer;">Sign Up</p>
-        </div>
-    </div>
-
-    <div id="p-add" class="page" style="overflow-y: auto;">
-        <div class="card" style="margin-top: 60px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2 style="color: var(--primary); margin: 0;">Add Work</h2>
-                <button onclick="logout()" style="background: none; border: 1px solid #444; color: #888; padding: 5px 10px; border-radius: 8px;">Logout</button>
-            </div>
-            <input type="text" id="u-name" placeholder="Full Name">
-            <input type="text" id="u-comp" placeholder="Company Name">
-            <input type="date" id="w-date">
-            <input type="number" step="0.5" id="w-hrs" placeholder="Hours Worked">
-            <textarea id="w-note" placeholder="Note..."></textarea>
-            <button class="btn" onclick="saveWork()">SAVE ✅</button>
-        </div>
-    </div>
-
-    <div id="p-rep" class="page" style="overflow-y: auto; padding-bottom: 120px;">
-        <div class="card" style="margin-top: 60px;">
-            <h3>Monthly Report</h3>
-            
-            <div class="info-header">
-                <p>Name: <b id="display-name">---</b></p>
-                <p>Company: <b id="display-comp">---</b></p>
-            </div>
-
-            <input type="month" id="month-filter" onchange="loadLogs()">
-            <div id="logs-list" style="margin-top: 20px;"></div>
-            
-            <div style="text-align: center; padding: 20px; border-top: 1px solid #333; margin-top: 15px;">
-                TOTAL: <b id="total-val" style="font-size: 35px; color: var(--primary);">0.0</b> Hrs
-            </div>
-            <button class="btn" onclick="generateAndSharePDF()">Share PDF <i class="fas fa-share-nodes"></i></button>
-        </div>
-    </div>
-
-    <nav id="nav-bar" class="nav">
-        <div class="nav-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus"></i><br>Add</div>
-        <div class="nav-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-file-lines"></i><br>Report</div>
-    </nav>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBlUrDFR15XgZdYKcPN9IjLqCc0DmTJ37I",
-      authDomain: "workapp-d34e0.firebaseapp.com",
-      projectId: "workapp-d34e0",
-      storageBucket: "workapp-d34e0.firebasestorage.app",
-      messagingSenderId: "687874876802",
-      appId: "1:687874876802:web:06e2e4e6030233cd579b9b"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    let isSignUp = false;
-    let cachedLogs = [];
-
-    // Clock Logic
-    function initClock() {
-        const face = document.getElementById('clock-face');
-        for (let i = 1; i <= 12; i++) {
-            const n = document.createElement('div');
-            n.className = 'clock-number';
-            n.style.transform = `rotate(${i * 30}deg)`;
-            n.innerHTML = `<span style="display:inline-block; transform:rotate(-${i * 30}deg)">${i}</span>`;
-            face.appendChild(n);
-        }
-    }
-    function updateClock() {
-        const d = new Date();
-        document.getElementById('sec-hand').style.transform = `rotate(${d.getSeconds()*6}deg)`;
-        document.getElementById('min-hand').style.transform = `rotate(${d.getMinutes()*6}deg)`;
-        document.getElementById('hour-hand').style.transform = `rotate(${(d.getHours()%12)*30 + d.getMinutes()*0.5}deg)`;
-    }
-    initClock(); setInterval(updateClock, 1000);
-
-    window.toggleMode = () => {
-        isSignUp = !isSignUp;
-        document.querySelector('#p-auth .btn').innerText = isSignUp ? "Sign Up" : "Sign In";
-        document.getElementById('toggle-txt').innerText = isSignUp ? "Back to Login" : "Sign Up";
-    };
-
-    window.handleAuth = async () => {
-        const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        try {
-            if(isSignUp) await createUserWithEmailAndPassword(auth, e, p);
-            else await signInWithEmailAndPassword(auth, e, p);
-        } catch(err) { alert(err.message); }
-    };
-
-    window.logout = () => signOut(auth);
-
-    onAuthStateChanged(auth, async (user) => {
-        const pAuth = document.getElementById('p-auth'), pAdd = document.getElementById('p-add'), nav = document.getElementById('nav-bar'), clock = document.getElementById('bg-clock');
-        if(user) {
-            pAuth.classList.remove('active'); pAdd.classList.add('active'); nav.style.display = 'flex'; clock.style.display = 'none';
-            const u = await getDoc(doc(db, "users", user.uid));
-            if(u.exists()) {
-                const data = u.data();
-                document.getElementById('u-name').value = data.fullname || "";
-                document.getElementById('u-comp').value = data.company || "";
-                document.getElementById('display-name').innerText = data.fullname || "User";
-                document.getElementById('display-comp').innerText = data.company || "Not Set";
-            }
-            loadLogs();
-        } else {
-            pAuth.classList.add('active'); pAdd.classList.remove('active'); nav.style.display = 'none'; clock.style.display = 'block';
-        }
-    });
-
-    window.switchTab = (t) => {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById('p-'+t).classList.add('active');
-        document.getElementById('t-'+t).classList.add('active');
-    };
-
-    window.saveWork = async () => {
-        const n = document.getElementById('u-name').value, c = document.getElementById('u-comp').value, d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value;
-        if(!n || !d || !h) return alert("Fill Name, Date and Hours");
-        await setDoc(doc(db, "users", auth.currentUser.uid), { fullname: n, company: c }, { merge: true });
-        await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${d}`), { uid: auth.currentUser.uid, fullname: n, company: c, date: d, hours: parseFloat(h), month: d.slice(0, 7) });
-        alert("Saved! ✅"); switchTab('rep');
-    };
-
-    window.deleteEntry = async (id) => { if(confirm("Delete?")) await deleteDoc(doc(db, "workLogs", id)); };
-
-    window.loadLogs = () => {
-        const m = document.getElementById('month-filter').value || new Date().toISOString().slice(0, 7);
-        const q = query(collection(db, "workLogs"), where("uid", "==", auth.currentUser.uid), where("month", "==", m));
-        onSnapshot(q, (snap) => {
-            const list = document.getElementById('logs-list'); list.innerHTML = ""; let tot = 0; cachedLogs = [];
-            snap.forEach(d => {
-                const data = d.data(); tot += data.hours;
-                cachedLogs.push([data.date, data.hours.toFixed(1)]);
-                list.innerHTML += `<div class="item-row"><div><b>${data.date}</b><br>${data.hours}h</div><button onclick="deleteEntry('${d.id}')" style="background:none; border:none; color:red;"><i class="fas fa-trash"></i></button></div>`;
-            });
-            document.getElementById('total-val').innerText = tot.toFixed(1);
-        });
-    };
-
-    // ✅ FIXED: PDF Now includes Name, Company, and Total Hours
     window.generateAndSharePDF = async () => {
         if(cachedLogs.length === 0) return alert("No data to export!");
         const { jsPDF } = window.jspdf;
         const docPDF = new jsPDF();
 
-        const name = document.getElementById('u-name').value || "User";
-        const company = document.getElementById('u-comp').value || "Company Name";
+        const name = document.getElementById('u-name').value || "Not Specified";
+        const company = document.getElementById('u-comp').value || "Not Specified";
         const total = document.getElementById('total-val').innerText;
-
-        // Header
-        docPDF.setFontSize(22);
-        docPDF.text("Work Report", 105, 20, null, null, "center");
         
-        // Info Section
-        docPDF.setFontSize(14);
-        docPDF.text(`Employee Name: ${name}`, 20, 35);
-        docPDF.text(`Company: ${company}`, 20, 43);
-        docPDF.text(`Report Month: ${document.getElementById('month-filter').value}`, 20, 51);
+        // تحويل قيمة Month Filter لاسم شهر مقروء
+        const monthVal = document.getElementById('month-filter').value; // YYYY-MM
+        const monthDate = new Date(monthVal + "-01");
+        const monthName = monthDate.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
-        // Table
+        // --- تصميم الهيدر (Header) ---
+        docPDF.setFillColor(240, 240, 240);
+        docPDF.rect(0, 0, 210, 40, 'F'); // خلفية رمادية خفيفة للهيدر
+        
+        docPDF.setFontSize(24);
+        docPDF.setTextColor(0, 123, 255);
+        docPDF.text("WORK REPORT", 105, 25, null, null, "center");
+        
+        // --- معلومات الموظف والشركة ---
+        docPDF.setFontSize(11);
+        docPDF.setTextColor(50, 50, 50);
+        docPDF.text("EMPLOYEE DETAILS:", 20, 50);
+        docPDF.setFont(undefined, 'bold');
+        docPDF.text(`Name: ${name}`, 20, 57);
+        docPDF.text(`Company: ${company}`, 20, 64);
+        
+        docPDF.setFont(undefined, 'normal');
+        docPDF.text("REPORT PERIOD:", 140, 50);
+        docPDF.setFont(undefined, 'bold');
+        docPDF.text(`${monthName}`, 140, 57);
+
+        // --- رسم خط فاصل ---
+        docPDF.setDrawColor(200, 200, 200);
+        docPDF.line(20, 70, 190, 70);
+
+        // --- جدول البيانات (Table) ---
         docPDF.autoTable({
-            startY: 60,
-            head: [['Date', 'Hours Worked']],
-            body: cachedLogs,
-            theme: 'grid',
-            headStyles: { fillColor: [0, 123, 255] }
+            startY: 75,
+            head: [['Date', 'Description', 'Hours Worked']],
+            body: cachedLogs.map(item => [item[0], "Standard Work Session", item[1] + " Hrs"]),
+            theme: 'striped',
+            headStyles: { fillColor: [0, 123, 255], textColor: [255, 255, 255], fontSize: 12, halign: 'center' },
+            columnStyles: {
+                0: { halign: 'center', cellWidth: 40 },
+                1: { halign: 'left' },
+                2: { halign: 'center', cellWidth: 40 }
+            },
+            styles: { fontSize: 10, cellPadding: 5 }
         });
 
-        // Footer Total
+        // --- التذييل والخلاصة (Footer) ---
         const finalY = docPDF.lastAutoTable.finalY + 15;
-        docPDF.setFontSize(16);
-        docPDF.text(`TOTAL HOURS: ${total} hrs`, 20, finalY);
+        
+        // مربع الإجمالي
+        docPDF.setFillColor(0, 123, 255);
+        docPDF.rect(130, finalY - 8, 60, 15, 'F');
+        docPDF.setTextColor(255, 255, 255);
+        docPDF.setFontSize(13);
+        docPDF.text(`TOTAL: ${total} HRS`, 160, finalY + 2, null, null, "center");
 
+        // توقيع بسيط
+        docPDF.setTextColor(150, 150, 150);
+        docPDF.setFontSize(9);
+        docPDF.text("Generated by WorkTime Pro App", 105, 285, null, null, "center");
+
+        // --- المشاركة أو الحفظ ---
         const blob = docPDF.output('blob');
-        const file = new File([blob], `Report_${name}.pdf`, { type: "application/pdf" });
+        const file = new File([blob], `Report_${monthName}_${name}.pdf`, { type: "application/pdf" });
 
         if (navigator.share) {
             try {
-                await navigator.share({ files: [file], title: 'Work Hours Report' });
+                await navigator.share({ files: [file], title: `Work Report - ${monthName}` });
             } catch (e) {
-                docPDF.save("WorkReport.pdf");
+                docPDF.save(`Report_${monthName}.pdf`);
             }
         } else {
-            docPDF.save("WorkReport.pdf");
+            docPDF.save(`Report_${monthName}.pdf`);
         }
     };
-</script>
-</body>
-</html>
