@@ -3,96 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Pro - Advanced v5</title>
+    <title>WorkTime Pro - Corporate Edition</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        :root { --primary: #00e676; --bg: #0d0d0d; --card: #1a1a1a; --text: #fff; --red: #ff5252; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; font-size: 18px; }
+        /* 🎨 تناسق الألوان: Corporate Blue & Dark Theme */
+        :root { --primary: #007bff; /* أزرق احترافي */ --bg: #0d0d0d; --card: #1a1a1a; --text: #f5f5f5; --accent: #00e676; --danger: #ff4444; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; font-size: 18px; }
         
-        .page { display: none; padding: 20px; min-height: 100vh; box-sizing: border-box; }
+        .page { display: none; padding: 20px; box-sizing: border-box; min-height: 100vh; }
         .page.active { display: block; }
 
         .card { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #333; max-width: 450px; margin: auto; }
         
-        h3 { font-size: 24px; color: var(--primary); text-align: center; margin-bottom: 20px; }
+        input, textarea { width: 100%; padding: 15px; margin: 10px 0; background: #222; border: 2px solid #333; color: white; border-radius: 12px; font-size: 18px; box-sizing: border-box; outline: none; }
+        input:focus { border-color: var(--primary); }
+
+        .btn { background: var(--primary); color: white; border: none; padding: 18px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 20px; margin-top: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn:active { transform: scale(0.98); }
+
+        /* التقرير الداكن (المكبر) في الموبايل */
+        #list-container { margin-top: 15px; }
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #333; background: #111; margin-bottom: 8px; border-radius: 12px; font-size: 20px; }
+        .item-actions { display: flex; gap: 12px; }
+        .icon-btn { background: none; border: none; font-size: 22px; cursor: pointer; }
+
+        .total-box { text-align: center; padding: 20px; background: rgba(0, 123, 255, 0.1); border: 1px solid var(--primary); border-radius: 15px; margin-top: 25px; }
         
-        input, select { 
-            width: 100%; padding: 16px; margin: 10px 0; background: #222; border: 2px solid #333; 
-            color: #fff; border-radius: 12px; font-size: 18px; box-sizing: border-box; outline: none;
-        }
-
-        .btn { 
-            background: var(--primary); color: #000; border: none; padding: 18px; width: 100%; 
-            border-radius: 12px; font-weight: bold; font-size: 20px; margin-top: 10px; cursor: pointer;
-            display: flex; justify-content: center; align-items: center; gap: 10px;
-        }
-
-        .btn-red { background: var(--red); color: white; margin-top: 5px; font-size: 16px; padding: 10px; }
-
-        /* قائمة التقرير مع إمكانية الضغط */
-        .item-row { 
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px; border-bottom: 1px solid #333; background: #111; 
-            margin-bottom: 8px; border-radius: 10px; font-size: 19px; 
-        }
-        .item-actions { display: flex; gap: 10px; }
-        .icon-btn { background: none; border: none; color: var(--text); font-size: 20px; cursor: pointer; }
-
-        .total-box { 
-            text-align: center; padding: 20px; background: rgba(0,230,118,0.1); 
-            border: 1px solid var(--primary); border-radius: 15px; margin-top: 20px;
-        }
-
-        .nav { position: fixed; bottom: 0; width: 100%; background: #000; display: none; justify-content: space-around; padding: 12px 0; border-top: 1px solid #222; z-index: 1000; }
-        .nav-item { color: #666; text-align: center; flex: 1; font-size: 16px; }
+        .nav { position: fixed; bottom: 0; width: 100%; background: #000; display: none; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; backdrop-filter: blur(10px); z-index: 1000; }
+        .nav-item { color: #666; text-align: center; flex: 1; font-size: 16px; font-weight: bold; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
-
-        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
 <div id="p-auth" class="page active">
-    <div class="card" style="margin-top: 50px;">
-        <h3>Welcome Back</h3>
-        <input type="email" id="email" placeholder="Email">
+    <div class="card" style="margin-top: 60px; text-align: center;">
+        <i class="fas fa-user-tie" style="font-size: 3.5rem; color: var(--primary); margin-bottom: 20px;"></i>
+        <h2>Corporate Login</h2>
+        <input type="email" id="email" placeholder="Work Email">
         <input type="password" id="pass" placeholder="Password">
-        <button class="btn" onclick="authAction()">Login</button>
+        <button class="btn" onclick="authAction()">Sign In <i class="fas fa-chevron-right"></i></button>
     </div>
 </div>
 
 <div id="p-add" class="page">
-    <div class="header-bar">
-        <span id="display-name" style="color:var(--primary); font-weight:bold;">Loading...</span>
-        <button onclick="logout()" style="background:none; border:1px solid #444; color:#888; padding:5px 10px; border-radius:8px;">Logout</button>
-    </div>
     <div class="card">
-        <h3>Log Hours</h3>
-        <input type="text" id="u-name" placeholder="Name">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="margin:0; color:var(--primary);">Log Time</h3>
+            <button onclick="logout()" style="background:none; border:1px solid #444; color:#888; padding:5px 10px; border-radius:8px; cursor:pointer;">Logout</button>
+        </div>
+        <input type="text" id="u-name" placeholder="Full Name (for Report)">
+        <input type="text" id="u-comp" placeholder="Company Name (for Report)">
+        <hr style="border:0; border-top:1px solid #333; margin:15px 0">
         <input type="date" id="w-date">
-        <input type="number" step="0.5" id="w-hrs" placeholder="Hours (e.g. 8.5)">
+        <input type="number" step="0.5" id="w-hrs" placeholder="Hours Worked (e.g. 8.5)">
+        <textarea id="w-note" placeholder="Short Note... (Optional)" rows="2"></textarea>
         <button class="btn" id="s-btn" onclick="saveData()">SAVE WORK ✅</button>
     </div>
 </div>
 
 <div id="p-rep" class="page" style="padding-bottom: 100px;">
     <div class="card">
-        <h3>Monthly Report</h3>
-        <label style="font-size:14px; color:#888;">Filter by Month:</label>
+        <h3>Time Summary</h3>
+        <p style="font-size:16px; color:#888;">Name: <span id="res-name" style="color:var(--text)">---</span></p>
+        <p style="font-size:16px; color:#888;">Company: <span id="res-comp" style="color:var(--text)">---</span></p>
+        <label style="font-size:14px; color:#888;">Month Filter:</label>
         <input type="month" id="month-filter" onchange="filterLogs()">
         
-        <div id="list-container" style="margin-top:15px;"></div>
+        <div id="list-container"></div>
         
         <div class="total-box">
-            <span style="font-size:18px;">Total Hours:</span><br>
-            <b style="font-size:30px; color:var(--primary);" id="r-total">0.0</b>
+            <span>TOTALE ORE:</span><br>
+            <b style="font-size:35px; color:var(--primary);" id="r-total">0.0</b>
         </div>
     </div>
-    <button class="btn" style="background:#333; color:#fff; margin-top:20px;" onclick="sharePDF()">Share Report PDF</button>
+    <button class="btn" style="background:var(--primary); color:white; margin-top:20px;" onclick="handleiOSSharePDF()">Export Professional PDF <i class="fas fa-share-alt"></i></button>
 </div>
 
 <nav id="nav" class="nav">
@@ -103,7 +92,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, query, where, orderBy, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBlUrDFR15XgZdYKcPN9IjLqCc0DmTJ37I",
@@ -118,7 +107,6 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // ضبط الشهر الحالي تلقائياً في الفلتر
     document.getElementById('month-filter').value = new Date().toISOString().slice(0, 7);
 
     window.authAction = async () => {
@@ -126,21 +114,23 @@
         try { await signInWithEmailAndPassword(auth, e, p); } catch { try { await createUserWithEmailAndPassword(auth, e, p); } catch(err){ alert(err.message); } }
     };
 
-    window.logout = () => { if(confirm("Logout?")) signOut(auth); };
+    window.logout = () => signOut(auth);
 
     onAuthStateChanged(auth, async (user) => {
         if(user) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('p-add').classList.add('active');
             document.getElementById('nav').style.display = 'flex';
-            
             const uSnap = await getDoc(doc(db, "users", user.uid));
             if(uSnap.exists()) {
                 const name = uSnap.data().fullname || "User";
+                const comp = uSnap.data().company || "";
                 document.getElementById('u-name').value = name;
-                document.getElementById('display-name').innerText = name;
+                document.getElementById('u-comp').value = comp;
+                document.getElementById('res-name').innerText = name;
+                document.getElementById('res-comp').innerText = comp;
             }
-            filterLogs(); // تحميل البيانات
+            filterLogs(); 
         } else {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('p-auth').classList.add('active');
@@ -156,56 +146,44 @@
     };
 
     window.saveData = async () => {
-        const n = document.getElementById('u-name').value, d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value;
-        if(!n || !d || !h) return alert("Fill all fields!");
-        const btn = document.getElementById('s-btn');
-        btn.disabled = true;
+        const n = document.getElementById('u-name').value, c = document.getElementById('u-comp').value, d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value;
+        if(!n || !d || !h) return alert("Fill Name, Date and Hours!");
+        const btn = document.getElementById('s-btn'); btn.disabled = true;
         try {
-            await setDoc(doc(db, "users", auth.currentUser.uid), { fullname: n }, { merge: true });
-            const docId = `${auth.currentUser.uid}_${d}`; // حفظ برقم اليوم لسهولة التعديل
+            await setDoc(doc(db, "users", auth.currentUser.uid), { fullname: n, company: c }, { merge: true });
+            const docId = `${auth.currentUser.uid}_${d}`; 
             await setDoc(doc(db, "workLogs", docId), {
                 uid: auth.currentUser.uid,
-                name: n, date: d, hours: parseFloat(h), month: d.slice(0, 7)
+                fullname: n, company: c, date: d, hours: parseFloat(h), note: document.getElementById('w-note').value, month: d.slice(0, 7)
             });
-            alert("Saved! ✅");
-            tab('rep');
+            alert("Saved! ✅"); document.getElementById('w-hrs').value = ""; document.getElementById('w-note').value = ""; tab('rep');
         } catch (e) { alert(e.message); }
         btn.disabled = false;
     };
 
-    window.deleteLog = async (id) => {
-        if(confirm("Delete this entry?")) {
-            await deleteDoc(doc(db, "workLogs", id));
-        }
-    };
+    window.deleteLog = async (id) => { if(confirm("Delete this?")) await deleteDoc(doc(db, "workLogs", id)); };
+    window.editLog = (d, h, n) => { document.getElementById('w-date').value = d; document.getElementById('w-hrs').value = h; document.getElementById('w-note').value = n; tab('add'); };
 
-    window.editLog = (id, date, hrs) => {
-        document.getElementById('w-date').value = date;
-        document.getElementById('w-hrs').value = hrs;
-        tab('add');
-    };
-
-    let pdfData = [];
+    let currentLogData = []; 
     window.filterLogs = () => {
-        const selectedMonth = document.getElementById('month-filter').value;
-        const q = query(collection(db, "workLogs"), 
-                  where("uid", "==", auth.currentUser.uid), 
-                  where("month", "==", selectedMonth));
-
+        const month = document.getElementById('month-filter').value;
+        const q = query(collection(db, "workLogs"), where("uid", "==", auth.currentUser.uid), where("month", "==", month));
         onSnapshot(q, (snap) => {
-            const list = document.getElementById('list-container');
-            list.innerHTML = ""; pdfData = []; let total = 0;
-            
+            const list = document.getElementById('list-container'); list.innerHTML = ""; let total = 0; currentLogData = [];
             snap.forEach(d => {
-                const data = d.data();
-                total += data.hours;
-                pdfData.push([data.date, data.hours.toFixed(1)]);
+                const data = d.data(); total += data.hours;
+                const dateParts = data.date.split('-');
+                const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+                // حساب النسبة من يوم كامل (8 ساعات)
+                const percent = (data.hours / 8) * 100;
+                currentLogData.push([formattedDate, data.hours.toFixed(1), `${percent.toFixed(0)}%`]);
+                
                 list.innerHTML += `
                     <div class="item-row">
                         <div><b>${data.date}</b><br><small>${data.hours} hrs</small></div>
                         <div class="item-actions">
-                            <button class="icon-btn" onclick="editLog('${d.id}', '${data.date}', ${data.hours})"><i class="fas fa-edit" style="color:#00e676"></i></button>
-                            <button class="icon-btn" onclick="deleteLog('${d.id}')"><i class="fas fa-trash" style="color:#ff5252"></i></button>
+                            <button class="icon-btn" onclick="editLog('${data.date}', ${data.hours}, '${data.note || ''}')"><i class="fas fa-edit" style="color:var(--primary)"></i></button>
+                            <button class="icon-btn" onclick="deleteLog('${d.id}')"><i class="fas fa-trash" style="color:var(--danger)"></i></button>
                         </div>
                     </div>`;
             });
@@ -213,17 +191,72 @@
         });
     }
 
-    window.sharePDF = async () => {
+    // ✅ تصدير PDF احترافي، لمنظم، ومضغوط (One Page A4)
+    window.handleiOSSharePDF = async () => {
+        const name = document.getElementById('res-name').innerText;
+        const comp = document.getElementById('res-comp').innerText;
+        const month = document.getElementById('month-filter').value;
+        const total = document.getElementById('r-total').innerText;
+
         const { jsPDF } = window.jspdf;
         const docPDF = new jsPDF();
-        const name = document.getElementById('display-name').innerText;
-        const month = document.getElementById('month-filter').value;
-        docPDF.text(`Work Report - ${month}`, 105, 20, null, null, "center");
-        docPDF.text(`Employee: ${name}`, 20, 35);
-        docPDF.autoTable({ startY: 40, head: [['Date', 'Hours']], body: pdfData });
+
+        // 1. PDF Header (Corporate Branding)
+        docPDF.setFontSize(22);
+        docPDF.setTextColor(0, 123, 255); // Professional Blue
+        docPDF.text(`${comp || "WorkTime Pro"} - Work Report`, 105, 20, null, null, "center");
+
+        docPDF.setFontSize(10);
+        docPDF.setTextColor(150, 150, 150);
+        docPDF.text(`Generated: ${new Date().toLocaleDateString()}`, 105, 26, null, null, "center");
+
+        docPDF.setTextColor(0, 0, 0);
+        docPDF.setFontSize(14);
+        docPDF.text(`Employee: ${name}`, 20, 38);
+        docPDF.text(`Month Period: ${month}`, 20, 46);
+
+        // 2. AutoTable (Optimized for One Page)
+        docPDF.autoTable({
+            startY: 55,
+            head: [['Date', 'Hours', '% Day (8h)']],
+            body: currentLogData,
+            theme: 'striped', 
+            headStyles: { fillColor: [0, 123, 255], fontSize: 11, fontStyle: 'bold' }, // Blue header
+            styles: { 
+                fontSize: 10, // Compact text
+                halign: 'center', // Center text
+                cellPadding: 2 // Reduced padding to fit more rows
+            },
+            columnStyles: { 0: { halign: 'left', cellWidth: 40 }, 1: { cellWidth: 30 }, 2: { cellWidth: 30 } },
+            margin: { left: 20, right: 20 },
+            rowPageBreak: 'avoid' // Prevent breaking rows between pages
+        });
+
+        // 3. Final Total & Corporate Seal
+        const finalY = docPDF.lastAutoTable.finalY;
+        docPDF.setFontSize(16);
+        docPDF.setTextColor(0, 123, 255);
+        docPDF.text(`TOTALE ORE: ${total} hrs`, 105, finalY + 15, null, null, "center");
+
+        docPDF.setTextColor(200, 200, 200);
+        docPDF.setFontSize(8);
+        docPDF.text("Powered by WorkTime Pro - Official Document", 105, 280, null, null, "center");
+
+        // ✅ iOS Native PDF Share Style (Perfect PDF & Share Menu)
         const pdfBlob = docPDF.output('blob');
-        const file = new File([pdfBlob], 'Report.pdf', { type: 'application/pdf' });
-        if(navigator.share) await navigator.share({ files: [file] }); else docPDF.save('Report.pdf');
+        const pdfFile = new File([pdfBlob], `Report_${name.replace(/\s/g, '_')}_${month}.pdf`, { type: "application/pdf" });
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    files: [pdfFile],
+                    title: 'Work Report Export',
+                    text: `Official Hours Report for ${name}`
+                });
+            } catch (error) { console.error("Error sharing PDF:", error); }
+        } else {
+            docPDF.save(`Report_${name}.pdf`);
+        }
     };
 </script>
 </body>
