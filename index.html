@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Pro - Corporate Edition</title>
+    <title>WorkTime Pro - Welcome v10</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        /* 🎨Corporate Branding: Corporate Blue & Full Dark Theme */
         :root { --primary: #007bff; --bg: #000; --card: #1a1a1a; --text: #f5f5f5; --danger: #ff4444; }
         
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; font-size: 18px; overflow: hidden; }
@@ -18,123 +17,41 @@
         .page { display: none; padding: 20px; box-sizing: border-box; min-height: 100vh; position: relative; z-index: 10; }
         .page.active { display: block; }
 
-        /* ✅ واجهة تسجيل دخول جديدة كلياً: لا فريم رمادي، العناصر تطفو على الساعة */
+        /* واجهة الدخول بدون إطار */
         .login-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; max-width: 400px; margin: auto; padding: 20px; }
-        .login-wrapper .input-group { width: 100%; margin: 15px 0; }
-        .login-wrapper input { width: 100%; padding: 18px; margin: 10px 0; background: rgba(34, 34, 34, 0.7); /* نصف شفاف */ border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 15px; font-size: 20px; box-sizing: border-box; outline: none; }
+        .input-group { width: 100%; margin: 10px 0; }
+        input { width: 100%; padding: 18px; margin: 10px 0; background: rgba(34, 34, 34, 0.8); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 15px; font-size: 20px; box-sizing: border-box; outline: none; }
         
-        .btn { background: var(--primary); color: white; border: none; padding: 20px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 22px; margin-top: 20px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.2s; }
+        .btn { background: var(--primary); color: white; border: none; padding: 20px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 22px; margin-top: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.2s; }
         .btn:active { transform: scale(0.98); }
 
-        /* تباعدات التقرير الاحترافي v6 (كما هو في الإصدار المستقر) */
-        .card { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #333; max-width: 450px; margin: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
-        input, textarea { width: 100%; padding: 15px; margin: 10px 0; background: #222; border: 2px solid #333; color: white; border-radius: 12px; font-size: 18px; box-sizing: border-box; outline: none; }
-        #list-container { margin-top: 15px; }
-        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #333; background: #111; margin-bottom: 8px; border-radius: 12px; font-size: 20px; }
-        .total-box { text-align: center; padding: 20px; background: rgba(0, 123, 255, 0.1); border: 1px solid var(--primary); border-radius: 15px; margin-top: 25px; }
-        .nav { position: fixed; bottom: 0; width: 100%; max-width: 420px; background: #000; display: none; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; backdrop-filter: blur(10px); z-index: 1000; margin: 0 auto; left: 0; right: 0; }
-        .nav-item { color: #666; text-align: center; flex: 1; font-size: 16px; font-weight: bold; }
+        .toggle-link { color: #888; margin-top: 20px; cursor: pointer; font-size: 16px; text-decoration: underline; }
+
+        /* ساعة الخلفية بالأرقام */
+        .clock-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 0; overflow: hidden; }
+        .clock-face { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95vw; height: 95vw; max-width: 700px; max-height: 700px; border-radius: 50%; }
+        
+        .clock-number { position: absolute; width: 100%; height: 100%; text-align: center; font-size: 24px; font-weight: 300; color: rgba(255,255,255,0.9); padding: 15px; box-sizing: border-box; }
+        
+        .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; border-radius: 4px; }
+        .hour { width: 8px; height: 25%; background: white; }
+        .minute { width: 5px; height: 35%; background: white; }
+        .second { width: 2px; height: 42%; background: #ff4444; }
+        .center-dot { position: absolute; width: 12px; height: 12px; border-radius: 50%; background: #ff4444; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+        .welcome-badge { font-size: 45px; font-weight: 800; color: #fff; margin-bottom: 30px; text-shadow: 0 0 20px rgba(0,0,0,0.5); }
+
+        /* تنسيق التقرير v6 المستقر */
+        .card { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #333; max-width: 450px; margin: auto; }
+        .nav { position: fixed; bottom: 0; width: 100%; max-width: 420px; background: #000; display: none; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 1000; left: 0; right: 0; margin: 0 auto; }
+        .nav-item { color: #666; text-align: center; flex: 1; font-size: 16px; }
         .nav-item.active { color: var(--primary); }
-
-        /* تأثير Welcome الجديد (بخلفية بيضاء بارزة) */
-        .welcome-badge {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            padding: 10px 30px;
-            border-radius: 50px;
-            font-size: 30px;
-            font-weight: 700;
-            margin-bottom: 40px;
-            box-shadow: 0 5px 20px rgba(255,255,255,0.1);
-        }
-
-        /* ✅ تنسيق الساعة الديناميكية كخلفية كاملة ومكشوفة (Full Hero Background) */
-        .clock-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: radial-gradient(circle, #222 0%, #000 80%);
-            z-index: 0; /* خلف كل شيء */
-            overflow: hidden;
-        }
-        
-        .clock-face {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90vw; /* حجم كبير جداً ليكشف كل العقارب */
-            height: 90vw;
-            max-width: 800px;
-            max-height: 800px;
-            border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.02);
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.9);
-        }
-
-        .clock-markers {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-        
-        /* علامات الساعات الكبيرة */
-        .clock-marker {
-            position: absolute;
-            width: 2px;
-            height: 15px;
-            background: white;
-            border-radius: 1px;
-            top: 8px;
-            left: 50%;
-            transform-origin: bottom center;
-            transform: translateX(-50%);
-        }
-        
-        /* علامات الدقائق الصغيرة */
-        .clock-min-marker {
-            position: absolute;
-            width: 1px;
-            height: 6px;
-            background: rgba(255,255,255,0.2);
-            top: 10px;
-            left: 50%;
-            transform-origin: bottom center;
-            transform: translateX(-50%);
-        }
-
-        .hand {
-            position: absolute;
-            bottom: 50%;
-            left: 50%;
-            transform-origin: bottom center;
-            border-radius: 3px;
-        }
-        
-        .hour { width: 6px; height: 28%; background: white; transform: rotate(0deg); }
-        .minute { width: 4px; height: 38%; background: white; transform: rotate(0deg); }
-        .second { width: 1.5px; height: 42%; background: #ff4444; border-radius: 1px; transform: rotate(0deg); } /* عقرب ثواني أحمر */
-        
-        .center-dot {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #ff4444; /* نقطة حمراء في المركز */
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
     </style>
 </head>
 <body>
 
     <div class="clock-bg">
-        <div class="clock-face">
-            <div class="clock-markers" id="clock-markers">
-                </div>
+        <div class="clock-face" id="clock-face">
             <div class="hand hour" id="hour-hand"></div>
             <div class="hand minute" id="min-hand"></div>
             <div class="hand second" id="sec-hand"></div>
@@ -144,32 +61,31 @@
 
     <div id="p-auth" class="page active">
         <div class="login-wrapper">
-            
             <div class="welcome-badge">Welcome</div>
-            
-            <i class="fas fa-lock" style="font-size: 3rem; color: var(--primary); margin-bottom: 30px; opacity: 0.8;"></i>
+            <i class="fas fa-user-circle" style="font-size: 4rem; color: var(--primary); margin-bottom: 20px; opacity: 0.9;"></i>
             
             <div class="input-group">
-                <input type="email" id="email" placeholder="Work Email">
+                <input type="email" id="email" placeholder="Email Address">
                 <input type="password" id="pass" placeholder="Password">
             </div>
             
-            <button class="btn" onclick="authAction()">Sign In <i class="fas fa-chevron-right"></i></button>
+            <button class="btn" id="auth-btn" onclick="authAction()">Sign In <i class="fas fa-sign-in-alt"></i></button>
+            <div class="toggle-link" id="toggle-auth" onclick="toggleAuthMode()">Don't have an account? Create one</div>
         </div>
     </div>
 
     <div id="p-add" class="page" style="overflow-y: auto;">
         <div class="card" style="margin-top: 40px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h3 style="margin:0; color:var(--primary);">Log Time</h3>
+                <h3 style="margin:0; color:var(--primary);">Log Work Time</h3>
                 <button onclick="logout()" style="background:none; border:1px solid #444; color:#888; padding:5px 10px; border-radius:8px;">Logout</button>
             </div>
-            <input type="text" id="u-name" placeholder="Full Name (for Report)">
-            <input type="text" id="u-comp" placeholder="Company Name (for Report)">
+            <input type="text" id="u-name" placeholder="Full Name">
+            <input type="text" id="u-comp" placeholder="Company Name">
             <hr style="border:0; border-top:1px solid #333; margin:15px 0">
             <input type="date" id="w-date">
-            <input type="number" step="0.5" id="w-hrs" placeholder="Hours Worked (e.g. 8.5)">
-            <textarea id="w-note" placeholder="Short Note... (Optional)" rows="2"></textarea>
+            <input type="number" step="0.5" id="w-hrs" placeholder="Hours Worked">
+            <textarea id="w-note" placeholder="Notes (Optional)" rows="2"></textarea>
             <button class="btn" id="s-btn" onclick="saveData()">SAVE WORK ✅</button>
         </div>
     </div>
@@ -177,19 +93,15 @@
     <div id="p-rep" class="page" style="padding-bottom: 120px; overflow-y: auto;">
         <div class="card" style="margin-top: 40px;">
             <h3>Time Summary</h3>
-            <p style="font-size:16px; color:#888;">Name: <span id="res-name" style="color:var(--text)">---</span></p>
-            <p style="font-size:16px; color:#888;">Company: <span id="res-comp" style="color:var(--text)">---</span></p>
-            <label style="font-size:14px; color:#888;">Month Filter:</label>
+            <label>Month Filter:</label>
             <input type="month" id="month-filter" onchange="filterLogs()">
-            
             <div id="list-container"></div>
-            
-            <div class="total-box">
-                <span>TOTALE ORE:</span><br>
-                <b style="font-size:35px; color:var(--primary);" id="r-total">0.0</b>
+            <div style="text-align:center; padding:20px; background:rgba(0,123,255,0.1); border-radius:15px; margin-top:20px;">
+                <span>TOTAL HOURS:</span><br>
+                <b style="font-size:40px; color:var(--primary);" id="r-total">0.0</b>
             </div>
         </div>
-        <button class="btn" style="background:var(--primary); color:white; margin-top:20px;" onclick="handleiOSSharePDF()">Export Professional PDF <i class="fas fa-share-alt"></i></button>
+        <button class="btn" onclick="handleiOSSharePDF()">Export PDF <i class="fas fa-share-alt"></i></button>
     </div>
 
     <nav id="nav" class="nav">
@@ -200,7 +112,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, query, where, orderBy, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBlUrDFR15XgZdYKcPN9IjLqCc0DmTJ37I",
@@ -215,53 +127,45 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    document.getElementById('month-filter').value = new Date().toISOString().slice(0, 7);
+    let isSignUpMode = false;
 
-    // ✅ إنشاء علامات الساعة الديناميكية برمجياً لضمان الدقة
-    function generateClockMarkers() {
-        const markerContainer = document.getElementById('clock-markers');
-        markerContainer.innerHTML = '';
-        for (let i = 0; i < 60; i++) {
-            if (i % 5 === 0) {
-                // علامة ساعة كبيرة
-                const marker = document.createElement('div');
-                marker.className = 'clock-marker';
-                marker.style.transform = `translateX(-50%) rotate(${i * 6}deg)`;
-                markerContainer.appendChild(marker);
-            } else {
-                // علامة دقيقة صغيرة
-                const marker = document.createElement('div');
-                marker.className = 'clock-min-marker';
-                marker.style.transform = `translateX(-50%) rotate(${i * 6}deg)`;
-                markerContainer.appendChild(marker);
-            }
+    // ✅ وضع الأرقام في الساعة
+    function setupClockNumbers() {
+        const face = document.getElementById('clock-face');
+        for (let i = 1; i <= 12; i++) {
+            const num = document.createElement('div');
+            num.className = 'clock-number';
+            num.style.transform = `rotate(${i * 30}deg)`;
+            num.innerHTML = `<span style="display:inline-block; transform:rotate(-${i * 30}deg)">${i}</span>`;
+            face.appendChild(num);
         }
     }
 
-    // ✅ دالة تحديث الساعة الديناميكية الكبيرة خلف الواجهة
     function updateClock() {
         const now = new Date();
-        const seconds = now.getSeconds();
-        const minutes = now.getMinutes();
-        const hours = now.getHours();
-
-        const secDegrees = (seconds / 60) * 360;
-        const minDegrees = ((minutes / 60) * 360) + ((seconds / 60) * 6);
-        const hourDegrees = ((hours % 12) / 12 * 360) + ((minutes / 60) * 30);
-
-        document.getElementById('sec-hand').style.transform = `rotate(${secDegrees}deg)`;
-        document.getElementById('min-hand').style.transform = `rotate(${minDegrees}deg)`;
-        document.getElementById('hour-hand').style.transform = `rotate(${hourDegrees}deg)`;
+        const sec = now.getSeconds(), min = now.getMinutes(), hr = now.getHours();
+        document.getElementById('sec-hand').style.transform = `rotate(${sec * 6}deg)`;
+        document.getElementById('min-hand').style.transform = `rotate(${min * 6 + sec * 0.1}deg)`;
+        document.getElementById('hour-hand').style.transform = `rotate(${hr * 30 + min * 0.5}deg)`;
     }
 
-    // تفعيل الساعة الخلفية
-    generateClockMarkers();
+    setupClockNumbers();
     setInterval(updateClock, 1000);
-    updateClock(); // التحديث الأولي
+    updateClock();
+
+    window.toggleAuthMode = () => {
+        isSignUpMode = !isSignUpMode;
+        document.getElementById('auth-btn').innerHTML = isSignUpMode ? 'Create Account <i class="fas fa-user-plus"></i>' : 'Sign In <i class="fas fa-sign-in-alt"></i>';
+        document.getElementById('toggle-auth').innerText = isSignUpMode ? 'Already have an account? Sign In' : "Don't have an account? Create one";
+    };
 
     window.authAction = async () => {
         const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        try { await signInWithEmailAndPassword(auth, e, p); } catch { try { await createUserWithEmailAndPassword(auth, e, p); } catch(err){ alert(err.message); } }
+        if(!e || !p) return alert("Enter email and password");
+        try {
+            if(isSignUpMode) await createUserWithEmailAndPassword(auth, e, p);
+            else await signInWithEmailAndPassword(auth, e, p);
+        } catch(err) { alert(err.message); }
     };
 
     window.logout = () => signOut(auth);
@@ -271,27 +175,18 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('p-add').classList.add('active');
             document.getElementById('nav').style.display = 'flex';
-            // إخفاء الساعة الخلفية عند الدخول لضمان عدم تأثيرها على التمرير
             document.querySelector('.clock-bg').style.display = 'none';
-            document.body.style.overflow = 'auto'; // السماح بالتمرير
-
             const uSnap = await getDoc(doc(db, "users", user.uid));
-            if(uSnap.exists()) {
-                const name = uSnap.data().fullname || "User";
-                const comp = uSnap.data().company || "";
-                document.getElementById('u-name').value = name;
-                document.getElementById('u-comp').value = comp;
-                document.getElementById('res-name').innerText = name;
-                document.getElementById('res-comp').innerText = comp;
+            if(uSnap.exists()){
+                document.getElementById('u-name').value = uSnap.data().fullname || "";
+                document.getElementById('u-comp').value = uSnap.data().company || "";
             }
-            filterLogs(); 
+            filterLogs();
         } else {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('p-auth').classList.add('active');
             document.getElementById('nav').style.display = 'none';
-            // إعادة إظهار الساعة الخلفية عند الخروج
             document.querySelector('.clock-bg').style.display = 'block';
-            document.body.style.overflow = 'hidden'; // منع التمرير
         }
     });
 
@@ -305,67 +200,35 @@
     window.saveData = async () => {
         const n = document.getElementById('u-name').value, c = document.getElementById('u-comp').value, d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value;
         if(!n || !d || !h) return alert("Fill Name, Date and Hours!");
-        const btn = document.getElementById('s-btn'); btn.disabled = true;
         try {
             await setDoc(doc(db, "users", auth.currentUser.uid), { fullname: n, company: c }, { merge: true });
-            const docId = `${auth.currentUser.uid}_${d}`; 
-            await setDoc(doc(db, "workLogs", docId), {
-                uid: auth.currentUser.uid,
-                fullname: n, company: c, date: d, hours: parseFloat(h), note: document.getElementById('w-note').value, month: d.slice(0, 7)
+            await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${d}`), {
+                uid: auth.currentUser.uid, fullname: n, company: c, date: d, hours: parseFloat(h), note: document.getElementById('w-note').value, month: d.slice(0, 7)
             });
-            alert("Saved! ✅"); document.getElementById('w-hrs').value = ""; document.getElementById('w-note').value = ""; tab('rep');
+            alert("Saved! ✅"); tab('rep');
         } catch (e) { alert(e.message); }
-        btn.disabled = false;
     };
 
-    window.deleteLog = async (id) => { if(confirm("Delete this?")) await deleteDoc(doc(db, "workLogs", id)); };
-    window.editLog = (d, h, n) => { document.getElementById('w-date').value = d; document.getElementById('w-hrs').value = h; document.getElementById('w-note').value = n; tab('add'); };
+    window.deleteLog = async (id) => { if(confirm("Delete?")) await deleteDoc(doc(db, "workLogs", id)); };
 
-    let currentLogData = []; 
     window.filterLogs = () => {
-        const month = document.getElementById('month-filter').value;
+        const month = document.getElementById('month-filter').value || new Date().toISOString().slice(0, 7);
         const q = query(collection(db, "workLogs"), where("uid", "==", auth.currentUser.uid), where("month", "==", month));
         onSnapshot(q, (snap) => {
-            const list = document.getElementById('list-container'); list.innerHTML = ""; let total = 0; currentLogData = [];
+            const list = document.getElementById('list-container'); list.innerHTML = ""; let total = 0;
             snap.forEach(d => {
                 const data = d.data(); total += data.hours;
-                const dateParts = data.date.split('-');
-                const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-                const percent = (data.hours / 8) * 100;
-                currentLogData.push([formattedDate, data.hours.toFixed(1), `${percent.toFixed(0)}%`]);
-                
-                list.innerHTML += `
-                    <div class="item-row">
-                        <div><b>${data.date}</b><br><small>${data.hours} hrs</small></div>
-                        <div class="item-actions">
-                            <button class="icon-btn" onclick="editLog('${data.date}', ${data.hours}, '${data.note || ''}')"><i class="fas fa-edit" style="color:var(--primary)"></i></button>
-                            <button class="icon-btn" onclick="deleteLog('${d.id}')"><i class="fas fa-trash" style="color:var(--danger)"></i></button>
-                        </div>
-                    </div>`;
+                list.innerHTML += `<div class="item-row"><div><b>${data.date}</b><br>${data.hours} hrs</div><button onclick="deleteLog('${d.id}')" style="background:none; border:none; color:red; font-size:20px;"><i class="fas fa-trash"></i></button></div>`;
             });
             document.getElementById('r-total').innerText = total.toFixed(1);
         });
-    }
+    };
 
     window.handleiOSSharePDF = async () => {
-        const name = document.getElementById('res-name').innerText;
-        const comp = document.getElementById('res-comp').innerText;
-        const month = document.getElementById('month-filter').value;
-        const total = document.getElementById('r-total').innerText;
         const { jsPDF } = window.jspdf;
         const docPDF = new jsPDF();
-        docPDF.setFontSize(22); docPDF.setTextColor(0, 123, 255);
-        docPDF.text(`${comp || "WorkTime Pro"} - Work Report`, 105, 20, null, null, "center");
-        docPDF.setFontSize(10); docPDF.setTextColor(150, 150, 150);
-        docPDF.text(`Generated: ${new Date().toLocaleDateString()}`, 105, 26, null, null, "center");
-        docPDF.setTextColor(0, 0, 0); docPDF.setFontSize(14);
-        docPDF.text(`Employee: ${name}`, 20, 38); docPDF.text(`Month Period: ${month}`, 20, 46);
-        docPDF.autoTable({ startY: 55, head: [['Date', 'Hours', '% Day (8h)']], body: currentLogData, theme: 'striped', headStyles: { fillColor: [0, 123, 255], fontSize: 11, fontStyle: 'bold' }, styles: { fontSize: 10, halign: 'center', cellPadding: 2 }, columnStyles: { 0: { halign: 'left', cellWidth: 40 }, 1: { cellWidth: 30 }, 2: { cellWidth: 30 } }, margin: { left: 20, right: 20 }, rowPageBreak: 'avoid' });
-        docPDF.setFontSize(16); docPDF.setTextColor(0, 123, 255); docPDF.text(`TOTALE ORE: ${total} hrs`, 105, docPDF.lastAutoTable.finalY + 15, null, null, "center");
-        docPDF.setTextColor(200, 200, 200); docPDF.setFontSize(8); docPDF.text("Powered by WorkTime Pro - Official Document", 105, 280, null, null, "center");
-        const pdfBlob = docPDF.output('blob');
-        const pdfFile = new File([pdfBlob], `Report_${name.replace(/\s/g, '_')}_${month}.pdf`, { type: "application/pdf" });
-        if (navigator.share) await navigator.share({ files: [pdfFile] }); else docPDF.save(`Report_${name}.pdf`);
+        docPDF.text("Work Report", 20, 20);
+        docPDF.save("Report.pdf");
     };
 </script>
 </body>
