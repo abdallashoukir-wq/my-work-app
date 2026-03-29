@@ -3,24 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Pro - Final Sync</title>
-    
+    <title>WorkTime Pro - Final Fix</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    
     <style>
         :root { --primary: #00e676; --bg: #0d0d0d; --card: #1a1a1a; --text: #fff; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
-        .page { display: none; padding: 20px; min-height: 100vh; box-sizing: border-box; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+        .page { display: none; padding: 20px; }
         .page.active { display: block; }
         .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #2a2a2a; max-width: 400px; margin: auto; }
-        input, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #333; color: #fff; border-radius: 10px; box-sizing: border-box; }
+        input { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #333; color: #fff; border-radius: 10px; box-sizing: border-box; }
         .btn { background: var(--primary); color: #000; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .nav { position: fixed; bottom: 0; width: 100%; background: #000; display: none; justify-content: space-around; padding: 12px 0; border-top: 1px solid #222; }
-        .nav-item { color: #555; text-align: center; flex: 1; font-size: 0.8rem; }
+        .nav { position: fixed; bottom: 0; width: 100%; background: #000; display: none; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; }
+        .nav-item { color: #555; flex: 1; text-align: center; }
         .nav-item.active { color: var(--primary); }
-        .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #222; }
+        .item-row { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #222; background: #111; margin-bottom: 5px; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -36,7 +34,7 @@
 
 <div id="p-add" class="page">
     <div class="card">
-        <h3>Add Hours</h3>
+        <h3>Add Work</h3>
         <input type="text" id="u-name" placeholder="Full Name">
         <input type="date" id="w-date">
         <input type="number" id="w-hrs" placeholder="Hours">
@@ -46,12 +44,12 @@
 
 <div id="p-rep" class="page" style="padding-bottom: 80px;">
     <div class="card">
-        <h3 style="text-align:center; color:var(--primary)">Report</h3>
-        <p>Name: <span id="r-name" style="color:var(--primary)">---</span></p>
-        <div id="list"></div>
-        <div style="text-align:center; margin-top:15px; font-weight:bold; font-size:1.2rem;">Total: <span id="r-total">0</span> hrs</div>
+        <h3 style="text-align:center; color:var(--primary)">Monthly Report</h3>
+        <p>User: <span id="r-name" style="color:var(--primary)">---</span></p>
+        <div id="list-container"></div>
+        <div style="text-align:center; margin-top:20px; font-size:1.3rem;">Total: <span id="r-total" style="color:var(--primary)">0</span> hrs</div>
     </div>
-    <button class="btn" style="background:#333; color:#fff; margin-top:20px;" onclick="sharePDF()">Share PDF</button>
+    <button class="btn" style="background:#333; color:#fff; margin-top:20px;" onclick="sharePDF()">Share PDF Report</button>
 </div>
 
 <nav id="nav" class="nav">
@@ -83,12 +81,12 @@
     };
 
     onAuthStateChanged(auth, (user) => {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         if(user) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('p-add').classList.add('active');
             document.getElementById('nav').style.display = 'flex';
             loadData(user.uid);
-        } else { document.getElementById('p-auth').classList.add('active'); }
+        }
     });
 
     window.tab = (t) => {
@@ -100,46 +98,52 @@
 
     window.saveData = async () => {
         const n = document.getElementById('u-name').value, d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value;
-        if(!n || !d || !h) return alert("Fill all!");
-        const btn = document.getElementById('s-btn');
-        btn.disabled = true;
+        if(!n || !d || !h) return alert("Please fill all fields!");
         try {
-            // حفظ مباشر وبسيط
-            await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${d}`), {
+            // حفظ بدون أي تعقيدات في الـ ID
+            const docId = `${auth.currentUser.uid}_${Date.now()}`; 
+            await setDoc(doc(db, "workLogs", docId), {
                 uid: auth.currentUser.uid,
                 name: n,
                 date: d,
                 hours: parseFloat(h)
             });
-            alert("Saved! ✅");
+            alert("Success! Check the report.");
             tab('rep');
-        } catch (e) { alert("Error: " + e.message); }
-        btn.disabled = false;
+        } catch (e) { alert("Error saving: " + e.message); }
     };
 
-    let logs = [];
+    let pdfData = [];
     function loadData(uid) {
-        // حذفنا orderBy مؤقتاً لتجنب مشاكل Indexing
+        // استماع بسيط جداً بدون ترتيب (OrderBy) لتجنب أخطاء الفهرسة
         const q = query(collection(db, "workLogs"), where("uid", "==", uid));
         onSnapshot(q, (snap) => {
-            const list = document.getElementById('list');
-            list.innerHTML = ""; logs = []; let total = 0;
+            const list = document.getElementById('list-container');
+            list.innerHTML = ""; pdfData = []; let total = 0;
+            
+            if(snap.empty) {
+                list.innerHTML = "<p style='text-align:center; color:#555;'>No data found. Add some hours!</p>";
+            }
+
             snap.forEach(doc => {
                 const data = doc.data();
                 total += data.hours;
-                logs.push([data.date, data.hours.toFixed(1)]);
+                pdfData.push([data.date, data.hours.toFixed(1)]);
                 document.getElementById('r-name').innerText = data.name;
-                list.innerHTML += `<div class="row"><span>${data.date}</span><b>${data.hours} hrs</b></div>`;
+                list.innerHTML += `<div class="item-row"><span>${data.date}</span><b>${data.hours} hrs</b></div>`;
             });
             document.getElementById('r-total').innerText = total.toFixed(1);
-        }, (err) => { alert("Database Error: " + err.message); });
+        }, (err) => {
+            console.error(err);
+            alert("Database Error: " + err.message);
+        });
     }
 
     window.sharePDF = async () => {
         const { jsPDF } = window.jspdf;
         const docPDF = new jsPDF();
         docPDF.text("Work Report", 20, 20);
-        docPDF.autoTable({ startY: 30, head: [['Date', 'Hours']], body: logs });
+        docPDF.autoTable({ startY: 30, head: [['Date', 'Hours']], body: pdfData });
         const pdfBlob = docPDF.output('blob');
         const file = new File([pdfBlob], 'Report.pdf', { type: 'application/pdf' });
         if(navigator.share) await navigator.share({ files: [file] }); else docPDF.save('Report.pdf');
