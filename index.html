@@ -4,179 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WorkTime Pro</title>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    
     <style>
-        :root { 
-            --primary: #00e676; 
-            --bg: #0d0d0d; 
-            --card: #1a1a1a; 
-            --text: #ffffff; 
-            --accent-blue: #4da3ff; 
-        }
-        
-        body { 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
-            background: var(--bg); 
-            color: var(--text); 
-            margin: 0; 
-            padding: 0; 
-        }
-
-        /* تنسيق الصفحات */
+        :root { --primary: #00e676; --bg: #0d0d0d; --card: #1a1a1a; --text: #ffffff; --accent-blue: #4da3ff; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
         .page { display: none; padding: 20px; min-height: 100vh; box-sizing: border-box; }
         .page.active { display: block; }
-
-        /* البطاقات */
-        .card { 
-            background: var(--card); 
-            padding: 25px; 
-            border-radius: 20px; 
-            border: 1px solid #2a2a2a; 
-            max-width: 400px; 
-            margin: 0 auto 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        /* المدخلات بأسلوب متناسق */
-        input, textarea { 
-            width: 100%; 
-            padding: 14px; 
-            margin: 10px 0; 
-            background: #252525; 
-            border: 1px solid #333; 
-            color: white; 
-            border-radius: 12px; 
-            box-sizing: border-box; 
-            font-size: 16px; 
-            outline: none;
-        }
+        .card { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #2a2a2a; max-width: 400px; margin: 0 auto 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        input, textarea { width: 100%; padding: 14px; margin: 10px 0; background: #252525; border: 1px solid #333; color: white; border-radius: 12px; font-size: 16px; outline: none; box-sizing: border-box; }
         input:focus { border-color: var(--primary); }
-
-        .btn { 
-            background: var(--primary); 
-            color: #000; 
-            border: none; 
-            padding: 16px; 
-            width: 100%; 
-            border-radius: 12px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            font-size: 1rem; 
-            transition: 0.3s;
-        }
-        .btn:active { transform: scale(0.98); }
-
-        /* المنيو السفلية */
-        .bottom-nav { 
-            position: fixed; 
-            bottom: 0; 
-            left: 0; 
-            width: 100%; 
-            background: #000; 
-            display: flex; 
-            justify-content: space-around; 
-            padding: 12px 0; 
-            border-top: 1px solid #222; 
-            z-index: 1000;
-        }
-        .nav-item { color: #666; text-align: center; flex: 1; cursor: pointer; font-size: 0.8rem; transition: 0.3s; }
+        .btn { background: var(--primary); color: #000; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #222; }
+        .nav-item { color: #555; text-align: center; flex: 1; cursor: pointer; font-size: 0.8rem; }
         .nav-item.active { color: var(--primary); }
         .nav-item i { font-size: 1.4rem; display: block; margin-bottom: 4px; }
-
-        /* تصميم التقرير (أبيض كما في الصورة) */
-        #pdf-content { 
-            background: white; 
-            color: #333; 
-            padding: 30px; 
-            border-radius: 15px; 
-            direction: ltr; 
-            text-align: left;
-        }
-        .report-header { text-align: center; color: var(--accent-blue); }
-        .report-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        .report-table th { border-bottom: 2px solid #eee; padding: 12px; color: #999; font-size: 0.8rem; }
-        .report-table td { padding: 15px; border-bottom: 1px solid #eee; font-weight: bold; }
-        
-        .total-box { 
-            background: #f0f7ff; 
-            color: var(--accent-blue); 
-            padding: 20px; 
-            border-radius: 12px; 
-            text-align: center; 
-            font-size: 1.3rem; 
-            font-weight: bold;
-        }
+        /* تصميم التقرير الاحترافي */
+        #pdf-area { background: white; color: #333; padding: 30px; border-radius: 15px; direction: ltr; text-align: left; }
+        .rep-head { text-align: center; color: var(--accent-blue); border-bottom: 2px solid var(--accent-blue); padding-bottom: 15px; margin-bottom: 20px; }
+        .rep-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .rep-table th { color: #999; font-size: 0.8rem; border-bottom: 1px solid #eee; padding: 10px; text-align: left; }
+        .rep-table td { padding: 15px; border-bottom: 1px solid #eee; font-weight: bold; }
+        .total-box { background: #f0f7ff; color: var(--accent-blue); padding: 20px; border-radius: 12px; text-align: center; font-size: 1.3rem; font-weight: bold; border: 1px solid #d0e7ff; }
     </style>
 </head>
 <body>
 
-    <div id="auth-page" class="page active">
-        <div class="card" style="margin-top: 60px; text-align: center;">
-            <div style="background: rgba(0,230,118,0.1); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-                <i class="fas fa-user-lock" style="font-size: 2.5rem; color: var(--primary);"></i>
-            </div>
-            <h2 style="margin-bottom: 30px;">WorkTime Pro</h2>
-            <input type="email" id="email" placeholder="البريد الإلكتروني">
-            <input type="password" id="pass" placeholder="كلمة المرور">
-            <button class="btn" onclick="authAction()">دخول آمن</button>
-            <p onclick="isLogin = !isLogin; this.innerText = isLogin ? 'إنشاء حساب جديد' : 'لديك حساب؟ دخول'" 
-               style="color: var(--primary); cursor: pointer; margin-top: 20px; font-size: 0.9rem;">إنشاء حساب جديد</p>
-        </div>
+<div id="auth-page" class="page active">
+    <div class="card" style="margin-top: 50px; text-align: center;">
+        <i class="fas fa-user-clock" style="font-size: 4rem; color: var(--primary); margin-bottom: 20px;"></i>
+        <h2 style="margin-bottom: 30px;">WorkTime Pro</h2>
+        <input type="email" id="email" placeholder="البريد الإلكتروني">
+        <input type="password" id="pass" placeholder="كلمة المرور">
+        <button class="btn" onclick="authAction()">تسجيل الدخول</button>
+        <p onclick="toggleAuth()" id="auth-msg" style="color:var(--primary); cursor:pointer; margin-top:20px;">إنشاء حساب جديد</p>
     </div>
+</div>
 
-    <div id="add-page" class="page">
-        <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-                <h3 style="margin:0; color: var(--primary);">إضافة ساعات العمل</h3>
-                <i class="fas fa-sign-out-alt" onclick="logout()" style="color:#ff4444; cursor:pointer; font-size: 1.2rem;"></i>
-            </div>
-            
-            <label style="font-size:0.8rem; color:#888;">الاسم الكامل:</label>
-            <input type="text" id="fullname" placeholder="اسمك الذي سيظهر في التقرير">
-            
-            <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
-
-            <label style="font-size:0.8rem; color:#888;">تاريخ اليوم:</label>
-            <input type="date" id="date">
-            <input type="number" id="hours" placeholder="عدد الساعات">
-            <textarea id="note" placeholder="ملاحظة سريعة..." rows="2"></textarea>
-            
-            <button class="btn" onclick="saveData()">حفظ البيانات ✅</button>
+<div id="main-page" class="page">
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 style="margin:0; color:var(--primary)">إضافة ساعات عمل</h3>
+            <i class="fas fa-power-off" onclick="logout()" style="color:#ff4444; cursor:pointer"></i>
         </div>
+        <label style="font-size:0.8rem; color:#888">اسم الموظف:</label>
+        <input type="text" id="fname" placeholder="اكتب اسمك ليظهر في التقرير">
+        <hr style="border:0; border-top:1px solid #333; margin:15px 0">
+        <label style="font-size:0.8rem; color:#888">التاريخ:</label>
+        <input type="date" id="date">
+        <input type="number" id="hrs" placeholder="عدد الساعات (مثلاً: 8)">
+        <textarea id="note" placeholder="ملاحظة قصيرة..." rows="2"></textarea>
+        <button class="btn" onclick="saveWork()">حفظ العمل +</button>
     </div>
+</div>
 
-    <div id="report-page" class="page" style="padding-bottom: 100px;">
-        <div id="pdf-content">
-            <div class="report-header">
-                <h2 style="margin:0; letter-spacing: 1px;">Riepilogo Ore Mensili</h2>
-                <p id="rep-month" style="margin:5px 0; color:#666;"></p>
-                <div style="width:100%; height:2px; background:var(--accent-blue); margin: 15px 0;"></div>
-            </div>
-
-            <p><strong>Nome:</strong> <span id="rep-name" style="color:var(--accent-blue)">---</span></p>
-            <p><strong>Periodo:</strong> <span id="rep-period" style="color:var(--accent-blue)">---</span></p>
-
-            <table class="report-table">
-                <thead><tr><th>Data</th><th style="text-align:right">Ore</th></tr></thead>
-                <tbody id="table-body"></tbody>
-            </table>
-
-            <div class="total-box">
-                TOTALE ORE: <span id="rep-total">0.0</span>
-            </div>
+<div id="rep-page" class="page" style="padding-bottom: 100px;">
+    <div id="pdf-area">
+        <div class="rep-head">
+            <h2 style="margin:0">Riepilogo Ore Mensili</h2>
+            <p id="rep-date-info" style="color:#666; margin:5px 0; font-size:0.9rem"></p>
         </div>
-        <div style="max-width:400px; margin: 20px auto;">
-            <button class="btn" style="background:var(--accent-blue); color:white;" onclick="downloadPDF()">تصدير PDF للشركة</button>
-        </div>
+        <p><strong>Nome:</strong> <span id="rep-name-val" style="color:var(--accent-blue)">---</span></p>
+        <p><strong>Periodo:</strong> <span id="rep-period-val" style="color:var(--accent-blue)">---</span></p>
+        <table class="rep-table">
+            <thead><tr><th>Data</th><th style="text-align:right">Ore</th></tr></thead>
+            <tbody id="tbody"></tbody>
+        </table>
+        <div class="total-box">TOTALE ORE: <span id="total-val">0.0</span></div>
     </div>
+    <div style="max-width:400px; margin: 20px auto;"><button class="btn" style="background:var(--accent-blue); color:white" onclick="downloadPDF()">تصدير PDF للشركة</button></div>
+</div>
 
-    <div id="nav" class="bottom-nav" style="display:none;">
-        <div class="nav-item active" id="n-add" onclick="showTab('add')"><i class="fas fa-plus-circle"></i>إضافة</div>
-        <div class="nav-item" id="n-rep" onclick="showTab('rep')"><i class="fas fa-file-invoice"></i>التقرير</div>
-    </div>
+<nav id="navbar" class="bottom-nav" style="display:none">
+    <div class="nav-item active" id="n1" onclick="tab('main')"><i class="fas fa-plus-circle"></i>إضافة</div>
+    <div class="nav-item" id="n2" onclick="tab('rep')"><i class="fas fa-file-invoice"></i>التقرير</div>
+</nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -197,96 +99,61 @@
     const db = getFirestore(app);
 
     let isLogin = true;
+    window.toggleAuth = () => { isLogin = !isLogin; document.getElementById('auth-msg').innerText = isLogin ? "إنشاء حساب جديد" : "لديك حساب؟ دخول"; };
 
     window.authAction = async () => {
-        const e = document.getElementById('email').value;
-        const p = document.getElementById('pass').value;
-        try {
-            if(isLogin) await signInWithEmailAndPassword(auth, e, p);
-            else await createUserWithEmailAndPassword(auth, e, p);
-        } catch (err) { alert("خطأ: " + err.message); }
+        const e = document.getElementById('email').value, p = document.getElementById('pass').value;
+        try { isLogin ? await signInWithEmailAndPassword(auth, e, p) : await createUserWithEmailAndPassword(auth, e, p); } catch (err) { alert("خطأ: " + err.message); }
     };
 
     onAuthStateChanged(auth, async (user) => {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         if(user) {
-            document.getElementById('add-page').classList.add('active');
-            document.getElementById('nav').style.display = 'flex';
-            const u = await getDoc(doc(db, "users", user.uid));
-            if(u.exists()) document.getElementById('fullname').value = u.data().fullname || "";
+            document.getElementById('main-page').classList.add('active');
+            document.getElementById('navbar').style.display = 'flex';
+            const d = await getDoc(doc(db, "users", user.uid));
+            if(d.exists()) document.getElementById('fname').value = d.data().fullname || "";
         } else {
             document.getElementById('auth-page').classList.add('active');
-            document.getElementById('nav').style.display = 'none';
+            document.getElementById('navbar').style.display = 'none';
         }
     });
 
-    window.showTab = (t) => {
+    window.tab = (t) => {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        if(t === 'add') {
-            document.getElementById('add-page').classList.add('active');
-            document.getElementById('n-add').classList.add('active');
-        } else {
-            document.getElementById('report-page').classList.add('active');
-            document.getElementById('n-rep').classList.add('active');
-            updateReport();
-        }
+        if(t === 'main') { document.getElementById('main-page').classList.add('active'); document.getElementById('n1').classList.add('active'); }
+        else { document.getElementById('rep-page').classList.add('active'); document.getElementById('n2').classList.add('active'); loadRep(); }
     };
 
-    // دالة الحفظ المعدلة لضمان العمل
-    window.saveData = async () => {
-        const name = document.getElementById('fullname').value;
-        const date = document.getElementById('date').value;
-        const hrs = document.getElementById('hours').value;
-        const note = document.getElementById('note').value;
-
-        if(!name || !date || !hrs) return alert("يرجى ملء الاسم والتاريخ والساعات!");
-
+    window.saveWork = async () => {
+        const name = document.getElementById('fname').value, date = document.getElementById('date').value, h = document.getElementById('hrs').value;
+        if(!name || !date || !h) return alert("يرجى ملء الاسم والتاريخ والساعات!");
         try {
-            // حفظ الاسم
             await setDoc(doc(db, "users", auth.currentUser.uid), { fullname: name }, { merge: true });
-            
-            // حفظ الساعات (معرف فريد يمنع التكرار في نفس اليوم)
-            const id = `${auth.currentUser.uid}_${date}`;
-            await setDoc(doc(db, "workLogs", id), {
-                uid: auth.currentUser.uid,
-                date: date,
-                hours: parseFloat(hrs),
-                note: note
-            });
-
-            alert("تم الحفظ بنجاح! ✅");
-            showTab('rep');
-        } catch (e) {
-            alert("فشل الحفظ: " + e.message);
-        }
+            await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${date}`), { uid: auth.currentUser.uid, date: date, hours: parseFloat(h), note: document.getElementById('note').value });
+            alert("تم حفظ البيانات بنجاح! ✅"); tab('rep');
+        } catch (e) { alert("فشل الحفظ: " + e.message); }
     };
 
-    async function updateReport() {
+    async function loadRep() {
         const q = query(collection(db, "workLogs"), where("uid", "==", auth.currentUser.uid), orderBy("date", "asc"));
-        const snap = await getDocs(q);
-        const tbody = document.getElementById('table-body');
-        const name = document.getElementById('fullname').value;
-        
-        document.getElementById('rep-name').innerText = name || "---";
-        const d = new Date();
-        const period = `${d.toLocaleString('it-IT', { month: 'long' })} ${d.getFullYear()}`;
-        document.getElementById('rep-month').innerText = period;
-        document.getElementById('rep-period').innerText = period;
-
-        tbody.innerHTML = "";
-        let total = 0;
-        snap.forEach(doc => {
-            const item = doc.data();
-            total += item.hours;
-            const formattedDate = item.date.split('-').reverse().join('/');
-            tbody.innerHTML += `<tr><td>${formattedDate}</td><td style="text-align:right">${item.hours.toFixed(1)}</td></tr>`;
+        const snap = await getDocs(q), tbody = document.getElementById('tbody');
+        tbody.innerHTML = ""; let total = 0;
+        document.getElementById('rep-name-val').innerText = document.getElementById('fname').value;
+        const now = new Date(); 
+        const monthText = now.toLocaleString('it-IT', { month: 'long', year: 'numeric' });
+        document.getElementById('rep-date-info').innerText = monthText;
+        document.getElementById('rep-period-val').innerText = monthText;
+        snap.forEach(d => {
+            const item = d.data(); total += item.hours;
+            tbody.innerHTML += `<tr><td>${item.date.split('-').reverse().join('/')}</td><td style="text-align:right">${item.hours.toFixed(1)}</td></tr>`;
         });
-        document.getElementById('rep-total').innerText = total.toFixed(1);
+        document.getElementById('total-val').innerText = total.toFixed(1);
     }
 
     window.logout = () => signOut(auth);
-    window.downloadPDF = () => html2pdf().from(document.getElementById('pdf-content')).save('Riepilogo_Ore.pdf');
+    window.downloadPDF = () => html2pdf().from(document.getElementById('pdf-area')).save('Riepilogo_Ore.pdf');
 </script>
 </body>
 </html>
