@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Pro v7.1 - Ultimate Stable</title>
+    <title>WorkTime Pro v7.2 - Fixed Report Info</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -11,35 +11,34 @@
     
     <style>
         :root { --primary: #007bff; --bg: #000; --card: #1a1a1a; --text: #f5f5f5; }
-        
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; overflow-x: hidden; }
         
-        /* 🕒 الساعة الخلفية الكبيرة */
+        /* 🕒 الساعة الخلفية (تظهر فقط في الدخول) */
         .clock-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 0; overflow: hidden; }
-        .clock-face { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120vw; height: 120vw; max-width: 850px; max-height: 850px; opacity: 0.6; }
-        .clock-number { position: absolute; width: 100%; height: 100%; text-align: center; font-size: 38px; font-weight: 300; color: rgba(255,255,255,0.3); padding: 25px; box-sizing: border-box; }
+        .clock-face { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120vw; height: 120vw; max-width: 850px; max-height: 850px; opacity: 0.5; }
+        .clock-number { position: absolute; width: 100%; height: 100%; text-align: center; font-size: 38px; color: rgba(255,255,255,0.2); padding: 25px; box-sizing: border-box; }
         .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; border-radius: 10px; }
         .hour { width: 8px; height: 26%; background: #fff; }
         .minute { width: 5px; height: 36%; background: #ccc; }
         .second { width: 2px; height: 42%; background: #ff4444; }
         .center-dot { position: absolute; width: 12px; height: 12px; background: #ff4444; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
-        /* 🏷️ واجهة الدخول */
-        .welcome-badge { position: absolute; top: 10%; width: 100%; text-align: center; font-size: 55px; font-weight: 800; color: #fff; text-shadow: 0 0 20px rgba(0,0,0,0.8); z-index: 10; }
+        .welcome-badge { position: absolute; top: 10%; width: 100%; text-align: center; font-size: 55px; font-weight: 800; color: #fff; z-index: 10; }
         .page { display: none; padding: 20px; position: relative; z-index: 5; min-height: 100vh; box-sizing: border-box; }
         .page.active { display: block; }
         
         .login-wrap { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 90vh; max-width: 380px; margin: auto; }
-        input, textarea { width: 100%; padding: 18px; margin: 10px 0; background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 15px; font-size: 18px; box-sizing: border-box; outline: none; backdrop-filter: blur(10px); }
+        input, textarea { width: 100%; padding: 18px; margin: 10px 0; background: rgba(255, 255, 255, 0.1); border: 1px solid #333; color: #fff; border-radius: 15px; font-size: 18px; box-sizing: border-box; outline: none; }
         
-        .btn { background: var(--primary); color: #fff; border: none; padding: 20px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 20px; cursor: pointer; margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.2s; }
-        .btn:active { transform: scale(0.97); opacity: 0.9; }
-        
-        /* 📋 الكروت والتقارير */
-        .card { background: var(--card); padding: 25px; border-radius: 25px; border: 1px solid #333; margin-top: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 18px; border-bottom: 1px solid #222; background: #111; margin-bottom: 8px; border-radius: 15px; }
+        .btn { background: var(--primary); color: #fff; border: none; padding: 20px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 20px; cursor: pointer; margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .card { background: var(--card); padding: 25px; border-radius: 25px; border: 1px solid #333; margin-top: 30px; }
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #222; background: #111; margin-bottom: 8px; border-radius: 12px; }
 
-        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: space-around; padding: 18px 0; border-top: 1px solid #222; z-index: 100; backdrop-filter: blur(10px); }
+        .info-header { margin-bottom: 20px; padding: 10px; border-left: 4px solid var(--primary); background: rgba(255,255,255,0.03); border-radius: 0 10px 10px 0; }
+        .info-header p { margin: 5px 0; font-size: 16px; color: #bbb; }
+        .info-header b { color: #fff; }
+
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; display: none; justify-content: space-around; padding: 18px 0; border-top: 1px solid #222; z-index: 100; }
         .nav-item { color: #555; text-align: center; flex: 1; font-size: 14px; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
     </style>
@@ -59,45 +58,52 @@
         <div class="welcome-badge">Welcome</div>
         <div class="login-wrap">
             <div style="height: 120px;"></div>
-            <input type="email" id="email" placeholder="Email Address">
+            <input type="email" id="email" placeholder="Email">
             <input type="password" id="pass" placeholder="Password">
-            <button class="btn" onclick="handleAuth()">Sign In <i class="fas fa-arrow-right"></i></button>
-            <p onclick="toggleMode()" id="toggle-txt" style="color: #777; margin-top: 25px; text-decoration: underline; cursor: pointer;">Don't have an account? Sign Up</p>
+            <button class="btn" onclick="handleAuth()">Sign In</button>
+            <p onclick="toggleMode()" id="toggle-txt" style="color: #777; margin-top: 25px; text-decoration: underline; cursor: pointer;">Sign Up</p>
         </div>
     </div>
 
     <div id="p-add" class="page" style="overflow-y: auto;">
         <div class="card" style="margin-top: 60px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2 style="color: var(--primary); margin: 0;">Log Session</h2>
-                <button onclick="logout()" style="background: none; border: 1px solid #444; color: #888; padding: 6px 12px; border-radius: 10px;">Logout</button>
+                <h2 style="color: var(--primary); margin: 0;">Add Work</h2>
+                <button onclick="logout()" style="background: none; border: 1px solid #444; color: #888; padding: 5px 10px; border-radius: 8px;">Logout</button>
             </div>
-            <input type="text" id="u-name" placeholder="Full Name">
+            <input type="text" id="u-name" placeholder="Your Full Name">
             <input type="text" id="u-comp" placeholder="Company Name">
-            <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
             <input type="date" id="w-date">
-            <input type="number" step="0.5" id="w-hrs" placeholder="Hours (e.g. 8.5)">
-            <textarea id="w-note" placeholder="Quick note..."></textarea>
-            <button class="btn" onclick="saveWork()">Save Entry ✅</button>
+            <input type="number" step="0.5" id="w-hrs" placeholder="Hours Worked">
+            <textarea id="w-note" placeholder="Note..."></textarea>
+            <button class="btn" onclick="saveWork()">SAVE ✅</button>
         </div>
     </div>
 
     <div id="p-rep" class="page" style="overflow-y: auto; padding-bottom: 120px;">
         <div class="card" style="margin-top: 60px;">
-            <h3>Monthly Overview</h3>
-            <input type="month" id="month-filter" onchange="loadLogs()">
-            <div id="logs-list"></div>
-            <div style="text-align: center; padding: 25px; background: rgba(0,123,255,0.05); border-radius: 20px; margin-top: 20px;">
-                TOTAL HOURS: <br>
-                <b id="total-val" style="font-size: 45px; color: var(--primary);">0.0</b>
+            <h3>Monthly Report</h3>
+            
+            <div class="info-header">
+                <p>Name: <b id="display-name">---</b></p>
+                <p>Company: <b id="display-comp">---</b></p>
             </div>
-            <button class="btn" onclick="generateAndSharePDF()">Share PDF Report <i class="fas fa-share-nodes"></i></button>
+
+            <label style="font-size: 14px; color: #777;">Select Month:</label>
+            <input type="month" id="month-filter" onchange="loadLogs()">
+            
+            <div id="logs-list" style="margin-top: 20px;"></div>
+            
+            <div style="text-align: center; padding: 20px; border-top: 1px solid #333; margin-top: 15px;">
+                TOTAL: <b id="total-val" style="font-size: 35px; color: var(--primary);">0.0</b> Hrs
+            </div>
+            <button class="btn" onclick="generateAndSharePDF()">Share PDF <i class="fas fa-share-nodes"></i></button>
         </div>
     </div>
 
     <nav id="nav-bar" class="nav">
-        <div class="nav-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus-circle"></i><br>Add</div>
-        <div class="nav-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-chart-simple"></i><br>Report</div>
+        <div class="nav-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus"></i><br>Add</div>
+        <div class="nav-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-file-lines"></i><br>Report</div>
     </nav>
 
 <script type="module">
@@ -121,7 +127,7 @@
     let isSignUp = false;
     let cachedLogs = [];
 
-    // --- Clock Engine ---
+    // Clock
     function initClock() {
         const face = document.getElementById('clock-face');
         for (let i = 1; i <= 12; i++) {
@@ -140,16 +146,14 @@
     }
     initClock(); setInterval(updateClock, 1000);
 
-    // --- Auth Logic ---
     window.toggleMode = () => {
         isSignUp = !isSignUp;
-        document.querySelector('#p-auth .btn').innerHTML = isSignUp ? 'Sign Up <i class="fas fa-user-plus"></i>' : 'Sign In <i class="fas fa-arrow-right"></i>';
-        document.getElementById('toggle-txt').innerText = isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up";
+        document.querySelector('#p-auth .btn').innerText = isSignUp ? "Sign Up" : "Sign In";
+        document.getElementById('toggle-txt').innerText = isSignUp ? "Back to Login" : "Sign Up";
     };
 
     window.handleAuth = async () => {
         const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        if(!e || !p) return alert("Missing fields");
         try {
             if(isSignUp) await createUserWithEmailAndPassword(auth, e, p);
             else await signInWithEmailAndPassword(auth, e, p);
@@ -163,14 +167,19 @@
         if(user) {
             pAuth.classList.remove('active'); pAdd.classList.add('active'); nav.style.display = 'flex'; clock.style.display = 'none';
             const u = await getDoc(doc(db, "users", user.uid));
-            if(u.exists()) { document.getElementById('u-name').value = u.data().fullname || ""; document.getElementById('u-comp').value = u.data().company || ""; }
+            if(u.exists()) {
+                const data = u.data();
+                document.getElementById('u-name').value = data.fullname || "";
+                document.getElementById('u-comp').value = data.company || "";
+                document.getElementById('display-name').innerText = data.fullname || "User";
+                document.getElementById('display-comp').innerText = data.company || "Not Set";
+            }
             loadLogs();
         } else {
             pAuth.classList.add('active'); pAdd.classList.remove('active'); nav.style.display = 'none'; clock.style.display = 'block';
         }
     });
 
-    // --- App Logic ---
     window.switchTab = (t) => {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -180,15 +189,13 @@
 
     window.saveWork = async () => {
         const n = document.getElementById('u-name').value, c = document.getElementById('u-comp').value, d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value;
-        if(!n || !d || !h) return alert("Fill all main fields!");
+        if(!n || !d || !h) return alert("Fill Name, Date and Hours");
         await setDoc(doc(db, "users", auth.currentUser.uid), { fullname: n, company: c }, { merge: true });
-        await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${d}`), { 
-            uid: auth.currentUser.uid, fullname: n, company: c, date: d, hours: parseFloat(h), note: document.getElementById('w-note').value, month: d.slice(0, 7) 
-        });
-        alert("Entry Saved! ✅"); switchTab('rep');
+        await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${d}`), { uid: auth.currentUser.uid, fullname: n, company: c, date: d, hours: parseFloat(h), month: d.slice(0, 7) });
+        alert("Saved! ✅"); switchTab('rep');
     };
 
-    window.deleteEntry = async (id) => { if(confirm("Delete this log?")) await deleteDoc(doc(db, "workLogs", id)); };
+    window.deleteEntry = async (id) => { if(confirm("Delete?")) await deleteDoc(doc(db, "workLogs", id)); };
 
     window.loadLogs = () => {
         const m = document.getElementById('month-filter').value || new Date().toISOString().slice(0, 7);
@@ -198,33 +205,23 @@
             snap.forEach(d => {
                 const data = d.data(); tot += data.hours;
                 cachedLogs.push([data.date, data.hours.toFixed(1)]);
-                list.innerHTML += `<div class="item-row"><div><b>${data.date}</b><br><small>${data.hours} hrs</small></div><button onclick="deleteEntry('${d.id}')" style="background:none; border:none; color:red; font-size:20px;"><i class="fas fa-trash-can"></i></button></div>`;
+                list.innerHTML += `<div class="item-row"><div><b>${data.date}</b><br>${data.hours}h</div><button onclick="deleteEntry('${d.id}')" style="background:none; border:none; color:red;"><i class="fas fa-trash"></i></button></div>`;
             });
             document.getElementById('total-val').innerText = tot.toFixed(1);
         });
     };
 
-    // --- PDF Sharing Fixed ---
     window.generateAndSharePDF = async () => {
-        if(cachedLogs.length === 0) return alert("No data available for this month!");
+        if(cachedLogs.length === 0) return alert("No data!");
         const { jsPDF } = window.jspdf;
         const docPDF = new jsPDF();
-        
-        docPDF.setFontSize(22); docPDF.text("Work Report", 105, 15, null, null, "center");
-        docPDF.setFontSize(12);
-        docPDF.text(`Name: ${document.getElementById('u-name').value}`, 20, 25);
-        docPDF.text(`Company: ${document.getElementById('u-comp').value}`, 20, 32);
-        docPDF.text(`Total Monthly Hours: ${document.getElementById('total-val').innerText}`, 20, 39);
-        
-        docPDF.autoTable({ startY: 45, head: [['Date', 'Hours']], body: cachedLogs, theme: 'striped' });
-        
+        docPDF.text("Work Report", 105, 15, null, null, "center");
+        docPDF.text(`Employee: ${document.getElementById('u-name').value}`, 20, 25);
+        docPDF.autoTable({ startY: 35, head: [['Date', 'Hours']], body: cachedLogs });
         const blob = docPDF.output('blob');
-        const file = new File([blob], "WorkReport.pdf", { type: "application/pdf" });
-
-        if (navigator.share) {
-            try { await navigator.share({ files: [file], title: 'My Work Report' }); } 
-            catch (e) { docPDF.save("WorkReport.pdf"); }
-        } else { docPDF.save("WorkReport.pdf"); }
+        const file = new File([blob], "Report.pdf", { type: "application/pdf" });
+        if (navigator.share) await navigator.share({ files: [file] });
+        else docPDF.save("Report.pdf");
     };
 </script>
 </body>
