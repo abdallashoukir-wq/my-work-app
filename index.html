@@ -3,71 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Pro - Final Fix</title>
+    <title>WorkTime Pro - Official</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
-        :root { --primary: #00e676; --bg: #0d0d0d; --card: #1a1a1a; --text: #fff; }
-        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; direction: ltr; }
-        .page { display: none; padding: 20px; }
+        :root { 
+            --primary: #00e676; 
+            --bg: #0d0d0d; 
+            --card: #1a1a1a; 
+            --text: #ffffff; 
+            --gray: #888;
+            --danger: #ff5252;
+        }
+        
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; direction: ltr; overflow-x: hidden; }
+        
+        .page { display: none; padding: 20px; box-sizing: border-box; min-height: 100vh; }
         .page.active { display: block; }
-        .card { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #2a2a2a; max-width: 400px; margin: auto; }
-        input, textarea { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #333; color: #fff; border-radius: 10px; box-sizing: border-box; }
-        .btn { background: var(--primary); color: #000; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .nav { position: fixed; bottom: 0; width: 100%; background: #000; display: none; justify-content: space-around; padding: 10px 0; border-top: 1px solid #222; }
+
+        .card { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #2a2a2a; max-width: 400px; margin: 15px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        input, textarea { width: 100%; padding: 14px; margin: 10px 0; background: #252525; border: 1px solid #333; color: white; border-radius: 12px; box-sizing: border-box; font-size: 16px; outline: none; }
+        input:focus { border-color: var(--primary); }
+
+        .btn { background: var(--primary); color: #000; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
+
+        /* Navigation */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 420px; background: #000; display: none; justify-content: space-around; padding: 12px 0; border-top: 1px solid #222; z-index: 1000; margin: 0 auto; left: 0; right: 0; }
         .nav-item { color: #555; text-align: center; flex: 1; cursor: pointer; font-size: 0.8rem; }
-        .nav-item.active { color: var(--primary); }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { color: #888; text-align: left; padding: 10px; border-bottom: 1px solid #333; }
-        td { padding: 10px; border-bottom: 1px solid #222; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .nav-item i { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+
+        /* Report UI (Maintains Dark Theme) */
+        #report-view-card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #2a2a2a; }
+        .report-header { text-align: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        .report-header h2 { color: var(--primary); margin: 0; }
+        
+        .info-box { margin-bottom: 12px; font-size: 0.9rem; text-align: left; }
+        .info-box span { color: var(--primary); font-weight: bold; }
+
+        .work-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #111; }
+        .work-table th { text-align: left; color: var(--gray); font-size: 0.8rem; padding: 10px; border-bottom: 1px solid #333; }
+        .work-table td { padding: 12px; border-bottom: 1px solid #222; font-size: 0.9rem; text-align: left; }
+
+        .total-highlight { background: rgba(0, 230, 118, 0.1); color: var(--primary); padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; font-size: 1.2rem; margin-top: 20px; border: 1px solid var(--primary); }
     </style>
 </head>
 <body>
 
-<div id="auth-page" class="page active">
-    <div class="card" style="margin-top: 50px; text-align: center;">
-        <h2>Login</h2>
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="pass" placeholder="Password">
-        <button class="btn" onclick="authAction()">Login / Register</button>
+    <div id="page-auth" class="page active">
+        <div class="card" style="margin-top: 50px; text-align: center;">
+            <i class="fas fa-lock" style="font-size: 3.5rem; color: var(--primary); margin-bottom: 20px;"></i>
+            <h2>WorkTime Pro Login</h2>
+            <input type="email" id="auth-email" placeholder="Email Address">
+            <input type="password" id="auth-pass" placeholder="Password">
+            <button class="btn" onclick="handleLogin()">Login <i class="fas fa-sign-in-alt"></i></button>
+            <p id="auth-toggle" onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; margin-top:20px; font-size: 0.9rem;">New User? Create Account</p>
+        </div>
     </div>
-</div>
 
-<div id="main-page" class="page">
-    <div class="card">
-        <h3>Add Work Hours</h3>
-        <input type="text" id="name" placeholder="Full Name">
-        <input type="date" id="date">
-        <input type="number" id="hours" placeholder="Hours">
-        <textarea id="note" placeholder="Notes..."></textarea>
-        <button class="btn" onclick="saveData()">SAVE NOW ✅</button>
-    </div>
-</div>
+    <div id="page-add" class="page">
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="margin:0">Log Hours</h3>
+                <i class="fas fa-power-off" onclick="handleLogout()" style="color:var(--danger); cursor:pointer"></i>
+            </div>
+            
+            <label style="font-size:0.8rem; color:var(--gray)">Employee Name:</label>
+            <input type="text" id="input-name" placeholder="Enter your full name">
+            
+            <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
 
-<div id="report-page" class="page">
-    <div class="card" id="pdf-area" style="background: #111;">
-        <h2 style="color: var(--primary); text-align: center;">Work Report</h2>
-        <p>Name: <span id="rep-name" style="color: var(--primary);"></span></p>
-        <table>
-            <thead><tr><th>Date</th><th>Hours</th></tr></thead>
-            <tbody id="tbody"></tbody>
-        </table>
-        <h3 style="text-align: center; margin-top: 20px;">Total: <span id="total">0</span> hrs</h3>
+            <label style="font-size:0.8rem; color:var(--gray)">Date:</label>
+            <input type="date" id="input-date">
+            <input type="number" id="input-hours" placeholder="Hours (e.g. 8)">
+            <textarea id="input-note" placeholder="Note (optional)..." rows="2"></textarea>
+            
+            <button class="btn" onclick="submitData()">Save Work ✅</button>
+        </div>
     </div>
-    <div style="text-align: center; margin-top: 20px;">
-        <button class="btn" style="background: #333; color: #fff; width: 200px;" onclick="download()">Download PDF</button>
-    </div>
-</div>
 
-<nav id="navbar" class="nav">
-    <div class="nav-item active" id="n1" onclick="tab('main')">Add</div>
-    <div class="nav-item" id="n2" onclick="tab('report')">Report</div>
-</nav>
+    <div id="page-report" class="page" style="padding-bottom: 100px;">
+        <div id="report-view-card">
+            <div class="report-header">
+                <h2>📊 Monthly Summary</h2>
+                <p id="display-month" style="color:var(--gray); font-size: 0.8rem;"></p>
+            </div>
+
+            <div class="info-box">Name: <span id="res-name">Loading...</span></div>
+            <div class="info-box">Period: <span id="res-period">---</span></div>
+
+            <table class="work-table">
+                <thead><tr><th>Date</th><th style="text-align:right">Hours</th></tr></thead>
+                <tbody id="report-body">
+                    </tbody>
+            </table>
+
+            <div class="total-highlight">
+                TOTAL: <span id="res-total">0.0</span> HRS
+            </div>
+        </div>
+        
+        <div style="max-width:400px; margin: 20px auto;">
+            <button class="btn" style="background:var(--primary); color:#000;" onclick="handleiOSSharePDF()">
+                Share PDF <i class="fas fa-share-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="nav-bar" class="bottom-nav">
+        <div class="nav-item active" id="btn-nav-add" onclick="showTab('add')"><i class="fas fa-plus"></i>Add</div>
+        <div class="nav-item" id="btn-nav-rep" onclick="showTab('report')"><i class="fas fa-chart-bar"></i>Report</div>
+    </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBlUrDFR15XgZdYKcPN9IjLqCc0DmTJ37I",
@@ -82,64 +138,178 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    window.authAction = async () => {
-        const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        try { await signInWithEmailAndPassword(auth, e, p); } 
-        catch { try { await createUserWithEmailAndPassword(auth, e, p); } catch (err) { alert(err.message); } }
+    let isLoginMode = true;
+    let currentUserLogData = []; // Store current logs for PDF generation
+
+    window.toggleAuthMode = () => {
+        isLoginMode = !isLoginMode;
+        document.getElementById('auth-toggle').innerText = isLoginMode ? "New User? Create Account" : "Have an account? Login";
     };
 
-    onAuthStateChanged(auth, (user) => {
+    window.handleLogin = async () => {
+        const email = document.getElementById('auth-email').value;
+        const pass = document.getElementById('auth-pass').value;
+        try {
+            if(isLoginMode) await signInWithEmailAndPassword(auth, email, pass);
+            else await createUserWithEmailAndPassword(auth, email, pass);
+        } catch (e) { alert(e.message); }
+    };
+
+    onAuthStateChanged(auth, async (user) => {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         if(user) {
-            document.getElementById('main-page').classList.add('active');
-            document.getElementById('navbar').style.display = 'flex';
-            loadData(user.uid);
+            document.getElementById('page-add').classList.add('active');
+            document.getElementById('nav-bar').style.display = 'flex';
+            
+            // ✅ Fix Name issue: Get directly from Profile
+            const userSnap = await getDoc(doc(db, "users", user.uid));
+            if(userSnap.exists()) {
+                const fullName = userSnap.data().fullname || "User";
+                document.getElementById('input-name').value = fullName;
+                document.getElementById('res-name').innerText = fullName;
+            }
+            
+            startRealTimeLogging(user.uid);
         } else {
-            document.getElementById('auth-page').classList.add('active');
+            document.getElementById('page-auth').classList.add('active');
+            document.getElementById('nav-bar').style.display = 'none';
         }
     });
 
-    window.tab = (t) => {
+    window.showTab = (tab) => {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        if(t === 'main') { document.getElementById('main-page').classList.add('active'); document.getElementById('n1').classList.add('active'); }
-        else { document.getElementById('report-page').classList.add('active'); document.getElementById('n2').classList.add('active'); }
+        if(tab === 'add') {
+            document.getElementById('page-add').classList.add('active');
+            document.getElementById('btn-nav-add').classList.add('active');
+        } else {
+            document.getElementById('page-report').classList.add('active');
+            document.getElementById('btn-nav-rep').classList.add('active');
+        }
     };
 
-    window.saveData = async () => {
-        const name = document.getElementById('name').value, date = document.getElementById('date').value, hrs = document.getElementById('hours').value;
-        if(!name || !date || !hrs) return alert("Fill all fields!");
-        
-        const id = `${auth.currentUser.uid}_${date}`;
+    window.submitData = async () => {
+        const name = document.getElementById('input-name').value;
+        const date = document.getElementById('input-date').value;
+        const hrs = document.getElementById('input-hours').value;
+        const note = document.getElementById('input-note').value;
+
+        if(!name || !date || !hrs) return alert("Fill Name, Date and Hours.");
+
         try {
-            await setDoc(doc(db, "workLogs", id), {
+            // Merge Name into Profile Collection
+            await setDoc(doc(db, "users", auth.currentUser.uid), { fullname: name }, { merge: true });
+
+            // Save Work Log Collection
+            const logId = `${auth.currentUser.uid}_${date}`;
+            await setDoc(doc(db, "workLogs", logId), {
                 uid: auth.currentUser.uid,
-                name: name,
                 date: date,
                 hours: parseFloat(hrs),
-                note: document.getElementById('note').value
+                note: note,
+                timestamp: new Date()
             });
-            alert("Saved Successfully! ✅");
-            tab('report');
+
+            alert("Successfully Saved! ✅");
+            document.getElementById('input-hours').value = "";
+            showTab('report');
         } catch (e) { alert("Save Error: " + e.message); }
     };
 
-    function loadData(uid) {
-        const q = query(collection(db, "workLogs"), where("uid", "==", uid));
+    // حياً جلب البيانات
+    function startRealTimeLogging(uid) {
+        const q = query(collection(db, "workLogs"), where("uid", "==", uid), orderBy("date", "asc"));
+        
         onSnapshot(q, (snap) => {
-            const tbody = document.getElementById('tbody');
-            tbody.innerHTML = ""; let total = 0;
-            snap.forEach(d => {
-                const data = d.data();
+            const tbody = document.getElementById('report-body');
+            tbody.innerHTML = "";
+            let total = 0;
+            currentUserLogData = []; // Reset for new PDF generation
+
+            const now = new Date();
+            const periodText = now.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+            document.getElementById('display-month').innerText = periodText;
+            document.getElementById('res-period').innerText = periodText;
+
+            snap.forEach(docSnap => {
+                const data = docSnap.data();
                 total += data.hours;
-                document.getElementById('rep-name').innerText = data.name;
-                tbody.innerHTML += `<tr><td>${data.date}</td><td>${data.hours}</td></tr>`;
+                
+                // Format for PDF generation [Date, Hours]
+                const formattedDate = data.date.split('-').reverse().join('/');
+                currentUserLogData.push([formattedDate, data.hours.toFixed(1)]);
+
+                tbody.innerHTML += `<tr><td>${data.date}</td><td style="text-align:right; font-weight:bold">${data.hours.toFixed(1)}</td></tr>`;
             });
-            document.getElementById('total').innerText = total;
+            document.getElementById('res-total').innerText = total.toFixed(1);
         });
     }
 
-    window.download = () => html2pdf().from(document.getElementById('pdf-area')).save('report.pdf');
+    window.handleLogout = () => signOut(auth);
+
+    // ✅ iOS Native PDF Share Style (Perfect PDF & Share Menu)
+    window.handleiOSSharePDF = async () => {
+        if (!navigator.share) return alert("Native sharing is not supported in this browser. Please use Safari on iOS.");
+
+        const name = document.getElementById('res-name').innerText;
+        const period = document.getElementById('res-period').innerText;
+        const total = document.getElementById('res-total').innerText;
+
+        const { jsPDF } = window.jspdf;
+        const docPDF = new jsPDF();
+
+        // 1. PDF Header (Company Style)
+        docPDF.setFontSize(22);
+        docPDF.setTextColor(0, 128, 0); // Company Green
+        docPDF.text("Official Work Report", 105, 20, null, null, "center");
+
+        docPDF.setFontSize(12);
+        docPDF.setTextColor(100, 100, 100);
+        docPDF.text(`Generated: ${new Date().toLocaleDateString()}`, 105, 27, null, null, "center");
+
+        // 2. Employee Info Section
+        docPDF.setTextColor(0, 0, 0);
+        docPDF.setFontSize(14);
+        docPDF.text(`Nome: ${name}`, 20, 40);
+        docPDF.text(`Periodo: ${period}`, 20, 48);
+
+        // 3. AutoTable (Professional Table)
+        docPDF.autoTable({
+            startY: 60,
+            head: [['Date', 'Hours (hrs)']],
+            body: currentUserLogData,
+            theme: 'striped', // Cleaner table
+            headStyles: { fillColor: [0, 128, 0] }, // Green header for Company
+            styles: { fontSize: 11, halign: 'center' },
+            columnStyles: { 0: { halign: 'left' }, 1: { halign: 'center' } }
+        });
+
+        // 4. Total and Signature
+        const finalY = docPDF.lastAutoTable.finalY;
+        docPDF.setFontSize(16);
+        docPDF.setTextColor(0, 128, 0);
+        docPDF.text(`TOTALE ORE: ${total} hrs`, 105, finalY + 20, null, null, "center");
+
+        docPDF.setTextColor(200, 200, 200);
+        docPDF.setFontSize(8);
+        docPDF.text("Powered by WorkTime Pro App", 105, 280, null, null, "center");
+
+        // ✅ 5. Convert to Blob & Share via Native iOS Menu
+        const pdfBlob = docPDF.output('blob');
+        const pdfFile = new File([pdfBlob], `Report_${name.replace(/\s/g, '_')}.pdf`, { type: "application/pdf" });
+
+        try {
+            await navigator.share({
+                files: [pdfFile],
+                title: 'Monthly Work Report',
+                text: `Work Report for ${name} (${period})`
+            });
+            console.log("PDF Shared successfully.");
+        } catch (error) {
+            console.error("Error sharing PDF:", error);
+            alert("Sharing was canceled or failed.");
+        }
+    };
 </script>
 </body>
 </html>
