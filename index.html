@@ -3,64 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Pro - Final Fix</title>
+    <title>WorkTime Pro - Large UI</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
         :root { --primary: #00e676; --bg: #0d0d0d; --card: #1a1a1a; --text: #fff; }
-        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
-        .page { display: none; padding: 20px; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; font-size: 18px; }
+        
+        .page { display: none; padding: 25px; box-sizing: border-box; min-height: 100vh; }
         .page.active { display: block; }
-        .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #2a2a2a; max-width: 400px; margin: auto; }
-        input { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #333; color: #fff; border-radius: 10px; box-sizing: border-box; }
-        .btn { background: var(--primary); color: #000; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .nav { position: fixed; bottom: 0; width: 100%; background: #000; display: none; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; }
-        .nav-item { color: #555; flex: 1; text-align: center; }
+
+        .card { background: var(--card); padding: 30px; border-radius: 25px; border: 1px solid #333; max-width: 450px; margin: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+        
+        h2, h3 { font-size: 26px; color: var(--primary); text-align: center; margin-bottom: 25px; }
+        
+        /* تكبير الخط في المدخلات */
+        input { 
+            width: 100%; 
+            padding: 18px; 
+            margin: 12px 0; 
+            background: #222; 
+            border: 2px solid #333; 
+            color: #fff; 
+            border-radius: 15px; 
+            box-sizing: border-box; 
+            font-size: 20px; /* خط كبير */
+            outline: none;
+        }
+        input:focus { border-color: var(--primary); }
+
+        .btn { 
+            background: var(--primary); 
+            color: #000; 
+            border: none; 
+            padding: 20px; 
+            width: 100%; 
+            border-radius: 15px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 22px; /* زر كبير */
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* الجدول في التقرير */
+        .report-list { margin-top: 20px; }
+        .item-row { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 18px; 
+            border-bottom: 1px solid #333; 
+            background: #111; 
+            margin-bottom: 10px; 
+            border-radius: 12px; 
+            font-size: 20px; 
+        }
+        
+        .total-section { 
+            text-align: center; 
+            margin-top: 30px; 
+            padding: 20px; 
+            background: rgba(0, 230, 118, 0.1); 
+            border: 1px solid var(--primary); 
+            border-radius: 15px; 
+        }
+        .total-section b { font-size: 28px; color: var(--primary); }
+
+        /* Navigation */
+        .nav { position: fixed; bottom: 0; width: 100%; background: #000; display: none; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 1000; }
+        .nav-item { color: #666; flex: 1; text-align: center; font-size: 18px; font-weight: bold; }
         .nav-item.active { color: var(--primary); }
-        .item-row { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #222; background: #111; margin-bottom: 5px; border-radius: 8px; }
     </style>
 </head>
 <body>
 
 <div id="p-auth" class="page active">
-    <div class="card" style="margin-top: 50px; text-align: center;">
+    <div class="card" style="margin-top: 60px;">
         <h2>Login</h2>
-        <input type="email" id="email" placeholder="Email">
+        <input type="email" id="email" placeholder="Email Address">
         <input type="password" id="pass" placeholder="Password">
-        <button class="btn" onclick="authAction()">Login</button>
+        <button class="btn" onclick="authAction()">Sign In <i class="fas fa-sign-in-alt"></i></button>
     </div>
 </div>
 
 <div id="p-add" class="page">
     <div class="card">
-        <h3>Add Work</h3>
+        <h3>Log Work</h3>
+        <label style="font-size: 16px; color: #888; margin-left: 5px;">Your Name:</label>
         <input type="text" id="u-name" placeholder="Full Name">
+        
+        <label style="font-size: 16px; color: #888; margin-left: 5px;">Date:</label>
         <input type="date" id="w-date">
-        <input type="number" id="w-hrs" placeholder="Hours">
-        <button class="btn" id="s-btn" onclick="saveData()">SAVE ✅</button>
+        
+        <label style="font-size: 16px; color: #888; margin-left: 5px;">Hours:</label>
+        <input type="number" id="w-hrs" placeholder="How many hours?">
+        
+        <button class="btn" id="s-btn" onclick="saveData()">SAVE WORK ✅</button>
     </div>
 </div>
 
-<div id="p-rep" class="page" style="padding-bottom: 80px;">
+<div id="p-rep" class="page" style="padding-bottom: 100px;">
     <div class="card">
-        <h3 style="text-align:center; color:var(--primary)">Monthly Report</h3>
-        <p>User: <span id="r-name" style="color:var(--primary)">---</span></p>
-        <div id="list-container"></div>
-        <div style="text-align:center; margin-top:20px; font-size:1.3rem;">Total: <span id="r-total" style="color:var(--primary)">0</span> hrs</div>
+        <h3>Report Summary</h3>
+        <p style="font-size: 20px;">Name: <span id="r-name" style="color:var(--primary); font-weight:bold;">---</span></p>
+        <div id="list-container" class="report-list"></div>
+        <div class="total-section">
+            TOTAL: <span id="r-total">0.0</span> hrs
+        </div>
     </div>
-    <button class="btn" style="background:#333; color:#fff; margin-top:20px;" onclick="sharePDF()">Share PDF Report</button>
+    <button class="btn" style="background:#333; color:#fff; margin-top:25px;" onclick="sharePDF()">
+        Share PDF <i class="fas fa-file-pdf"></i>
+    </button>
 </div>
 
 <nav id="nav" class="nav">
-    <div class="nav-item active" id="t-add" onclick="tab('add')">Add</div>
-    <div class="nav-item" id="t-rep" onclick="tab('rep')">Report</div>
+    <div class="nav-item active" id="t-add" onclick="tab('add')"><i class="fas fa-plus-circle"></i><br>Add</div>
+    <div class="nav-item" id="t-rep" onclick="tab('rep')"><i class="fas fa-chart-bar"></i><br>Report</div>
 </nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBlUrDFR15XgZdYKcPN9IjLqCc0DmTJ37I",
@@ -80,11 +150,19 @@
         try { await signInWithEmailAndPassword(auth, e, p); } catch { try { await createUserWithEmailAndPassword(auth, e, p); } catch(err){ alert(err.message); } }
     };
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
         if(user) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('p-add').classList.add('active');
             document.getElementById('nav').style.display = 'flex';
+            
+            // جلب الاسم عند الدخول لضمان عدم وجود undefined
+            const uSnap = await getDoc(doc(db, "users", user.uid));
+            if(uSnap.exists()) {
+                const name = uSnap.data().fullname || "";
+                document.getElementById('u-name').value = name;
+                document.getElementById('r-name').innerText = name;
+            }
             loadData(user.uid);
         }
     });
@@ -98,9 +176,13 @@
 
     window.saveData = async () => {
         const n = document.getElementById('u-name').value, d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value;
-        if(!n || !d || !h) return alert("Please fill all fields!");
+        if(!n || !d || !h) return alert("Please fill everything!");
+        const btn = document.getElementById('s-btn');
+        btn.disabled = true; btn.innerText = "Saving...";
         try {
-            // حفظ بدون أي تعقيدات في الـ ID
+            // حفظ الاسم في ملف المستخدم
+            await setDoc(doc(db, "users", auth.currentUser.uid), { fullname: n }, { merge: true });
+            
             const docId = `${auth.currentUser.uid}_${Date.now()}`; 
             await setDoc(doc(db, "workLogs", docId), {
                 uid: auth.currentUser.uid,
@@ -110,43 +192,44 @@
             });
             alert("Success! Check the report.");
             tab('rep');
-        } catch (e) { alert("Error saving: " + e.message); }
+        } catch (e) { alert("Error: " + e.message); }
+        btn.disabled = false; btn.innerText = "SAVE WORK ✅";
     };
 
     let pdfData = [];
     function loadData(uid) {
-        // استماع بسيط جداً بدون ترتيب (OrderBy) لتجنب أخطاء الفهرسة
         const q = query(collection(db, "workLogs"), where("uid", "==", uid));
         onSnapshot(q, (snap) => {
             const list = document.getElementById('list-container');
             list.innerHTML = ""; pdfData = []; let total = 0;
             
-            if(snap.empty) {
-                list.innerHTML = "<p style='text-align:center; color:#555;'>No data found. Add some hours!</p>";
-            }
-
             snap.forEach(doc => {
                 const data = doc.data();
                 total += data.hours;
                 pdfData.push([data.date, data.hours.toFixed(1)]);
-                document.getElementById('r-name').innerText = data.name;
+                
+                // تحديث الاسم من البيانات المحفوظة
+                if(data.name) document.getElementById('r-name').innerText = data.name;
+                
                 list.innerHTML += `<div class="item-row"><span>${data.date}</span><b>${data.hours} hrs</b></div>`;
             });
             document.getElementById('r-total').innerText = total.toFixed(1);
-        }, (err) => {
-            console.error(err);
-            alert("Database Error: " + err.message);
         });
     }
 
     window.sharePDF = async () => {
         const { jsPDF } = window.jspdf;
         const docPDF = new jsPDF();
-        docPDF.text("Work Report", 20, 20);
-        docPDF.autoTable({ startY: 30, head: [['Date', 'Hours']], body: pdfData });
+        const name = document.getElementById('r-name').innerText;
+        docPDF.setFontSize(20);
+        docPDF.text("Work Report", 105, 20, null, null, "center");
+        docPDF.setFontSize(14);
+        docPDF.text(`Name: ${name}`, 20, 35);
+        docPDF.autoTable({ startY: 40, head: [['Date', 'Hours']], body: pdfData });
         const pdfBlob = docPDF.output('blob');
-        const file = new File([pdfBlob], 'Report.pdf', { type: 'application/pdf' });
-        if(navigator.share) await navigator.share({ files: [file] }); else docPDF.save('Report.pdf');
+        const file = new File([pdfBlob], 'WorkReport.pdf', { type: 'application/pdf' });
+        if(navigator.share) await navigator.share({ files: [file], title: 'My Work Report' });
+        else docPDF.save('Report.pdf');
     };
 </script>
 </body>
