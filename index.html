@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Pro v3</title>
+    <title>WorkTime Pro - Stable v4</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -11,28 +11,17 @@
     
     <style>
         :root { --primary: #00e676; --bg: #0d0d0d; --card: #1a1a1a; --text: #fff; --gray: #888; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
-        
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
         .page { display: none; padding: 20px; min-height: 100vh; box-sizing: border-box; }
         .page.active { display: block; }
-
         .card { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #2a2a2a; max-width: 400px; margin: 15px auto; }
-        
-        input, textarea { width: 100%; padding: 14px; margin: 10px 0; background: #252525; border: 1px solid #333; color: white; border-radius: 12px; font-size: 16px; outline: none; -webkit-appearance: none; }
-        
+        input, textarea { width: 100%; padding: 14px; margin: 10px 0; background: #252525; border: 1px solid #333; color: white; border-radius: 12px; font-size: 16px; outline: none; }
         .btn { background: var(--primary); color: #000; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; }
-
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; backdrop-filter: blur(10px); z-index: 1000; }
-        .nav-item { color: #555; text-align: center; flex: 1; font-size: 0.75rem; transition: 0.3s; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; display: none; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 1000; }
+        .nav-item { color: #555; text-align: center; flex: 1; font-size: 0.75rem; }
         .nav-item.active { color: var(--primary); }
         .nav-item i { font-size: 1.5rem; display: block; margin-bottom: 5px; }
-
-        /* Report View Style */
-        .report-box { background: var(--card); border-radius: 15px; border: 1px solid #2a2a2a; padding: 20px; }
-        .rep-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #222; font-size: 0.9rem; }
-        .rep-label { color: var(--gray); }
-        .rep-val { font-weight: bold; color: var(--primary); }
-        
+        .rep-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #222; }
         .total-box { background: rgba(0,230,118,0.1); border: 1px solid var(--primary); border-radius: 12px; padding: 20px; text-align: center; margin-top: 20px; font-size: 1.3rem; font-weight: bold; color: var(--primary); }
     </style>
 </head>
@@ -40,61 +29,44 @@
 
     <div id="page-auth" class="page active">
         <div class="card" style="margin-top: 60px; text-align: center;">
-            <i class="fas fa-user-circle" style="font-size: 4rem; color: var(--primary); margin-bottom: 20px;"></i>
-            <h2 style="margin-bottom: 30px;">WorkTime Pro</h2>
+            <i class="fas fa-user-lock" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
+            <h2>WorkTime Login</h2>
             <input type="email" id="email" placeholder="Email">
             <input type="password" id="pass" placeholder="Password">
-            <button class="btn" onclick="handleAuth()">Access Account <i class="fas fa-chevron-right"></i></button>
-            <p id="toggle-text" onclick="toggleAuth()" style="color:var(--primary); cursor:pointer; margin-top:20px; font-size: 0.85rem;">Need an account? Sign Up</p>
+            <button class="btn" onclick="handleAuth()">Login / Sign Up</button>
         </div>
     </div>
 
     <div id="page-add" class="page">
         <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h3 style="margin:0">Register Hours</h3>
-                <i class="fas fa-sign-out-alt" onclick="logout()" style="color:#ff5252; cursor:pointer"></i>
-            </div>
-            
-            <label style="color:var(--gray); font-size:0.8rem">Your Full Name:</label>
-            <input type="text" id="user-name" placeholder="Name for PDF report">
-            
+            <h3 style="margin-top:0">Add Hours</h3>
+            <input type="text" id="user-name" placeholder="Your Full Name">
             <hr style="border:0; border-top:1px solid #333; margin:15px 0">
-            
-            <label style="color:var(--gray); font-size:0.8rem">Date & Time:</label>
             <input type="date" id="work-date">
-            <input type="number" id="work-hours" placeholder="Hours Worked (e.g. 8.5)">
-            <textarea id="work-note" placeholder="Add a note... (Optional)" rows="2"></textarea>
-            
-            <button class="btn" onclick="saveData()">Save Work Log ✅</button>
+            <input type="number" id="work-hours" placeholder="Total Hours (e.g. 8)">
+            <textarea id="work-note" placeholder="Notes..." rows="2"></textarea>
+            <button class="btn" id="save-btn" onclick="saveData()">SAVE WORK ✅</button>
         </div>
     </div>
 
     <div id="page-report" class="page" style="padding-bottom: 100px;">
-        <div class="report-box">
-            <h3 style="text-align:center; color:var(--primary); margin-top:0">Monthly Summary</h3>
-            <div class="rep-row"><span class="rep-label">Employee:</span> <span id="res-name" class="rep-val">---</span></div>
-            <div class="rep-row"><span class="rep-label">Period:</span> <span id="res-date" class="rep-val">---</span></div>
-            
-            <div id="logs-container" style="margin-top:15px">
-                </div>
-
-            <div class="total-box">TOTAL ORE: <span id="res-total">0.0</span></div>
+        <div class="card">
+            <h3 style="text-align:center; color:var(--primary);">Monthly Summary</h3>
+            <div class="rep-row"><span>Name:</span> <span id="res-name" style="color:var(--primary)">---</span></div>
+            <div id="logs-list" style="margin-top:10px"></div>
+            <div class="total-box">TOTAL: <span id="res-total">0.0</span> hrs</div>
         </div>
-        
-        <button class="btn" style="background:#333; color:#fff; margin-top:20px" onclick="sharePDF()">
-            Share PDF Report <i class="fas fa-share-ios"></i>
-        </button>
+        <button class="btn" style="background:#333; color:#fff;" onclick="sharePDF()">Share Report PDF <i class="fas fa-share"></i></button>
     </div>
 
     <nav id="navbar" class="bottom-nav">
-        <div class="nav-item active" id="tab-add" onclick="showTab('add')"><i class="fas fa-plus-square"></i>Add</div>
-        <div class="nav-item" id="tab-rep" onclick="showTab('rep')"><i class="fas fa-file-invoice"></i>Report</div>
+        <div class="nav-item active" id="tab-add" onclick="showTab('add')"><i class="fas fa-plus-circle"></i>Add</div>
+        <div class="nav-item" id="tab-rep" onclick="showTab('rep')"><i class="fas fa-file-alt"></i>Report</div>
     </nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -110,38 +82,26 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let isLogin = true;
     let globalLogs = [];
-
-    window.toggleAuth = () => {
-        isLogin = !isLogin;
-        document.getElementById('toggle-text').innerText = isLogin ? "Need an account? Sign Up" : "Have an account? Login";
-    };
 
     window.handleAuth = async () => {
         const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        try {
-            if(isLogin) await signInWithEmailAndPassword(auth, e, p);
-            else await createUserWithEmailAndPassword(auth, e, p);
-        } catch (err) { alert(err.message); }
+        try { await signInWithEmailAndPassword(auth, e, p); } 
+        catch { try { await createUserWithEmailAndPassword(auth, e, p); } catch(err){ alert(err.message); } }
     };
 
     onAuthStateChanged(auth, async (user) => {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         if(user) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('page-add').classList.add('active');
             document.getElementById('navbar').style.display = 'flex';
             
-            // 1. Get User Profile First
             const uSnap = await getDoc(doc(db, "users", user.uid));
             if(uSnap.exists()) {
-                const name = uSnap.data().fullname || "";
-                document.getElementById('user-name').value = name;
-                document.getElementById('res-name').innerText = name;
+                document.getElementById('user-name').value = uSnap.data().fullname || "";
+                document.getElementById('res-name').innerText = uSnap.data().fullname || "User";
             }
-            
-            // 2. Start Real-time listener
-            initDataListener(user.uid);
+            fetchData(user.uid);
         } else {
             document.getElementById('page-auth').classList.add('active');
             document.getElementById('navbar').style.display = 'none';
@@ -151,100 +111,72 @@
     window.showTab = (t) => {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        if(t === 'add') {
-            document.getElementById('page-add').classList.add('active');
-            document.getElementById('tab-add').classList.add('active');
-        } else {
-            document.getElementById('page-report').classList.add('active');
-            document.getElementById('tab-rep').classList.add('active');
-        }
+        if(t === 'add') { document.getElementById('page-add').classList.add('active'); document.getElementById('tab-add').classList.add('active'); }
+        else { document.getElementById('page-report').classList.add('active'); document.getElementById('tab-rep').classList.add('active'); }
     };
 
     window.saveData = async () => {
-        const name = document.getElementById('user-name').value, date = document.getElementById('work-date').value, hrs = document.getElementById('work-hours').value;
+        const name = document.getElementById('user-name').value;
+        const date = document.getElementById('work-date').value;
+        const hrs = document.getElementById('work-hours').value;
+        const btn = document.getElementById('save-btn');
+
         if(!name || !date || !hrs) return alert("Please fill all fields!");
 
+        btn.disabled = true;
+        btn.innerText = "Saving...";
+
         try {
+            // 1. Update Profile Name
             await setDoc(doc(db, "users", auth.currentUser.uid), { fullname: name }, { merge: true });
+            
+            // 2. Save Log
             const logId = `${auth.currentUser.uid}_${date}`;
             await setDoc(doc(db, "workLogs", logId), {
                 uid: auth.currentUser.uid,
+                fullname: name, // Save name inside log too to be safe
                 date: date,
                 hours: parseFloat(hrs),
-                note: document.getElementById('work-note').value,
                 timestamp: new Date()
-            });
-            alert("Work saved successfully! ✅");
+            }, { merge: true });
+
+            alert("Saved! ✅");
             document.getElementById('work-hours').value = "";
             showTab('rep');
         } catch (e) { alert("Error: " + e.message); }
+        finally { btn.disabled = false; btn.innerText = "SAVE WORK ✅"; }
     };
 
-    function initDataListener(uid) {
+    function fetchData(uid) {
         const q = query(collection(db, "workLogs"), where("uid", "==", uid), orderBy("date", "asc"));
         onSnapshot(q, (snap) => {
-            const container = document.getElementById('logs-container');
-            container.innerHTML = "";
+            const list = document.getElementById('logs-list');
+            list.innerHTML = "";
             let total = 0;
             globalLogs = [];
-
-            const month = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
-            document.getElementById('res-date').innerText = month;
-
             snap.forEach(d => {
                 const data = d.data();
                 total += data.hours;
-                globalLogs.push([data.date.split('-').reverse().join('/'), data.hours.toFixed(1)]);
-                
-                container.innerHTML += `
-                    <div class="rep-row">
-                        <span>${data.date}</span>
-                        <span style="color:#fff">${data.hours.toFixed(1)} hrs</span>
-                    </div>`;
+                globalLogs.push([data.date, data.hours.toFixed(1)]);
+                list.innerHTML += `<div class="rep-row"><span>${data.date}</span><b>${data.hours} hrs</b></div>`;
+                if(data.fullname) document.getElementById('res-name').innerText = data.fullname;
             });
             document.getElementById('res-total').innerText = total.toFixed(1);
         });
     }
 
-    window.logout = () => signOut(auth);
-
-    // ✅ Professional iOS Share Action
     window.sharePDF = async () => {
         const { jsPDF } = window.jspdf;
         const docPDF = new jsPDF();
         const name = document.getElementById('res-name').innerText;
-        const total = document.getElementById('res-total').innerText;
-
-        docPDF.setFontSize(20);
-        docPDF.setTextColor(0, 150, 0);
-        docPDF.text("Monthly Hours Report", 105, 20, null, null, "center");
-
-        docPDF.setFontSize(12);
-        docPDF.setTextColor(0, 0, 0);
+        docPDF.text("Work Report", 105, 20, null, null, "center");
         docPDF.text(`Employee: ${name}`, 20, 35);
-        docPDF.text(`Total Hours: ${total} hrs`, 20, 42);
-
-        docPDF.autoTable({
-            startY: 50,
-            head: [['Date', 'Hours']],
-            body: globalLogs,
-            headStyles: { fillColor: [0, 150, 0] },
-            theme: 'grid'
-        });
-
+        docPDF.autoTable({ startY: 45, head: [['Date', 'Hours']], body: globalLogs });
+        
         const pdfBlob = docPDF.output('blob');
-        const file = new File([pdfBlob], `Report_${name}.pdf`, { type: 'application/pdf' });
-
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    files: [file],
-                    title: 'Work Report',
-                });
-            } catch (e) { console.error("Share failed", e); }
-        } else {
-            docPDF.save(`Report_${name}.pdf`);
-        }
+        const file = new File([pdfBlob], 'Report.pdf', { type: 'application/pdf' });
+        if(navigator.share) await navigator.share({ files: [file], title: 'Work Report' });
+        else docPDF.save('Report.pdf');
     };
 </script>
 </body>
