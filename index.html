@@ -3,32 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Pro - Corporate Welcome v11</title>
+    <title>WorkTime Pro - Mega Clock Welcome v12</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        /* 🎨Corporate Branding: Corporate Blue & Dark Theme */
-        :root { --primary: #007bff; --bg: #000; --card: #1a1a1a; --text: #f5f5f5; --red: #ff4444; }
+        /* 🎨 Corporate Branding: Corporate Blue & Full Dark Theme */
+        :root { --primary: rgba(0, 123, 255, 0.6); /* أزرق نصف شفاف مدمج */ --bg: #000; --card: #1a1a1a; --text: #f5f5f5; --red: #ff4444; }
         
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; font-size: 18px; overflow: hidden; }
         
         .page { display: none; padding: 20px; min-height: 100vh; position: relative; z-index: 10; }
         .page.active { display: block; }
 
-        /* ✅ واجهة تسجيل دخول جديدة كلياً: لا فريم، العناصر تطفو على الساعة بدون أيقونة الملف الشخصي */
-        .login-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; max-width: 400px; margin: auto; padding: 20px; }
+        /* ✅ واجهة تسجيل دخول نظيفة ومدمجة: لا فريم، العناصر تطفو على الساعة */
+        .login-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; max-width: 400px; margin: auto; padding: 20px; position: relative; }
         .login-wrapper .input-group { width: 100%; margin: 15px 0; }
-        .login-wrapper input { width: 100%; padding: 18px; margin: 10px 0; background: rgba(34, 34, 34, 0.7); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 15px; font-size: 20px; box-sizing: border-box; outline: none; }
+        .login-wrapper input { width: 100%; padding: 18px; margin: 10px 0; background: rgba(34, 34, 34, 0.4); /* أكثر شفافية ودمجاً مع البكجروند */ border: 1px solid rgba(255,255,255,0.06); color: white; border-radius: 15px; font-size: 20px; box-sizing: border-box; outline: none; backdrop-filter: blur(5px); /* تأثير ضبابي خفيف */ }
         
-        .btn { background: var(--primary); color: white; border: none; padding: 20px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 22px; margin-top: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.2s; }
-        .btn:active { transform: scale(0.98); }
+        /* ✅ زر Sign In المدمج في الشكل العام */
+        .btn { background: var(--primary); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 20px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 22px; margin-top: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.2s; backdrop-filter: blur(5px); }
+        .btn:active { transform: scale(0.98); background: rgba(0, 123, 255, 0.4); }
 
-        .toggle-link { color: #888; margin-top: 20px; cursor: pointer; font-size: 16px; text-decoration: underline; }
+        .toggle-link { color: #888; margin-top: 25px; cursor: pointer; font-size: 16px; text-decoration: underline; }
 
-        /* ✅ تنسيق الساعة الديناميكية كخلفية كاملة ومكشوفة بالأرقام */
+        /* ✅ تنسيق الساعة الديناميكية كخلفية كاملة ومكشوفة بالأرقام (V12: أكبر وأكثر بروزاً) */
         .clock-bg {
             position: fixed;
             top: 0;
@@ -45,13 +46,13 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 95vw; /* حجم كبير ليكشف الأرقام */
-            height: 95vw;
-            max-width: 700px;
-            max-height: 700px;
+            width: 120vw; /* ✅ جعلت الساعة أكبر لتملأ الشاشة خلف العناصر تماماً */
+            height: 120vw;
+            max-width: 900px;
+            max-height: 900px;
             border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.02);
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.9);
+            border: 1px solid rgba(255,255,255,0.01);
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.9);
         }
 
         .clock-number {
@@ -59,10 +60,10 @@
             width: 100%;
             height: 100%;
             text-align: center;
-            font-size: 28px;
+            font-size: 35px; /* ✅ أرقام أكبر للفخامة */
             font-weight: 300;
-            color: rgba(255,255,255,0.9);
-            padding: 15px;
+            color: rgba(255,255,255,0.8);
+            padding: 20px;
             box-sizing: border-box;
         }
 
@@ -72,26 +73,13 @@
             height: 100%;
         }
         
-        /* علامات الساعات الكبيرة */
-        .clock-marker {
-            position: absolute;
-            width: 2px;
-            height: 15px;
-            background: white;
-            border-radius: 1px;
-            top: 8px;
-            left: 50%;
-            transform-origin: bottom center;
-            transform: translateX(-50%);
-        }
-        
         /* علامات الدقائق الصغيرة */
         .clock-min-marker {
             position: absolute;
             width: 1px;
-            height: 6px;
-            background: rgba(255,255,255,0.2);
-            top: 10px;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            top: 12px;
             left: 50%;
             transform-origin: bottom center;
             transform: translateX(-50%);
@@ -102,17 +90,17 @@
             bottom: 50%;
             left: 50%;
             transform-origin: bottom center;
-            border-radius: 3px;
+            border-radius: 4px;
         }
         
-        .hour { width: 6px; height: 28%; background: white; transform: rotate(0deg); }
-        .minute { width: 4px; height: 38%; background: white; transform: rotate(0deg); }
-        .second { width: 1.5px; height: 42%; background: #ff4444; border-radius: 1px; transform: rotate(0deg); } /* عقرب ثواني أحمر */
+        .hour { width: 8px; height: 30%; background: white; transform: rotate(0deg); }
+        .minute { width: 5px; height: 40%; background: white; transform: rotate(0deg); }
+        .second { width: 1.5px; height: 45%; background: #ff4444; border-radius: 1px; transform: rotate(0deg); } /* عقرب ثواني أحمر */
         
         .center-dot {
             position: absolute;
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             background: #ff4444; /* نقطة حمراء في المركز */
             top: 50%;
@@ -120,13 +108,17 @@
             transform: translate(-50%, -50%);
         }
 
-        /* تنسيق Welcome الجديد (كبير وبارز) */
+        /* تنسيق Welcome الجديد (كبير ومرفوع للأعلى v12) */
         .welcome-badge {
+            position: absolute;
+            top: 10%; /* ✅ رفعته للأعلى قليلاً بدلاً من المنتصف */
+            left: 50%;
+            transform: translateX(-50%);
             font-size: 50px;
             font-weight: 800;
             color: #fff;
-            margin-bottom: 40px;
             text-shadow: 0 0 20px rgba(0,0,0,0.5);
+            z-index: 15;
         }
 
         /* تنسيق التقرير الاحترافي v6 (كما هو في الإصدار المستقر) */
@@ -139,7 +131,7 @@
         .total-box { text-align: center; padding: 20px; background: rgba(0, 123, 255, 0.1); border: 1px solid var(--primary); border-radius: 15px; margin-top: 25px; }
         .nav { position: fixed; bottom: 0; width: 100%; max-width: 420px; background: #000; display: none; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; backdrop-filter: blur(10px); z-index: 1000; margin: 0 auto; left: 0; right: 0; }
         .nav-item { color: #666; text-align: center; flex: 1; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .nav-item.active { color: var(--primary); }
+        .nav-item.active { color: rgba(0, 123, 255, 1); }
     </style>
 </head>
 <body>
@@ -154,16 +146,17 @@
     </div>
 
     <div id="p-auth" class="page active">
+        <div class="welcome-badge">Welcome</div>
+        
         <div class="login-wrapper">
-            
-            <div class="welcome-badge">Welcome</div>
+            <i class="fas fa-lock" style="font-size: 3rem; color: rgba(255,255,255,0.5); margin-bottom: 30px;"></i>
             
             <div class="input-group">
                 <input type="email" id="email" placeholder="Email Address">
                 <input type="password" id="pass" placeholder="Password">
             </div>
             
-            <button class="btn" id="auth-btn" onclick="authAction()">Sign In <i class="fas fa-sign-in-alt"></i></button>
+            <button class="btn" id="auth-btn" onclick="authAction()">Sign In <i class="fas fa-chevron-right"></i></button>
             <div class="toggle-link" id="toggle-auth" onclick="toggleAuthMode()">Don't have an account? Create one</div>
         </div>
     </div>
@@ -171,7 +164,7 @@
     <div id="p-add" class="page" style="overflow-y: auto;">
         <div class="card" style="margin-top: 40px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h3 style="margin:0; color:var(--primary);">Log Time</h3>
+                <h3 style="margin:0; color:rgba(0, 123, 255, 1);">Log Time</h3>
                 <button onclick="logout()" style="background:none; border:1px solid #444; color:#888; padding:5px 10px; border-radius:8px; cursor:pointer;">Logout</button>
             </div>
             <input type="text" id="u-name" placeholder="Full Name (for Report)">
@@ -180,7 +173,7 @@
             <input type="date" id="w-date">
             <input type="number" step="0.5" id="w-hrs" placeholder="Hours Worked (e.g. 8.5)">
             <textarea id="w-note" placeholder="Short Note... (Optional)" rows="2"></textarea>
-            <button class="btn" id="s-btn" onclick="saveData()">SAVE WORK ✅</button>
+            <button class="btn" id="s-btn" onclick="saveData()" style="background: rgba(0, 123, 255, 1); backdrop-filter: none;">SAVE WORK ✅</button>
         </div>
     </div>
 
@@ -196,10 +189,10 @@
             
             <div class="total-box">
                 <span>TOTALE ORE:</span><br>
-                <b style="font-size:35px; color:var(--primary);" id="r-total">0.0</b>
+                <b style="font-size:35px; color:rgba(0, 123, 255, 1);" id="r-total">0.0</b>
             </div>
         </div>
-        <button class="btn" style="background:var(--primary); color:white; margin-top:20px;" onclick="handleiOSSharePDF()">Export Professional PDF <i class="fas fa-share-alt"></i></button>
+        <button class="btn" style="background:rgba(0, 123, 255, 1); color:white; margin-top:20px; backdrop-filter: none;" onclick="handleiOSSharePDF()">Export Professional PDF <i class="fas fa-share-alt"></i></button>
     </div>
 
     <nav id="nav" class="nav">
@@ -244,10 +237,6 @@
         const markerContainer = document.getElementById('clock-face');
         for (let i = 0; i < 60; i++) {
             if (i % 5 === 0) {
-                // علامة ساعة كبيرة
-                const marker = document.createElement('div');
-                marker.className = 'clock-marker';
-                marker.style.transform = `translateX(-50%) rotate(${i * 6}deg)`;
                 // markerContainer.appendChild(marker); // تم استبدالها بالأرقام فيsetupClockNumbers
             } else {
                 // علامة دقيقة صغيرة
