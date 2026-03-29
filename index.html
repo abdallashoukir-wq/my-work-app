@@ -4,217 +4,249 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WorkTime Pro</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <style>
         :root { --primary: #00e676; --bg: #0d0d0d; --card: #1a1a1a; --text: #f5f5f5; --danger: #ff4444; }
-        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
-        .app-container { width: 100%; max-width: 420px; margin: 0 auto; padding: 20px; box-sizing: border-box; padding-bottom: 80px; }
-        .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #2a2a2a; margin-bottom: 20px; }
-        input, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #252525; border: 1px solid #333; color: white; border-radius: 10px; box-sizing: border-box; font-size: 16px; outline: none; }
-        .btn { background: var(--primary); color: #000; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; overflow-x: hidden; }
+        .app-container { width: 100%; max-width: 420px; margin: 0 auto; min-height: 100vh; position: relative; padding-bottom: 80px; box-sizing: border-box; }
         
-        #main-app, .tab-content { display: none; }
+        /* البطاقات (Cards) والمدخلات */
+        .card { background: var(--card); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin: 15px; border: 1px solid #2a2a2a; }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #252525; border: 1px solid #333; color: white; border-radius: 10px; box-sizing: border-box; font-size: 16px; outline: none; }
+        .btn { background: var(--primary); color: #000; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; font-size: 1rem; }
+        .btn:active { transform: scale(0.98); }
+
+        /* التحكم في الظهور */
+        .section { display: none; }
+        .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #222; z-index: 1000; }
-        .nav-item { color: #888; text-align: center; flex: 1; cursor: pointer; font-size: 0.8rem; }
-        .nav-item.active { color: var(--primary); }
-        .nav-item i { font-size: 1.2rem; display: block; margin-bottom: 4px; }
+        /* شاشة التحميل (Loader) */
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
 
+        /* القائمة السفلية (Bottom Nav) */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 420px; background: #000; display: none; justify-content: space-around; padding: 12px 0; border-top: 2px solid #222; z-index: 100; margin: 0 auto; left: 0; right: 0; }
+        .nav-item { color: #888; text-align: center; flex: 1; cursor: pointer; text-decoration: none; font-size: 0.8rem; }
+        .nav-item i { font-size: 1.3rem; display: block; margin-bottom: 4px; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+
+        /* الجدول والتقرير */
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 10px; background: #111; }
-        td, th { padding: 12px; border-bottom: 1px solid #222; text-align: center; }
-        th { color: var(--primary); background: #1a1a1a; }
+        td, th { padding: 10px; border-bottom: 1px solid #222; text-align: center; }
+        th { color: var(--primary); font-weight: bold; border-bottom: 2px solid #333; }
         .btn-del { color: var(--danger); background: none; border: none; cursor: pointer; font-size: 1rem; }
 
-        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; }
+        /* ✅ كود المربع العائم (Floating Modal) الخاص بالاسم */
+        #name-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .name-modal { width: 90%; max-width: 350px; background: #002b16; border-radius: 20px; padding: 25px; box-shadow: 0 15px 40px rgba(0,230,118,0.25); border: 2px solid var(--primary); text-align: center; }
+        .name-modal i { font-size: 3rem; color: var(--primary); margin-bottom: 10px; }
+        .name-modal h3 { margin-top: 0; }
+        .name-modal p { font-size: 0.8rem; color: #ccc; margin-bottom: 15px; }
+
     </style>
 </head>
 <body>
 
-<div id="loading" class="loading-overlay">
-    <i class="fas fa-circle-notch fa-spin" style="font-size:3rem; color:var(--primary)"></i>
-    <p style="margin-top:15px">جاري مزامنة البيانات...</p>
-</div>
-
-<div class="app-container">
-    <div id="auth-section" class="card">
-        <div style="text-align:center; margin-bottom:20px;">
-            <i class="fas fa-user-clock" style="font-size:3rem; color:var(--primary)"></i>
-            <h2>تسجيل الدخول</h2>
-        </div>
-        <input type="email" id="email" placeholder="البريد الإلكتروني">
-        <input type="password" id="password" placeholder="كلمة المرور">
-        <button class="btn" onclick="handleAuth()">دخول للنظام</button>
-        <p onclick="toggleMode()" id="mode-text" style="text-align:center; color:var(--primary); cursor:pointer; margin-top:20px; font-size:0.9rem;">ليس لديك حساب؟ إنشاء حساب جديد</p>
+    <div id="loading" class="loading-overlay">
+        <i class="fas fa-circle-notch fa-spin" style="font-size:3rem; color:var(--primary)"></i>
+        <p style="margin-top:15px; color:var(--primary)">جاري المزامنة...</p>
     </div>
 
-    <div id="main-app">
-        <div id="name-setup" class="card" style="display:none; border: 2px solid var(--primary); background: #002b16;">
-            <h3 style="margin-top:0">أهلاً بك! يرجى إدخال اسمك</h3>
-            <p style="font-size:0.8rem; color:#ccc;">هذا الاسم سيظهر في تقارير PDF الخاصة بالشركة.</p>
+    <div id="name-modal-overlay">
+        <div class="name-modal card">
+            <i class="fas fa-id-card"></i>
+            <h3>أهلاً بك! ما هو اسمك؟</h3>
+            <p>يرجى كتابة اسمك الكامل ليظهر في تقارير PDF المرفوعة للشركة.</p>
             <input type="text" id="fullname-input" placeholder="اكتب اسمك الحقيقي هنا">
-            <button class="btn" onclick="saveUserName()">حفظ الاسم والبدء ✅</button>
+            <button class="btn" onclick="saveUserProfile()">حفظ الاسم والبدء ✅</button>
+        </div>
+    </div>
+
+    <div class="app-container">
+        
+        <div id="auth-screen" class="section active card">
+            <div style="text-align:center; margin-bottom:20px;">
+                <i class="fas fa-user-clock" style="font-size:3.5rem; color:var(--primary)"></i>
+                <h2>دخول آمن</h2>
+            </div>
+            <input type="email" id="email" placeholder="البريد الإلكتروني">
+            <input type="password" id="password" placeholder="كلمة المرور">
+            <button class="btn" id="login-btn">تسجيل الدخول</button>
+            <p id="toggle-auth" style="text-align:center; font-size:0.85rem; color:var(--primary); margin-top:20px; cursor:pointer">ليس لديك حساب؟ إنشاء حساب جديد</p>
         </div>
 
-        <div id="add-tab" class="tab-content active">
+        <div id="main-app" class="section tab-content active">
             <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h3 style="margin:0">إضافة ساعات العمل</h3>
-                    <button onclick="logout()" style="color:var(--danger); background:none; border:none; cursor:pointer;"><i class="fas fa-sign-out-alt"></i></button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
+                    <h3 style="margin:0">إضافة ساعات عمل</h3>
+                    <button onclick="logout()" style="color:var(--danger); background:none; border:none; cursor:pointer"><i class="fas fa-sign-out-alt"></i></button>
                 </div>
-                <label style="font-size:0.8rem; color:#888;">تاريخ اليوم:</label>
+                <label style="font-size: 0.8rem; color: #888;">اختر التاريخ:</label>
                 <input type="date" id="work-date">
                 <input type="number" id="work-hours" placeholder="عدد الساعات (مثلاً: 8)">
-                <textarea id="work-note" placeholder="ملاحظة العمل (اختياري)..." rows="2"></textarea>
-                <button class="btn" onclick="addEntry()">حفظ في السجل +</button>
+                <textarea id="work-note" placeholder="ملاحظة قصيرة..."></textarea>
+                <button class="btn" onclick="addWorkEntry()">حفظ العمل +</button>
             </div>
         </div>
 
-        <div id="report-tab" class="tab-content">
-            <div class="card" id="pdf-area" style="padding:10px;">
-                <div style="text-align:center; border-bottom:2px solid var(--primary); padding-bottom:10px; margin-bottom:10px;">
-                    <h2 id="report-name" style="margin:0; color:var(--primary); font-size:1.2rem;">تقرير الساعات</h2>
-                    <small id="report-date" style="color:#888;"></small>
-                </div>
-                <table id="work-table">
+        <div id="report-app" class="section tab-content">
+            <div class="card" id="pdf-area">
+                <h4 id="report-header" style="text-align:center; color:var(--primary); border-bottom:1px solid #333; padding-bottom:10px">تقرير ساعات الموظف</h4>
+                <table>
                     <thead><tr><th>التاريخ</th><th>ساعة</th><th>ملاحظة</th><th>حذف</th></tr></thead>
-                    <tbody></tbody>
+                    <tbody id="table-body"></tbody>
                 </table>
                 <div style="margin-top:15px; padding:10px; background:#000; border-radius:10px; text-align:center;">
-                    <span style="color:#888;">إجمالي الساعات: </span>
-                    <span id="total-hours-sum" style="color:var(--primary); font-weight:bold; font-size:1.2rem;">0</span>
+                    <small style="color:#888;">إجمالي الساعات: </small>
+                    <span id="total-hours" style="color:var(--primary); font-weight:bold; font-size:1.2rem;">0</span>
                 </div>
             </div>
-            <button class="btn" style="background:#333; color:white; margin-top:10px;" onclick="exportPDF()">تصدير ومشاركة PDF <i class="fas fa-file-pdf"></i></button>
+            <button class="btn" style="background:#333; color:white; margin-top:15px" onclick="downloadPDF()">تحميل ومشاركة التقرير <i class="fas fa-file-pdf"></i></button>
         </div>
 
-        <div class="bottom-nav">
-            <div class="nav-item active" id="nav-add" onclick="switchTab('add')"><i class="fas fa-plus-circle"></i>إضافة</div>
-            <div class="nav-item" id="nav-report" onclick="switchTab('report')"><i class="fas fa-file-invoice"></i>التقرير</div>
-        </div>
+        <nav class="bottom-nav" id="main-nav">
+            <a href="#" class="nav-item active" onclick="switchSection('main')"><i class="fas fa-plus"></i>إضافة</a>
+            <a href="#" class="nav-item" onclick="switchSection('report')"><i class="fas fa-file-alt"></i>التقرير</a>
+        </nav>
+
     </div>
-</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs, query, where, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+    // بياناتك الصحيحة من الصورة
     const firebaseConfig = {
       apiKey: "AIzaSyBlUrDFR15XgZdYKcPN9IjLqCc0DmTJ37I",
       authDomain: "workapp-d34e0.firebaseapp.com",
+      databaseURL: "https://workapp-d34e0-default-rtdb.firebaseio.com",
       projectId: "workapp-d34e0",
       storageBucket: "workapp-d34e0.firebasestorage.app",
       messagingSenderId: "687874876802",
-      appId: "1:687874876802:web:06e2e4e6030233cd579b9b"
+      appId: "1:687874876802:web:06e2e4e6030233cd579b9b",
+      measurementId: "G-BJ7MMYDDER"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let loginMode = true;
+    let isLogin = true;
 
-    window.toggleMode = () => {
-        loginMode = !loginMode;
-        document.getElementById('mode-text').innerText = loginMode ? "ليس لديك حساب؟ إنشاء حساب جديد" : "لديك حساب؟ سجل دخولك الآن";
+    // تبديل الأقسام (التبويبات)
+    window.switchSection = (section) => {
+        document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        
+        if(section === 'main') {
+            document.getElementById('main-app').classList.add('active');
+            document.querySelector('.nav-item[onclick*="main"]').classList.add('active');
+        } else {
+            document.getElementById('report-app').classList.add('active');
+            document.querySelector('.nav-item[onclick*="report"]').classList.add('active');
+            loadTableData();
+        }
     };
 
-    window.handleAuth = async () => {
-        const e = document.getElementById('email').value;
-        const p = document.getElementById('password').value;
-        if(!e || !p) return alert("يرجى ملء كافة الحقول");
-        try {
-            if(loginMode) await signInWithEmailAndPassword(auth, e, p);
-            else await createUserWithEmailAndPassword(auth, e, p);
-        } catch (err) { alert("خطأ: " + err.message); }
-    };
-
+    // مراقبة حالة المستخدم
     onAuthStateChanged(auth, async (user) => {
         document.getElementById('loading').style.display = 'none';
-        if(user) {
-            document.getElementById('auth-section').style.display = 'none';
-            document.getElementById('main-app').style.display = 'block';
-            checkUserName(user.uid);
+        if (user) {
+            document.getElementById('auth-screen').style.display = 'none';
+            checkProfile(user.uid);
         } else {
-            document.getElementById('auth-section').style.display = 'block';
-            document.getElementById('main-app').style.display = 'none';
+            document.getElementById('auth-screen').style.display = 'block';
+            document.getElementById('main-nav').style.display = 'none';
+            location.reload(); // إعادة التحميل لضمان تنظيف الواجهة
         }
     });
 
-    async function checkUserName(uid) {
-        const d = await getDoc(doc(db, "users", uid));
-        if(d.exists() && d.data().fullname) {
-            document.getElementById('report-name').innerText = d.data().fullname;
-            document.getElementById('name-setup').style.display = 'none';
+    // التحقق من وجود الاسم (في مجموعة users)
+    async function checkProfile(uid) {
+        const userDoc = await getDoc(doc(db, "users", uid));
+        if (userDoc.exists() && userDoc.data().fullname) {
+            // ✅ الاسم موجود: اظهر التطبيق فوراً
+            document.getElementById('name-modal-overlay').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            document.getElementById('main-nav').style.display = 'flex';
+            document.getElementById('report-header').innerText = "تقرير ساعات: " + userDoc.data().fullname;
         } else {
-            document.getElementById('name-setup').style.display = 'block';
+            // ❌ الاسم غير موجود: اظهر التطبيق خلفاً واظهر مربع الاسم العائم
+            document.getElementById('main-app').style.display = 'block';
+            document.getElementById('name-modal-overlay').style.display = 'flex'; // المربع العائم يظهر فوق كل شيء
         }
     }
 
-    window.saveUserName = async () => {
+    // حفظ الاسم لأول مرة فقط
+    window.saveUserProfile = async () => {
         const name = document.getElementById('fullname-input').value.trim();
-        if(!name) return alert("من فضلك اكتب اسمك");
-        await setDoc(doc(db, "users", auth.currentUser.uid), { fullname: name });
-        document.getElementById('name-setup').style.display = 'none';
-        document.getElementById('report-name').innerText = name;
-        alert("تم حفظ الاسم بنجاح!");
+        if(!name) return alert("الاسم ضروري لتفعيل التطبيق");
+        try {
+            await setDoc(doc(db, "users", auth.currentUser.uid), { fullname: name, createdAt: new Date() });
+            location.reload(); // إعادة التحميل للتأكيد
+        } catch (e) { alert("حدث خطأ في الحفظ: " + e.message); }
     };
 
-    window.switchTab = (tab) => {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        if(tab === 'add') {
-            document.getElementById('add-tab').classList.add('active');
-            document.getElementById('nav-add').classList.add('active');
-        } else {
-            document.getElementById('report-tab').classList.add('active');
-            document.getElementById('nav-report').classList.add('active');
-            loadData();
-        }
+    // تسجيل الدخول / إنشاء حساب
+    document.getElementById('login-btn').onclick = async () => {
+        const e = document.getElementById('email').value;
+        const p = document.getElementById('password').value;
+        try {
+            if(isLogin) await signInWithEmailAndPassword(auth, e, p);
+            else { await createUserWithEmailAndPassword(auth, e, p); alert("تم الإنشاء!"); }
+        } catch (err) { alert("خطأ: " + err.message); }
     };
 
-    window.addEntry = async () => {
+    document.getElementById('toggle-auth').onclick = () => {
+        isLogin = !isLogin;
+        document.getElementById('login-btn').innerText = isLogin ? "تسجيل الدخول" : "إنشاء حساب";
+        document.getElementById('toggle-auth').innerText = isLogin ? "ليس لديك حساب؟ إنشاء حساب" : "لديك حساب؟ سجل دخولك";
+    };
+
+    // إضافة عمل جديد
+    window.addWorkEntry = async () => {
         const date = document.getElementById('work-date').value;
-        const hours = document.getElementById('work-hours').value;
+        const hours = parseFloat(document.getElementById('work-hours').value);
         const note = document.getElementById('work-note').value;
-        if(!date || !hours) return alert("أدخل التاريخ والساعات");
-        await addDoc(collection(db, "workLogs"), { uid: auth.currentUser.uid, date, hours: parseFloat(hours), note, ts: new Date() });
+        if(!date || isNaN(hours)) return alert("أكمل البيانات");
+        await addDoc(collection(db, "workLogs"), { uid: auth.currentUser.uid, date, hours, note, ts: new Date() });
         alert("تم الحفظ ✅");
         document.getElementById('work-hours').value = "";
-        document.getElementById('work-note').value = "";
-        switchTab('report');
+        switchSection('report');
     };
 
-    async function loadData() {
+    // تحميل بيانات الجدول وترتيبها
+    async function loadTableData() {
         const q = query(collection(db, "workLogs"), where("uid", "==", auth.currentUser.uid), orderBy("date", "desc"));
         const snap = await getDocs(q);
-        const tbody = document.querySelector('#work-table tbody');
+        const tbody = document.getElementById('table-body');
         tbody.innerHTML = "";
         let total = 0;
         snap.forEach(d => {
             const data = d.data();
             total += data.hours;
-            tbody.innerHTML += `<tr><td>${data.date}</td><td><b>${data.hours}</b></td><td>${data.note}</td><td><button class="btn-del" onclick="deleteItem('${d.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
+            tbody.innerHTML += `<tr><td>${data.date}</td><td><b>${data.hours}</b></td><td>${data.note}</td><td><button class="btn-del" onclick="deleteEntry('${d.id}')">❌</button></td></tr>`;
         });
-        document.getElementById('total-hours-sum').innerText = total;
-        document.getElementById('report-date').innerText = "تاريخ التقرير: " + new Date().toLocaleDateString('ar-EG');
+        document.getElementById('total-hours').innerText = total;
     }
 
-    window.deleteItem = async (id) => {
-        if(confirm("هل متأكد من حذف هذا السجل؟")) {
+    window.deleteEntry = async (id) => {
+        if(confirm("حذف؟")) {
             await deleteDoc(doc(db, "workLogs", id));
-            loadData();
+            loadTableData();
         }
     };
 
     window.logout = () => signOut(auth);
-    window.exportPDF = () => {
+    window.downloadPDF = () => {
         const element = document.getElementById('pdf-area');
-        const opt = { margin: 10, filename: 'تقرير_ساعات_العمل.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
-        html2pdf().set(opt).from(element).save();
+        html2pdf().set({ margin:10, filename: 'تقرير_الساعات.pdf', html2canvas:{scale:2, backgroundColor:'#1a1a1a'} }).from(element).save();
     };
 </script>
+
 </body>
 </html>
