@@ -3,164 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WorkApp Pro | تطبيق إدارة الساعات</title>
+    <title>WorkTime Pro</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2990/2990115.png">
+
     <style>
-        :root { --primary: #00e676; --bg: #0a0a0a; --card: #161616; --text: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; display: flex; justify-content: center; min-height: 100vh; }
-        .app { width: 100%; max-width: 400px; }
-        .card { background: var(--card); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; border: 1px solid #222; }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #333; color: white; border-radius: 10px; box-sizing: border-box; outline: none; }
-        .btn { background: var(--primary); color: black; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .btn:active { transform: scale(0.98); }
-        .link { color: var(--primary); cursor: pointer; font-size: 0.85rem; text-decoration: underline; display: block; margin-top: 15px; text-align: center; }
-        table { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 0.8rem; }
-        th { color: var(--primary); border-bottom: 2px solid #333; padding: 10px; text-align: center; }
-        td { padding: 10px; border-bottom: 1px solid #222; text-align: center; color: #bbb; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        :root { --primary: #00e676; --danger: #ff5252; --bg: #0d0d0d; --card: #1a1a1a; --text: #f5f5f5; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; display: flex; justify-content: center; }
+        .app-container { width: 100%; max-width: 450px; }
+        
+        .card { background: var(--card); padding: 25px; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); margin-bottom: 20px; border: 1px solid #2a2a2a; }
+        .logo-area { text-align: center; margin-bottom: 20px; }
+        .logo-area i { font-size: 4rem; color: var(--primary); text-shadow: 0 0 20px rgba(0,230,118,0.3); }
+
+        input, textarea { width: 100%; padding: 14px; margin: 10px 0; background: #252525; border: 1px solid #333; color: white; border-radius: 12px; box-sizing: border-box; font-size: 1rem; }
+        .btn { background: var(--primary); color: #000; border: none; padding: 16px; width: 100%; border-radius: 15px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; font-size: 1rem; }
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-del { background: none; color: var(--danger); border: none; padding: 5px; cursor: pointer; font-size: 1.1rem; }
+
+        table { width: 100%; margin-top: 15px; border-collapse: separate; border-spacing: 0 8px; }
+        th { color: var(--primary); padding: 10px; font-size: 0.85rem; text-align: center; }
+        td { background: #222; padding: 12px; text-align: center; font-size: 0.9rem; border-radius: 0; }
+        td:first-child { border-radius: 0 10px 10px 0; }
+        td:last-child { border-radius: 10px 0 0 10px; }
+
+        .summary { display: flex; justify-content: space-between; margin-top: 15px; padding: 15px; background: #000; border-radius: 15px; border: 1px solid #222; }
+        .stat-item { text-align: center; }
+        .stat-item span { display: block; color: var(--primary); font-size: 1.3rem; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="app">
+<div class="app-container">
     <div id="auth-screen" class="card">
-        <h2 id="auth-title" style="text-align:center;">تسجيل الدخول</h2>
+        <div class="logo-area">
+            <i class="fas fa-user-clock"></i>
+            <h2 style="margin-top:10px">WorkTime Pro</h2>
+            <p style="color:#888; font-size:0.9rem">نظامك الذكي لإدارة ساعات العمل</p>
+        </div>
         <input type="email" id="email" placeholder="البريد الإلكتروني">
         <input type="password" id="password" placeholder="كلمة المرور">
-        <button class="btn" id="auth-btn">دخول آمن <i class="fas fa-lock-open"></i></button>
-        <span class="link" id="toggle-auth">ليس لديك حساب؟ إنشاء حساب جديد</span>
+        <button class="btn" id="auth-btn">دخول للنظام <i class="fas fa-chevron-left"></i></button>
+        <p class="logo-area" style="font-size:0.85rem; cursor:pointer; color:var(--primary); text-decoration:underline" id="toggle-auth">إنشاء حساب جديد</p>
     </div>
 
     <div id="main-app" style="display:none">
         <div class="card">
-            <div class="header">
-                <h3 id="user-head" style="margin:0; font-size: 1rem;">مرحباً</h3>
-                <button onclick="logout()" style="background:none; border:none; color:#ff4444; cursor:pointer;"><i class="fas fa-power-off"></i> خروج</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
+                <div id="user-display" style="font-weight:bold; color:var(--primary)">👤 مستخدم</div>
+                <button onclick="logout()" style="background:none; border:none; color:var(--danger); cursor:pointer">خروج <i class="fas fa-sign-out-alt"></i></button>
             </div>
-            <label style="font-size: 0.75rem; color: #888;">اختر تاريخ اليوم:</label>
             <input type="date" id="work-date">
             <input type="number" id="work-hours" placeholder="عدد الساعات">
-            <input type="text" id="work-note" placeholder="ملاحظة (مثلاً: مشروع س)">
-            <button class="btn" onclick="saveData()">حفظ في السحابة <i class="fas fa-cloud-upload-alt"></i></button>
+            <textarea id="work-note" placeholder="ملاحظة العمل..." rows="2"></textarea>
+            <button class="btn" onclick="saveData()">إضافة الساعات <i class="fas fa-plus-circle"></i></button>
         </div>
 
         <div class="card" id="pdf-area">
-            <h4 style="margin:0; border-bottom: 1px solid #333; padding-bottom: 10px;">📊 سجل الساعات</h4>
+            <h3 style="margin:0; border-bottom:1px solid #333; padding-bottom:10px">📝 تقرير الساعات</h3>
             <table id="data-table">
-                <thead><tr><th>التاريخ</th><th>ساعة</th><th>ملاحظة</th></tr></thead>
+                <thead><tr><th>التاريخ</th><th>ساعة</th><th>ملاحظة</th><th>حذف</th></tr></thead>
                 <tbody></tbody>
             </table>
+            <div class="summary">
+                <div class="stat-item"><span id="total-h">0</span><small>إجمالي ساعات</small></div>
+                <div class="stat-item"><span id="total-d">0</span><small>أيام العمل</small></div>
+            </div>
         </div>
-        <button class="btn" style="background:#444; color:white" onclick="exportPDF()">تصدير تقرير PDF <i class="fas fa-file-pdf"></i></button>
+        <button class="btn" style="background:#333; color:white" onclick="exportPDF()">تصدير تقرير PDF احترافي <i class="fas fa-file-pdf"></i></button>
     </div>
 </div>
 
 <script type="module">
-    // استدعاء مكتبات Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // بياناتك الصحيحة التي أرسلتها
     const firebaseConfig = {
       apiKey: "AIzaSyBlUrDFR15XgZdYKcPN9IjLqCc0DmTJ37I",
       authDomain: "workapp-d34e0.firebaseapp.com",
-      databaseURL: "https://workapp-d34e0-default-rtdb.firebaseio.com",
       projectId: "workapp-d34e0",
       storageBucket: "workapp-d34e0.firebasestorage.app",
       messagingSenderId: "687874876802",
-      appId: "1:687874876802:web:06e2e4e6030233cd579b9b",
-      measurementId: "G-BJ7MMYDDER"
+      appId: "1:687874876802:web:06e2e4e6030233cd579b9b"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let isLoginMode = true;
+    let isLogin = true;
 
-    // تبديل الواجهة بين دخول وتسجيل
     document.getElementById('toggle-auth').onclick = () => {
-        isLoginMode = !isLoginMode;
-        document.getElementById('auth-title').innerText = isLoginMode ? "تسجيل الدخول" : "إنشاء حساب جديد";
-        document.getElementById('auth-btn').innerText = isLoginMode ? "دخول آمن" : "إنشاء الحساب الآن";
-        document.getElementById('toggle-auth').innerText = isLoginMode ? "ليس لديك حساب؟ إنشاء حساب جديد" : "لديك حساب بالفعل؟ سجل دخولك";
+        isLogin = !isLogin;
+        document.getElementById('auth-btn').innerText = isLogin ? "دخول للنظام" : "تسجيل الحساب";
+        document.getElementById('toggle-auth').innerText = isLogin ? "إنشاء حساب جديد" : "لديك حساب؟ سجل دخولك";
     };
 
-    // تنفيذ الدخول أو التسجيل
     document.getElementById('auth-btn').onclick = async () => {
-        const email = document.getElementById('email').value;
-        const pass = document.getElementById('password').value;
-        if(!email || !pass) return alert("يرجى ملء البيانات");
-        
+        const e = document.getElementById('email').value;
+        const p = document.getElementById('password').value;
         try {
-            if(isLoginMode) {
-                await signInWithEmailAndPassword(auth, email, pass);
-            } else {
-                await createUserWithEmailAndPassword(auth, email, pass);
-                alert("تهانينا! تم إنشاء حسابك بنجاح.");
-            }
-        } catch (e) { 
-            alert("حدث خطأ: " + e.message); 
-        }
+            if(isLogin) await signInWithEmailAndPassword(auth, e, p);
+            else { await createUserWithEmailAndPassword(auth, e, p); alert("تم الإنشاء!"); }
+        } catch (err) { alert("خطأ: " + err.message); }
     };
 
-    // مراقبة حالة المستخدم
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
+    onAuthStateChanged(auth, (u) => {
+        if(u) {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
-            document.getElementById('user-head').innerText = "👤 " + user.email.split('@')[0];
-            loadTable(user.uid);
+            document.getElementById('user-display').innerText = "👤 " + u.email.split('@')[0];
+            loadData(u.uid);
         } else {
             document.getElementById('auth-screen').style.display = 'block';
             document.getElementById('main-app').style.display = 'none';
         }
     });
 
-    // حفظ البيانات في قاعدة البيانات
     window.saveData = async () => {
-        const user = auth.currentUser;
+        const u = auth.currentUser;
         const date = document.getElementById('work-date').value;
-        const hours = parseFloat(document.getElementById('work-hours').value);
+        const h = parseFloat(document.getElementById('work-hours').value);
         const note = document.getElementById('work-note').value;
+        if(!date || !h) return alert("أكمل البيانات");
 
-        if(!date || isNaN(hours)) return alert("يرجى إدخال التاريخ وعدد الساعات");
-
-        try {
-            await addDoc(collection(db, "workLogs"), {
-                uid: user.uid,
-                date: date,
-                hours: hours,
-                note: note,
-                createdAt: new Date()
-            });
-            alert("تم الحفظ بنجاح ✅");
-            document.getElementById('work-hours').value = "";
-            document.getElementById('work-note').value = "";
-            loadTable(user.uid);
-        } catch (e) { alert("فشل الحفظ: " + e.message); }
+        await addDoc(collection(db, "workLogs"), { uid: u.uid, date, h, note, ts: new Date() });
+        loadData(u.uid);
     };
 
-    // جلب بيانات المستخدم فقط وترتيبها
-    async function loadTable(uid) {
+    async function loadData(uid) {
         const q = query(collection(db, "workLogs"), where("uid", "==", uid), orderBy("date", "desc"));
         const snap = await getDocs(q);
-        const tbody = document.querySelector('#data-table tbody');
+        const tbody = document.querySelector('tbody');
         tbody.innerHTML = "";
-        snap.forEach(doc => {
-            const d = doc.data();
-            tbody.innerHTML += `<tr><td>${d.date}</td><td><b>${d.hours}</b></td><td>${d.note}</td></tr>`;
+        let total = 0;
+        snap.forEach(d => {
+            const item = d.data();
+            total += item.h;
+            tbody.innerHTML += `<tr><td>${item.date}</td><td><b>${item.h}</b></td><td>${item.note}</td><td><button class="btn-del" onclick="deleteEntry('${d.id}')"><i class="fas fa-trash-alt"></i></button></td></tr>`;
         });
+        document.getElementById('total-h').innerText = total;
+        document.getElementById('total-d').innerText = snap.size;
     }
+
+    window.deleteEntry = async (id) => {
+        if(confirm("هل تريد حذف هذا السجل؟")) {
+            await deleteDoc(doc(db, "workLogs", id));
+            loadData(auth.currentUser.uid);
+        }
+    };
 
     window.logout = () => signOut(auth);
     window.exportPDF = () => {
         const element = document.getElementById('pdf-area');
-        html2pdf().set({ margin: 10, filename: 'تقرير_ساعات_العمل.pdf', html2canvas: { scale: 2, backgroundColor: '#161616' } }).from(element).save();
+        html2pdf().set({ margin:10, filename: 'Report.pdf', html2canvas:{scale:2, backgroundColor:'#1a1a1a'} }).from(element).save();
     };
-
 </script>
+
 </body>
 </html>
+
