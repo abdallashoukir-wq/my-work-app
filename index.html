@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Pro v18</title>
+    <title>WorkTime Pro v19</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -12,7 +12,7 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; margin: 0; padding: 0; overflow: hidden; }
         
-        /* ✨ خلفية v8 الثابتة */
+        /* ✨ خلفية v8 ثابتة */
         .v8-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1; }
         .ray { position: absolute; background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.06), transparent); width: 1px; height: 100vh; animation: move 10s infinite linear; }
         @keyframes move { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
@@ -20,7 +20,6 @@
         .page { display: none; padding: 20px; min-height: 100vh; box-sizing: border-box; position: relative; z-index: 5; flex-direction: column; align-items: center; justify-content: center; }
         .page.active { display: flex; }
         
-        /* 📱 تصميم الكارت النحيف (Slim) كما في v17 */
         .slim-card { 
             background: rgba(255, 255, 255, 0.03); 
             width: 100%; max-width: 330px; 
@@ -29,9 +28,8 @@
             backdrop-filter: blur(15px);
         }
 
-        h2 { font-size: 18px; text-transform: uppercase; text-align: center; margin-bottom: 20px; letter-spacing: 2px; }
         input, textarea, select { width: 100%; padding: 14px; margin: 8px 0; background: rgba(255,255,255,0.05); border: 1px solid #333; color: #fff; border-radius: 12px; outline: none; font-size: 15px; box-sizing: border-box; }
-        .btn { background: #fff; color: #000; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .btn { background: #fff; color: #000; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; }
 
         .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 100; }
         .nav-item { color: #555; text-align: center; flex: 1; font-size: 12px; cursor: pointer; }
@@ -68,13 +66,13 @@
 
     <div id="p-add" class="page">
         <div class="slim-card">
-            <h2 id="l-add">ADD HOURS</h2>
+            <h2 id="l-add" style="text-align:center; font-size:18px;">ADD HOURS</h2>
             <input type="text" id="u-name" placeholder="Name">
             <input type="text" id="u-comp" placeholder="Company">
             <input type="date" id="w-date">
             <input type="text" id="w-loc" placeholder="Location">
             <input type="number" step="0.5" id="w-hrs" placeholder="Hours">
-            <textarea id="w-note" placeholder="Notes (Arabic OK)" rows="2"></textarea>
+            <textarea id="w-note" placeholder="Notes" rows="2"></textarea>
             <button class="btn" onclick="saveWork()" id="l-save">SAVE ✅</button>
         </div>
         <div class="sig">CREATED BY SHOUKIR ABDALLA</div>
@@ -82,14 +80,14 @@
 
     <div id="p-rep" class="page">
         <div class="slim-card" style="max-width: 350px;">
-            <h2 id="l-rep">REPORT</h2>
+            <h2 id="l-rep" style="text-align:center; font-size:18px;">REPORT</h2>
             <input type="month" id="month-filter" onchange="loadLogs()">
-            <div id="logs-list" style="max-height: 250px; overflow-y: auto; margin: 15px 0; font-size: 14px; border-top:1px solid #222;"></div>
-            <div style="text-align: center;">
+            <div id="logs-list" style="max-height: 200px; overflow-y: auto; margin: 15px 0; border-top:1px solid #222;"></div>
+            <div style="text-align: center; margin-bottom:10px;">
                 <small id="l-tot">TOTAL</small><br>
                 <b id="total-val" style="font-size: 35px;">0.0</b>
             </div>
-            <button class="btn" onclick="generatePDF()">DOWNLOAD PDF <i class="fas fa-file-pdf"></i></button>
+            <button class="btn" onclick="generateAndSharePDF()">SHARE PDF <i class="fas fa-share-nodes"></i></button>
         </div>
         <div class="sig">CREATED BY SHOUKIR ABDALLA</div>
     </div>
@@ -153,21 +151,21 @@
 
     window.handleAuth = async () => {
         const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        try { await signInWithEmailAndPassword(auth, e, p); } catch(err) { alert("Access Denied"); }
+        try { await signInWithEmailAndPassword(auth, e, p); } catch(err) { alert("Error"); }
     };
 
     window.logout = () => signOut(auth);
 
     window.saveWork = async () => {
         const d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value;
-        if(!d || !h) return alert("Missing Data");
+        if(!d || !h) return alert("Fill all fields");
         await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${d}`), {
             uid: auth.currentUser.uid, date: d, hours: parseFloat(h),
             location: document.getElementById('w-loc').value,
             note: document.getElementById('w-note').value,
             month: d.slice(0,7)
         }, {merge: true});
-        alert("Done! ✅"); switchTab('rep');
+        alert("Saved! ✅"); switchTab('rep');
     };
 
     window.del = async (id) => { if(confirm("Delete?")) await deleteDoc(doc(db, "workLogs", id)); };
@@ -191,39 +189,28 @@
         });
     };
 
-    // ✨ وظيفة إصلاح النص العربي للـ PDF
-    const fixAr = (text) => {
-        if (!/[\u0600-\u06FF]/.test(text)) return text;
-        return text.split(' ').map(w => w.split('').reverse().join('')).reverse().join('  ');
+    // معالجة العربي
+    const fixAr = (t) => {
+        if (!/[\u0600-\u06FF]/.test(t)) return t;
+        return t.split(' ').map(w => w.split('').reverse().join('')).reverse().join('  ');
     };
 
-    window.generatePDF = () => {
+    window.generateAndSharePDF = async () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const mVal = document.getElementById('month-filter').value || "2026-03";
         const mName = langs[curL].months[parseInt(mVal.split('-')[1])-1];
 
-        // Header Blue Bar
         doc.setFillColor(0, 123, 255); doc.rect(0, 0, 210, 40, 'F');
         doc.setTextColor(255,255,255); doc.setFontSize(22);
         doc.text(`${mName.toUpperCase()} ${mVal.split('-')[0]}`, 105, 25, null, null, "center");
 
-        // Employee Info
         doc.setTextColor(0,0,0); doc.setFontSize(14);
         doc.text(`Employee: ${document.getElementById('u-name').value}`, 15, 55);
         doc.text(`Company: ${document.getElementById('u-comp').value}`, 15, 63);
 
-        // Table Data with Arabic Fix
-        const tableBody = cached.map(r => [r[0], r[1], fixAr(r[2]), r[3]]);
-
-        doc.autoTable({
-            startY: 75,
-            head: [['Date', 'Location', 'Notes', 'Hrs']],
-            body: tableBody,
-            theme: 'grid',
-            headStyles: { fillColor: [0, 123, 255] },
-            styles: { font: "courier" } 
-        });
+        const body = cached.map(r => [r[0], r[1], fixAr(r[2]), r[3]]);
+        doc.autoTable({ startY: 75, head: [['Date', 'Location', 'Notes', 'Hrs']], body: body, theme: 'grid', headStyles: { fillColor: [0, 123, 255] } });
 
         doc.setFontSize(18); doc.setTextColor(0, 123, 255);
         doc.text(`TOTAL: ${document.getElementById('total-val').innerText} HRS`, 200, doc.lastAutoTable.finalY + 20, null, null, "right");
@@ -231,7 +218,15 @@
         doc.setFontSize(14); doc.setTextColor(150);
         doc.text("CREATED BY SHOUKIR ABDALLA", 105, 285, null, null, "center");
 
-        doc.save(`Report_${mVal}.pdf`);
+        // رجوع وظيفة الشير الأصلية
+        const pdfOutput = doc.output('blob');
+        const file = new File([pdfOutput], `Report_${mName}.pdf`, { type: 'application/pdf' });
+        if (navigator.share) {
+            try { await navigator.share({ files: [file], title: 'Work Report' }); }
+            catch (e) { doc.save(`Report_${mName}.pdf`); }
+        } else {
+            doc.save(`Report_${mName}.pdf`);
+        }
     };
 
     window.switchTab = (t) => {
