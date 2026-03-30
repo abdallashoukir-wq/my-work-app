@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Pro v19</title>
+    <title>WorkTime Pro v20</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -20,6 +20,7 @@
         .page { display: none; padding: 20px; min-height: 100vh; box-sizing: border-box; position: relative; z-index: 5; flex-direction: column; align-items: center; justify-content: center; }
         .page.active { display: flex; }
         
+        /* 📱 تصميم الكارت النحيف لـ ADD */
         .slim-card { 
             background: rgba(255, 255, 255, 0.03); 
             width: 100%; max-width: 330px; 
@@ -31,13 +32,19 @@
         input, textarea, select { width: 100%; padding: 14px; margin: 8px 0; background: rgba(255,255,255,0.05); border: 1px solid #333; color: #fff; border-radius: 12px; outline: none; font-size: 15px; box-sizing: border-box; }
         .btn { background: #fff; color: #000; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; }
 
-        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 100; }
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 100; }
         .nav-item { color: #555; text-align: center; flex: 1; font-size: 12px; cursor: pointer; }
         .nav-item.active { color: #fff; }
 
         .sig { font-weight: bold; margin-top: 30px; font-size: 14px; text-transform: uppercase; opacity: 0.8; text-align: center; }
         .top-bar { position: fixed; top: 15px; right: 15px; z-index: 20; display: flex; gap: 10px; }
         .lang-btn { background: rgba(255,255,255,0.1); border: 1px solid #444; color: #fff; padding: 8px; border-radius: 8px; font-size: 12px; }
+        
+        /* تنسيق قائمة التقرير ليرجع زي زمان */
+        .log-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #111; }
+        .log-date { font-size: 14px; color: #aaa; }
+        .log-hrs { font-size: 16px; font-weight: bold; }
+        
         .rtl { direction: rtl; text-align: right; }
     </style>
 </head>
@@ -78,21 +85,24 @@
         <div class="sig">CREATED BY SHOUKIR ABDALLA</div>
     </div>
 
-    <div id="p-rep" class="page">
+    <div id="p-rep" class="page" style="justify-content: flex-start; padding-top: 80px;">
         <div class="slim-card" style="max-width: 350px;">
             <h2 id="l-rep" style="text-align:center; font-size:18px;">REPORT</h2>
             <input type="month" id="month-filter" onchange="loadLogs()">
-            <div id="logs-list" style="max-height: 200px; overflow-y: auto; margin: 15px 0; border-top:1px solid #222;"></div>
-            <div style="text-align: center; margin-bottom:10px;">
-                <small id="l-tot">TOTAL</small><br>
-                <b id="total-val" style="font-size: 35px;">0.0</b>
+            
+            <div id="logs-list" style="max-height: 280px; overflow-y: auto; margin: 15px 0;"></div>
+            
+            <div style="text-align: center; margin-top: 10px; border-top: 1px solid #222; padding-top: 15px;">
+                <small id="l-tot" style="letter-spacing: 2px;">TOTAL</small><br>
+                <b id="total-val" style="font-size: 40px; text-shadow: 0 0 10px rgba(255,255,255,0.3);">0.0</b>
             </div>
+            
             <button class="btn" onclick="generateAndSharePDF()">SHARE PDF <i class="fas fa-share-nodes"></i></button>
         </div>
         <div class="sig">CREATED BY SHOUKIR ABDALLA</div>
     </div>
 
-    <nav id="nav-bar" class="nav">
+    <nav id="nav-bar" class="nav" style="display:none;">
         <div class="nav-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus"></i><br>ADD</div>
         <div class="nav-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-file-alt"></i><br>REPORT</div>
     </nav>
@@ -151,14 +161,14 @@
 
     window.handleAuth = async () => {
         const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        try { await signInWithEmailAndPassword(auth, e, p); } catch(err) { alert("Error"); }
+        try { await signInWithEmailAndPassword(auth, e, p); } catch(err) { alert("Access Denied"); }
     };
 
     window.logout = () => signOut(auth);
 
     window.saveWork = async () => {
         const d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value;
-        if(!d || !h) return alert("Fill all fields");
+        if(!d || !h) return alert("Fill data");
         await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${d}`), {
             uid: auth.currentUser.uid, date: d, hours: parseFloat(h),
             location: document.getElementById('w-loc').value,
@@ -179,9 +189,10 @@
             snap.forEach(d => {
                 const data = d.data(); tot += data.hours;
                 cached.push([data.date, data.location || "-", data.note || "-", data.hours.toFixed(1)]);
-                list.innerHTML += `<div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #111;">
-                    <span>${data.date}</span><b>${data.hours}h</b>
-                    <i class="fas fa-trash" style="color:#ff4444" onclick="del('${d.id}')"></i>
+                list.innerHTML += `<div class="log-item">
+                    <span class="log-date">${data.date}</span>
+                    <b class="log-hrs">${data.hours}h</b>
+                    <i class="fas fa-trash" style="color:#ff4444; cursor:pointer;" onclick="del('${d.id}')"></i>
                 </div>`;
             });
             document.getElementById('total-val').innerText = tot.toFixed(1);
@@ -218,7 +229,6 @@
         doc.setFontSize(14); doc.setTextColor(150);
         doc.text("CREATED BY SHOUKIR ABDALLA", 105, 285, null, null, "center");
 
-        // رجوع وظيفة الشير الأصلية
         const pdfOutput = doc.output('blob');
         const file = new File([pdfOutput], `Report_${mName}.pdf`, { type: 'application/pdf' });
         if (navigator.share) {
