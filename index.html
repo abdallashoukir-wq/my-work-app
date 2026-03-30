@@ -3,106 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Pro v14 - Full Restore</title>
+    <title>WorkTime Pro v15 - Classic Clock & Arabic Support</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        /* 🎨 القالب الجمالي (النيون والفخامة) */
-        :root { --glow: rgba(255, 255, 255, 0.8); --card: rgba(255, 255, 255, 0.03); }
+        :root { --glow: rgba(255, 255, 255, 0.5); }
         body { font-family: -apple-system, sans-serif; background: #000; color: #fff; margin: 0; padding: 0; overflow-x: hidden; }
         
-        /* الخلفية المتحركة */
-        .f-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1; overflow: hidden; }
-        .f-light { position: absolute; background: linear-gradient(to bottom, transparent, #fff, transparent); width: 1px; height: 100vh; opacity: 0.1; animation: move 8s infinite linear; }
-        @keyframes move { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+        /* 🕒 الساعة الخلفية الأصلية */
+        .clock-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 0; display: block; }
+        .clock-face { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 300px; border: 2px solid #222; border-radius: 50%; opacity: 0.4; }
+        .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; background: #fff; border-radius: 10px; }
+        .hour { width: 6px; height: 60px; } .minute { width: 4px; height: 90px; } .second { width: 2px; height: 110px; background: #ff4444; }
 
         .page { display: none; padding: 20px; min-height: 100vh; box-sizing: border-box; position: relative; z-index: 5; }
         .page.active { display: block; }
         
-        /* تصميم الكروت الزجاجية */
-        .card { background: var(--card); padding: 30px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); margin-top: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        .card { background: rgba(255, 255, 255, 0.03); padding: 30px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); margin-top: 20px; }
+        input, textarea { width: 100%; padding: 18px; margin: 12px 0; background: rgba(255,255,255,0.05); border: 1px solid #333; color: #fff; border-radius: 15px; outline: none; font-size: 16px; box-sizing: border-box; }
         
-        /* النصوص المضيئة */
-        h1, h2, h3 { text-shadow: 0 0 15px var(--glow); font-weight: 200; text-transform: uppercase; letter-spacing: 2px; }
-        .signature { text-align: center; font-weight: bold; color: #fff; font-size: 18px; margin: 20px 0; text-shadow: 0 0 10px #fff; text-transform: uppercase; }
-
-        /* المدخلات */
-        input, textarea { width: 100%; padding: 18px; margin: 12px 0; background: rgba(255,255,255,0.02); border: 1px solid #333; color: #fff; border-radius: 15px; outline: none; font-size: 16px; box-sizing: border-box; }
-        input:focus { border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.2); }
-
-        /* الأزرار البيضاء الفخمة */
-        .btn { background: #fff; color: #000; border: none; padding: 20px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 18px; cursor: pointer; margin-top: 15px; box-shadow: 0 0 20px rgba(255,255,255,0.3); transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .btn:active { transform: scale(0.96); }
-
-        /* القائمة السفلية */
-        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: space-around; padding: 20px 0; border-top: 1px solid #222; z-index: 100; backdrop-filter: blur(10px); }
-        .nav-item { color: #444; text-align: center; flex: 1; font-size: 13px; cursor: pointer; }
+        .btn { background: #fff; color: #000; border: none; padding: 20px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 18px; cursor: pointer; margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 0 20px var(--glow); }
+        
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: space-around; padding: 20px 0; border-top: 1px solid #222; z-index: 100; }
+        .nav-item { color: #555; text-align: center; flex: 1; font-size: 13px; cursor: pointer; }
         .nav-item.active { color: #fff; text-shadow: 0 0 10px #fff; }
 
-        /* صفوف البيانات مع زر الحذف */
-        .log-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #222; background: rgba(255,255,255,0.01); margin-bottom: 5px; border-radius: 10px; }
-        .trash-btn { color: #ff4444; font-size: 18px; cursor: pointer; padding: 10px; }
+        .log-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #222; }
+        .signature-bottom { text-align: center; font-weight: bold; color: #fff; font-size: 22px; margin: 30px 0; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 15px #fff; }
     </style>
 </head>
 <body>
 
-    <div class="f-bg"><div class="f-light" style="left:25%"></div><div class="f-light" style="left:75%"></div></div>
+    <div class="clock-bg" id="bg-clock">
+        <div class="clock-face">
+            <div class="hand hour" id="h-hand"></div>
+            <div class="hand minute" id="m-hand"></div>
+            <div class="hand second" id="s-hand"></div>
+        </div>
+    </div>
 
     <div id="p-auth" class="page active">
-        <div style="max-width:380px; margin: 120px auto; text-align:center;">
-            <h1>WORKTIME</h1>
+        <div style="max-width:380px; margin: 100px auto; text-align:center;">
+            <h1 style="font-size:45px; text-shadow: 0 0 20px #fff; font-weight:200;">WORKTIME</h1>
             <div class="card">
                 <input type="email" id="email" placeholder="Email">
                 <input type="password" id="pass" placeholder="Password">
-                <button class="btn" onclick="handleAuth()">ACCEDI <i class="fas fa-sign-in-alt"></i></button>
+                <button class="btn" onclick="handleAuth()">ACCEDI</button>
             </div>
-            <div class="signature">Created by Shoukir Abdalla</div>
+            <div class="signature-bottom">Created by Shoukir Abdalla</div>
         </div>
     </div>
 
     <div id="p-add" class="page">
-        <div class="signature">Created by Shoukir Abdalla</div>
         <div class="card">
             <h2>Registra Ore</h2>
             <input type="text" id="u-name" placeholder="Nome Dipendente">
             <input type="text" id="u-comp" placeholder="Nome Azienda">
             <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
             <input type="date" id="w-date">
-            <input type="text" id="w-loc-name" placeholder="Luogo (Cantiere / Ufficio)">
-            <input type="number" step="0.5" id="w-hrs" placeholder="Ore Lavorate">
-            <textarea id="w-note" placeholder="Note / Attività svolta" rows="2"></textarea>
-            <button class="btn" onclick="saveWork()">SALVA SESSIONE ✅</button>
+            <input type="text" id="w-loc-name" placeholder="Luogo (Cantiere)">
+            <input type="number" step="0.5" id="w-hrs" placeholder="Ore">
+            <textarea id="w-note" placeholder="Note (Supporta Arabo)" rows="2" style="text-align: right;"></textarea>
+            <button class="btn" onclick="saveWork()">SALVA ✅</button>
         </div>
+        <div class="signature-bottom">Created by Shoukir Abdalla</div>
     </div>
 
     <div id="p-rep" class="page" style="padding-bottom: 120px;">
-        <div class="signature">Created by Shoukir Abdalla</div>
         <div class="card">
             <h3>Rapporto Mensile</h3>
             <input type="month" id="month-filter" onchange="loadLogs()">
             <div id="logs-list" style="margin-top:20px;"></div>
-            
-            <div style="background:rgba(255,255,255,0.05); padding:30px; border-radius:20px; text-align:center; margin-top:25px; border:1px solid rgba(255,255,255,0.1);">
+            <div style="background:rgba(255,255,255,0.05); padding:30px; border-radius:20px; text-align:center; margin-top:25px; border:1px solid #222;">
                 TOTALE ORE<br>
-                <b id="total-val" style="font-size:50px; text-shadow: 0 0 15px #fff;">0.0</b>
+                <b id="total-val" style="font-size:55px; text-shadow: 0 0 20px #fff;">0.0</b>
             </div>
-            
             <button class="btn" onclick="generateAndSharePDF()">CONDIVIDI PDF <i class="fas fa-file-pdf"></i></button>
-            <button onclick="logout()" style="background:none; border:none; color:#555; margin-top:30px; width:100%; cursor:pointer;">Esci (Logout)</button>
         </div>
+        <div class="signature-bottom">Created by Shoukir Abdalla</div>
     </div>
 
     <nav id="nav-bar" class="nav">
-        <div class="nav-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus-circle"></i><br>Aggiungi</div>
-        <div class="nav-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-chart-bar"></i><br>Rapporto</div>
+        <div class="nav-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus"></i><br>Aggiungi</div>
+        <div class="nav-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-file-alt"></i><br>Rapporto</div>
     </nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, collection, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -120,11 +111,20 @@
 
     let cachedLogs = [];
 
+    // نظام الساعة
+    setInterval(() => {
+        const d = new Date();
+        document.getElementById('s-hand').style.transform = `rotate(${d.getSeconds()*6}deg)`;
+        document.getElementById('m-hand').style.transform = `rotate(${d.getMinutes()*6}deg)`;
+        document.getElementById('h-hand').style.transform = `rotate(${(d.getHours()%12)*30 + d.getMinutes()*0.5}deg)`;
+    }, 1000);
+
     onAuthStateChanged(auth, async (user) => {
         if(user) {
             switchTab('add');
             document.getElementById('p-auth').classList.remove('active');
             document.getElementById('nav-bar').style.display = 'flex';
+            document.getElementById('bg-clock').style.opacity = '0.1'; // تخفيف الساعة في الداخل
             const u = await getDoc(doc(db, "users", user.uid));
             if(u.exists()) {
                 document.getElementById('u-name').value = u.data().fullname || "";
@@ -134,36 +134,29 @@
         } else {
             document.getElementById('p-auth').classList.add('active');
             document.getElementById('nav-bar').style.display = 'none';
+            document.getElementById('bg-clock').style.opacity = '0.4';
         }
     });
 
     window.handleAuth = async () => {
         const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        try { await signInWithEmailAndPassword(auth, e, p); } catch(err) { alert("Errore: " + err.message); }
+        try { await signInWithEmailAndPassword(auth, e, p); } catch(err) { alert("Errore"); }
     };
-
-    window.logout = () => signOut(auth);
 
     window.saveWork = async () => {
         const n = document.getElementById('u-name').value, c = document.getElementById('u-comp').value,
               d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value, 
               loc = document.getElementById('w-loc-name').value || "-", note = document.getElementById('w-note').value || "-";
-        
-        if(!n || !d || !h) return alert("Inserisci Nome, Data e Ore");
-        
+        if(!n || !d || !h) return alert("Mancano dati");
         await setDoc(doc(db, "users", auth.currentUser.uid), { fullname: n, company: c }, { merge: true });
         await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${d}`), { 
             uid: auth.currentUser.uid, date: d, hours: parseFloat(h), 
             locationName: loc, note: note, month: d.slice(0, 7) 
         });
-        alert("Salvato con successo! ✅"); switchTab('rep');
+        alert("Salvato! ✅"); switchTab('rep');
     };
 
-    window.deleteEntry = async (id) => { 
-        if(confirm("Sei sicuro di voler eliminare questa riga?")) {
-            await deleteDoc(doc(db, "workLogs", id));
-        }
-    };
+    window.deleteEntry = async (id) => { if(confirm("Eliminare?")) await deleteDoc(doc(db, "workLogs", id)); };
 
     window.loadLogs = () => {
         const m = document.getElementById('month-filter').value || new Date().toISOString().slice(0, 7);
@@ -173,13 +166,10 @@
             snap.forEach(d => {
                 const data = d.data(); tot += data.hours;
                 cachedLogs.push([data.date, data.locationName, data.note, data.hours.toFixed(1)]);
-                list.innerHTML += `
-                <div class="log-row">
-                    <div><b>${data.date}</b><br><small style="color:#888">${data.locationName}</small></div>
-                    <div style="display:flex; align-items:center; gap:15px;">
-                        <b style="font-size:18px;">${data.hours}h</b>
-                        <i class="fas fa-trash-alt trash-btn" onclick="deleteEntry('${d.id}')"></i>
-                    </div>
+                list.innerHTML += `<div class="log-row">
+                    <div><b>${data.date}</b><br><small>${data.locationName}</small></div>
+                    <div style="display:flex; align-items:center; gap:10px;"><b>${data.hours}h</b>
+                    <i class="fas fa-trash" style="color:red" onclick="deleteEntry('${d.id}')"></i></div>
                 </div>`;
             });
             document.getElementById('total-val').innerText = tot.toFixed(1);
@@ -194,12 +184,9 @@
         
         docPDF.setFillColor(0, 123, 255); docPDF.rect(0, 0, 210, 45, 'F');
         docPDF.setTextColor(255, 255, 255); 
-        docPDF.setFontSize(26); docPDF.text(mVal.toUpperCase(), 105, 22, null, null, "center");
-        docPDF.setFontSize(14); docPDF.text("RAPPORTO DI LAVORO", 105, 32, null, null, "center");
-        docPDF.setFontSize(10); docPDF.text("Created by Shoukir Abdalla", 200, 40, null, null, "right");
-
-        docPDF.setTextColor(0, 0, 0);
-        docPDF.setFontSize(18); docPDF.setFont(undefined, 'bold');
+        docPDF.setFontSize(26); docPDF.text(mVal.toUpperCase(), 105, 25, null, null, "center");
+        
+        docPDF.setTextColor(0, 0, 0); docPDF.setFontSize(18); docPDF.setFont(undefined, 'bold');
         docPDF.text(`DIPENDENTE: ${document.getElementById('u-name').value.toUpperCase()}`, 15, 60);
         docPDF.text(`AZIENDA: ${document.getElementById('u-comp').value.toUpperCase()}`, 15, 72);
 
@@ -208,18 +195,20 @@
             head: [['Data', 'Luogo', 'Note / Attività', 'Ore']],
             body: cachedLogs,
             theme: 'grid',
-            headStyles: { fillColor: [0, 123, 255], fontSize: 12 },
-            styles: { fontSize: 10 }
+            headStyles: { fillColor: [0, 123, 255] },
+            styles: { halign: 'right' } // تحسين محاذاة النص للملاحظات
         });
 
         const finalY = docPDF.lastAutoTable.finalY + 20;
         docPDF.setFontSize(22); docPDF.setTextColor(0, 123, 255);
         docPDF.text(`TOTALE ORE: ${document.getElementById('total-val').innerText} HRS`, 200, finalY, null, null, "right");
-        docPDF.setFontSize(14); docPDF.setTextColor(150, 150, 150);
+        
+        // توقيع واحد فقط في الأسفل
+        docPDF.setFontSize(16); docPDF.setTextColor(100, 100, 100);
         docPDF.text("Created by Shoukir Abdalla", 105, 285, null, null, "center");
 
         const blob = docPDF.output('blob');
-        const file = new File([blob], `Rapporto_${mVal}.pdf`, { type: "application/pdf" });
+        const file = new File([blob], `Rapporto.pdf`, { type: "application/pdf" });
         if (navigator.share) await navigator.share({ files: [file] });
         else docPDF.save(`Rapporto.pdf`);
     };
