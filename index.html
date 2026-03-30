@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Pro v12 - Manual Location</title>
+    <title>WorkTime Pro v13 - Italiano</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -15,24 +15,21 @@
         .page { display: none; padding: 20px; min-height: 100vh; box-sizing: border-box; position: relative; z-index: 5; }
         .page.active { display: block; }
         
-        /* تأثير الإضاءة الخلفية */
         .f-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1; overflow: hidden; display: none; }
-        .f-light-ray { position: absolute; background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent); width: 1px; height: 100vh; }
+        .f-light-ray { position: absolute; background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.05), transparent); width: 1px; height: 100vh; }
 
-        /* الكروت الزجاجية */
-        .card { background: rgba(255, 255, 255, 0.03); padding: 30px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); margin-top: 50px; }
-        input { width: 100%; padding: 16px; margin: 10px 0; background: rgba(255,255,255,0.05); border: 1px solid #333; color: #fff; border-radius: 12px; outline: none; box-sizing: border-box; font-size: 16px; }
-        input:focus { border-color: #fff; box-shadow: 0 0 10px var(--glow); }
+        .card { background: rgba(255, 255, 255, 0.03); padding: 30px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); margin-top: 20px; }
+        input, textarea { width: 100%; padding: 16px; margin: 10px 0; background: rgba(255,255,255,0.05); border: 1px solid #333; color: #fff; border-radius: 12px; outline: none; box-sizing: border-box; font-size: 16px; }
         
         .btn { border: none; padding: 18px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.2s; font-size: 16px; }
         .main-btn { background: #fff; color: #000; box-shadow: 0 0 15px var(--glow); }
-        .main-btn:active { transform: scale(0.97); }
 
         .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: space-around; padding: 18px 0; border-top: 1px solid #222; z-index: 100; }
         .nav-item { color: #555; text-align: center; flex: 1; font-size: 12px; cursor: pointer; }
         .nav-item.active { color: #fff; text-shadow: 0 0 10px #fff; }
 
-        .item-row { padding: 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        /* توقيع شقير في التطبيق */
+        .signature-app { text-align: center; font-weight: bold; color: #fff; font-size: 20px; margin-top: 20px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
     </style>
 </head>
 <body>
@@ -40,57 +37,53 @@
     <div class="f-bg" id="f-bg"><div class="f-light-ray" style="left:30%"></div><div class="f-light-ray" style="left:70%"></div></div>
 
     <div id="p-auth" class="page active">
-        <div style="max-width:350px; margin: 150px auto; text-align:center;">
-            <h1 style="text-shadow: 0 0 20px #fff; font-weight:200; font-size:40px; letter-spacing:3px;">WORKTIME</h1>
-            <input type="email" id="email" placeholder="Email Address">
+        <div style="max-width:350px; margin: 100px auto; text-align:center;">
+            <h1 style="text-shadow: 0 0 20px #fff; font-weight:200; font-size:40px;">WORKTIME</h1>
+            <input type="email" id="email" placeholder="Email">
             <input type="password" id="pass" placeholder="Password">
-            <button class="btn main-btn" onclick="handleAuth()">SIGN IN</button>
+            <button class="btn main-btn" onclick="handleAuth()">ACCEDI</button>
+            <div class="signature-app">Created by Shoukir Abdalla</div>
         </div>
     </div>
 
     <div id="p-add" class="page">
+        <div class="signature-app">Created by Shoukir Abdalla</div>
         <div class="card">
-            <h2 style="text-shadow: 0 0 10px #fff; font-weight:300;">LOG HOURS</h2>
-            <input type="text" id="u-name" placeholder="Full Name">
-            <input type="text" id="u-comp" placeholder="Company Name">
-            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-            
-            <label style="font-size: 12px; color: #777;">Date:</label>
+            <h2 style="font-weight:300;">REGISTRA ORE</h2>
+            <input type="text" id="u-name" placeholder="Nome Dipendente">
+            <input type="text" id="u-comp" placeholder="Nome Azienda">
+            <hr style="border:0; border-top:1px solid #222; margin:15px 0;">
             <input type="date" id="w-date">
-            
-            <label style="font-size: 12px; color: #777;">Location:</label>
-            <input type="text" id="w-loc-name" placeholder="Work Site / Office Name">
-            
-            <label style="font-size: 12px; color: #777;">Hours:</label>
-            <input type="number" step="0.5" id="w-hrs" placeholder="Number of Hours">
-            
-            <button class="btn main-btn" onclick="saveWork()">SAVE SESSION ✅</button>
+            <input type="text" id="w-loc-name" placeholder="Luogo di lavoro">
+            <input type="number" step="0.5" id="w-hrs" placeholder="Ore lavorate">
+            <textarea id="w-note" placeholder="Note / Descrizione" rows="2"></textarea>
+            <button class="btn main-btn" onclick="saveWork()">SALVA ✅</button>
         </div>
     </div>
 
     <div id="p-rep" class="page" style="padding-bottom:120px;">
+        <div class="signature-app">Created by Shoukir Abdalla</div>
         <div class="card">
-            <h3>REPORT OVERVIEW</h3>
+            <h3>RIEPILOGO MENSILE</h3>
             <input type="month" id="month-filter" onchange="loadLogs()">
             <div id="logs-list" style="margin-top:20px;"></div>
-            <div style="background:rgba(255,255,255,0.05); padding:25px; border-radius:20px; text-align:center; margin-top:25px; border:1px solid #222;">
-                TOTAL ACCUMULATED<br>
-                <b id="total-val" style="font-size:40px; text-shadow:0 0 15px #fff;">0.0</b> Hrs
+            <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:20px; text-align:center; margin-top:25px; border:1px solid #222;">
+                TOTALE ORE<br>
+                <b id="total-val" style="font-size:45px; text-shadow:0 0 15px #fff;">0.0</b>
             </div>
-            <button class="btn main-btn" onclick="generateAndSharePDF()">SHARE PDF REPORT <i class="fas fa-share-nodes"></i></button>
-            <button onclick="logout()" style="background:none; border:none; color:red; margin-top:20px; width:100%; cursor:pointer;">Logout</button>
+            <button class="btn main-btn" onclick="generateAndSharePDF()">CONDIVIDI PDF <i class="fas fa-share-nodes"></i></button>
         </div>
     </div>
 
     <nav id="nav-bar" class="nav">
-        <div class="nav-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus"></i><br>Add</div>
-        <div class="nav-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-chart-simple"></i><br>Report</div>
+        <div class="nav-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus"></i><br>Aggiungi</div>
+        <div class="nav-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-file-invoice"></i><br>Rapporto</div>
     </nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBlUrDFR15XgZdYKcPN9IjLqCc0DmTJ37I",
@@ -122,33 +115,28 @@
         } else {
             document.getElementById('p-auth').classList.add('active');
             document.getElementById('nav-bar').style.display = 'none';
-            document.getElementById('f-bg').style.display = 'none';
         }
     });
 
     window.handleAuth = async () => {
         const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        try { await signInWithEmailAndPassword(auth, e, p); } catch(err) { alert("Login Error: " + err.message); }
+        try { await signInWithEmailAndPassword(auth, e, p); } catch(err) { alert("Errore: " + err.message); }
     };
-
-    window.logout = () => signOut(auth);
 
     window.saveWork = async () => {
         const n = document.getElementById('u-name').value, c = document.getElementById('u-comp').value,
               d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value, 
-              loc = document.getElementById('w-loc-name').value || "Office";
+              loc = document.getElementById('w-loc-name').value || "-", note = document.getElementById('w-note').value || "-";
         
-        if(!n || !d || !h) return alert("Please fill Name, Date, and Hours");
+        if(!n || !d || !h) return alert("Compila i campi obbligatori");
         
         await setDoc(doc(db, "users", auth.currentUser.uid), { fullname: n, company: c }, { merge: true });
         await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${d}`), { 
             uid: auth.currentUser.uid, date: d, hours: parseFloat(h), 
-            locationName: loc, month: d.slice(0, 7) 
+            locationName: loc, note: note, month: d.slice(0, 7) 
         });
-        alert("Session Logged! ✅"); switchTab('rep');
+        alert("Salvato! ✅"); switchTab('rep');
     };
-
-    window.deleteEntry = async (id) => { if(confirm("Delete this entry?")) await deleteDoc(doc(db, "workLogs", id)); };
 
     window.loadLogs = () => {
         const m = document.getElementById('month-filter').value || new Date().toISOString().slice(0, 7);
@@ -157,11 +145,10 @@
             const list = document.getElementById('logs-list'); list.innerHTML = ""; let tot = 0; cachedLogs = [];
             snap.forEach(d => {
                 const data = d.data(); tot += data.hours;
-                cachedLogs.push([data.date, data.locationName, data.hours.toFixed(1)]);
-                list.innerHTML += `<div class="item-row">
-                    <div><b>${data.date}</b><br><small style="color:#666">${data.locationName}</small></div>
-                    <div style="display:flex; align-items:center; gap:15px;"><b>${data.hours}h</b>
-                    <i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deleteEntry('${d.id}')"></i></div>
+                cachedLogs.push([data.date, data.locationName, data.note, data.hours.toFixed(1)]);
+                list.innerHTML += `<div style="padding:15px; border-bottom:1px solid #222; display:flex; justify-content:space-between;">
+                    <div><b>${data.date}</b><br><small>${data.locationName}</small></div>
+                    <b>${data.hours}h</b>
                 </div>`;
             });
             document.getElementById('total-val').innerText = tot.toFixed(1);
@@ -170,36 +157,54 @@
     };
 
     window.generateAndSharePDF = async () => {
-        if(cachedLogs.length === 0) return alert("No data to export");
         const { jsPDF } = window.jspdf;
         const docPDF = new jsPDF();
-        const mVal = document.getElementById('month-filter').value || "Report";
+        const mVal = document.getElementById('month-filter').value || "Mese";
         
-        // Header
-        docPDF.setFillColor(0, 123, 255); docPDF.rect(0, 0, 210, 40, 'F');
-        docPDF.setTextColor(255, 255, 255); docPDF.setFontSize(22);
-        docPDF.text("MONTHLY WORK REPORT", 105, 25, null, null, "center");
+        // Header Blue Box
+        docPDF.setFillColor(0, 123, 255); docPDF.rect(0, 0, 210, 45, 'F');
+        docPDF.setTextColor(255, 255, 255); 
+        
+        // Title (Nome Mese)
+        docPDF.setFontSize(26);
+        docPDF.text(mVal.toUpperCase(), 105, 22, null, null, "center");
+        docPDF.setFontSize(14);
+        docPDF.text("RAPPORTO DI LAVORO", 105, 32, null, null, "center");
 
-        // Info Section
-        docPDF.setTextColor(40, 40, 40); docPDF.setFontSize(10);
-        docPDF.text(`Employee: ${document.getElementById('u-name').value}`, 15, 50);
-        docPDF.text(`Company: ${document.getElementById('u-comp').value}`, 15, 57);
-        docPDF.text(`Report Month: ${mVal}`, 140, 50);
-        docPDF.text(`Total Hours: ${document.getElementById('total-val').innerText} hrs`, 140, 57);
+        // Created by signature (Header)
+        docPDF.setFontSize(10);
+        docPDF.text("Created by Shoukir Abdalla", 200, 40, null, null, "right");
 
-        // Table (Date - Location - Hours)
+        // Employee & Company (Big & Bold)
+        docPDF.setTextColor(0, 0, 0);
+        docPDF.setFontSize(18); docPDF.setFont(undefined, 'bold');
+        docPDF.text(`DIPENDENTE: ${document.getElementById('u-name').value.toUpperCase()}`, 15, 60);
+        docPDF.text(`AZIENDA: ${document.getElementById('u-comp').value.toUpperCase()}`, 15, 72);
+
+        // Table (Date - Location - Note - Hours)
         docPDF.autoTable({
-            startY: 65,
-            head: [['Date', 'Location / Site', 'Hours Worked']],
+            startY: 85,
+            head: [['Data', 'Luogo', 'Note / Attività', 'Ore']],
             body: cachedLogs,
-            theme: 'striped',
-            headStyles: { fillColor: [0, 123, 255] }
+            theme: 'grid',
+            headStyles: { fillColor: [0, 123, 255], fontSize: 12 },
+            styles: { fontSize: 10 }
         });
 
+        const finalY = docPDF.lastAutoTable.finalY + 20;
+
+        // Big Total at the bottom
+        docPDF.setFontSize(22); docPDF.setTextColor(0, 123, 255);
+        docPDF.text(`TOTALE ORE: ${document.getElementById('total-val').innerText} HRS`, 200, finalY, null, null, "right");
+
+        // Created by signature (Footer)
+        docPDF.setFontSize(14); docPDF.setTextColor(150, 150, 150);
+        docPDF.text("Created by Shoukir Abdalla", 105, 285, null, null, "center");
+
         const blob = docPDF.output('blob');
-        const file = new File([blob], `Work_Report_${mVal}.pdf`, { type: "application/pdf" });
-        if (navigator.share) await navigator.share({ files: [file], title: 'Work Report' });
-        else docPDF.save(`Work_Report_${mVal}.pdf`);
+        const file = new File([blob], `Rapporto_${mVal}.pdf`, { type: "application/pdf" });
+        if (navigator.share) await navigator.share({ files: [file], title: 'Rapporto di Lavoro' });
+        else docPDF.save(`Rapporto_${mVal}.pdf`);
     };
 
     window.switchTab = (t) => {
