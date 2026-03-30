@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Pro v8.3 - Login Fixed</title>
+    <title>WorkTime Pro v9 - Adaptive Edition</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -11,103 +11,178 @@
     
     <style>
         /* ========================================================
-           🎨 THEME PART (Isolated Section)
+           ✅ CORE STRUCTURE & STABLE STYLE (Like Version 6)
+           This part handles Login and Basic App Elements.
            ======================================================== */
-        :root {
-            --glow: rgba(255, 255, 255, 0.8);
-            --card-bg: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
-        }
-
-        body { font-family: -apple-system, sans-serif; background: #000; color: #fff; margin: 0; padding: 0; overflow-x: hidden; }
+        :root { --primary: #007bff; --bg: #000; --text: #f5f5f5; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; overflow-x: hidden; }
         
-        /* Futuristic Panels */
-        .card {
-            background: var(--card-bg);
-            padding: 30px; border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px); margin-top: 50px;
-        }
+        /* Original Clock Background (Only for Login) */
+        .clock-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 0; overflow: hidden; }
+        .clock-face { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120vw; height: 120vw; max-width: 850px; max-height: 850px; opacity: 0.5; }
+        .clock-number { position: absolute; width: 100%; height: 100%; text-align: center; font-size: 38px; color: rgba(255,255,255,0.2); padding: 25px; box-sizing: border-box; }
+        .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; background: #fff; border-radius: 10px; }
+        .hour { width: 8px; height: 26%; }
+        .minute { width: 5px; height: 36%; background: #ccc; }
+        .second { width: 2px; height: 42%; background: #ff4444; }
 
-        /* Neon Glow Text */
-        h1, h2, h3 { text-shadow: 0 0 15px var(--glow); font-weight: 200; text-transform: uppercase; letter-spacing: 2px; }
-
-        /* White Neon Button */
-        .btn {
-            background: #fff; color: #000; border: none; padding: 18px;
-            width: 100%; border-radius: 12px; font-weight: bold; font-size: 16px;
-            cursor: pointer; margin-top: 15px; box-shadow: 0 0 20px rgba(255,255,255,0.5);
-            transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px;
-        }
-        .btn:active { transform: scale(0.97); box-shadow: 0 0 10px #fff; }
-
-        /* Inputs */
-        input, textarea {
-            width: 100%; padding: 15px; margin: 10px 0; background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 10px;
-            font-size: 16px; box-sizing: border-box; outline: none;
-        }
-        input:focus { border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.3); }
-
-        /* Nav Bar */
-        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 100; }
-        .nav-item { color: #555; text-align: center; flex: 1; font-size: 12px; cursor: pointer; }
-        .nav-item.active { color: #fff; text-shadow: 0 0 10px #fff; }
-
-        .page { display: none; padding: 20px; min-height: 100vh; box-sizing: border-box; }
+        .page { display: none; padding: 20px; position: relative; z-index: 5; min-height: 100vh; box-sizing: border-box; }
         .page.active { display: block; }
+        
+        /* Basic Inputs (Will be styled later after login) */
+        input, textarea { width: 100%; padding: 18px; margin: 10px 0; background: rgba(255, 255, 255, 0.1); border: 1px solid #333; color: #fff; border-radius: 15px; font-size: 18px; box-sizing: border-box; outline: none; transition: 0.3s; }
+        
+        /* Basic Buttons (Will be styled later) */
+        .btn { border: none; padding: 20px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 20px; cursor: pointer; margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.2s; }
+        .btn:active { transform: scale(0.97); }
+
+        /* Stable Core App Styling */
+        .card { background: #1a1a1a; padding: 25px; border-radius: 25px; border: 1px solid #333; margin-top: 50px; }
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #222; background: #111; margin-bottom: 8px; border-radius: 12px; }
+
+        /* Bottom Nav */
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; display: none; justify-content: space-around; padding: 18px 0; border-top: 1px solid #222; z-index: 100; }
+        .nav-item { color: #555; text-align: center; flex: 1; font-size: 14px; cursor: pointer; }
+        .nav-item.active { color: var(--primary); }
     </style>
 </head>
 <body>
 
-    <div id="p-auth" class="page active">
-        <div style="max-width: 400px; margin: 100px auto; text-align: center;">
-            <h1 style="font-size: 40px;">WorkTime</h1>
-            <div class="card">
-                <input type="email" id="email" placeholder="Email Address">
-                <input type="password" id="pass" placeholder="Password">
-                <button class="btn" id="loginBtn" onclick="handleAuth()">SIGN IN <i class="fas fa-sign-in-alt"></i></button>
-                <p onclick="toggleMode()" id="toggle-txt" style="color: #666; margin-top: 20px; cursor: pointer; text-decoration: underline;">New? Create Account</p>
-            </div>
+    <div class="clock-bg" id="bg-clock">
+        <div class="clock-face" id="clock-face">
+            <div class="hand hour" id="hour-hand"></div>
+            <div class="hand minute" id="min-hand"></div>
+            <div class="hand second" id="sec-hand"></div>
+            <div class="center-dot"></div>
         </div>
     </div>
 
-    <div id="p-add" class="page">
-        <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2>Log Hours</h2>
-                <button onclick="logout()" style="background:none; border:1px solid #444; color:#888; padding:5px 10px; border-radius:8px;">Logout</button>
+    <div class="f-bg" id="f-bg-id">
+        <div class="f-light-ray a"></div>
+        <div class="f-light-ray b"></div>
+        <div class="f-light-ray c"></div>
+    </div>
+
+    <div id="p-auth" class="page active">
+        <div class="welcome-badge" style="position:absolute; top:10%; width:100%; text-align:center; font-size:55px; font-weight:800; color:#fff; z-index:10;">Welcome</div>
+        <div class="login-wrap" style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 90vh; max-width: 380px; margin: auto;">
+            <div style="height: 120px;"></div>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="pass" placeholder="Password">
+            <button class="btn" style="background:var(--primary); color:#fff;" onclick="handleAuth()">Sign In <i class="fas fa-sign-in-alt"></i></button>
+            <p onclick="toggleMode()" id="toggle-txt" style="color: #777; margin-top: 25px; text-decoration: underline; cursor: pointer;">Sign Up</p>
+        </div>
+    </div>
+
+    <div id="p-add" class="page" style="overflow-y: auto;">
+        <div class="card add-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2>LOG TIME</h2>
+                <button onclick="logout()" style="background: none; border: 1px solid #444; color: #888; padding: 5px 10px; border-radius: 8px; cursor: pointer;">Logout</button>
             </div>
-            <input type="text" id="u-name" placeholder="Employee Name">
+            <input type="text" id="u-name" placeholder="Full Name">
             <input type="text" id="u-comp" placeholder="Company Name">
             <input type="date" id="w-date">
             <input type="number" step="0.5" id="w-hrs" placeholder="Hours Worked">
-            <button class="btn" onclick="saveWork()">SAVE SESSION ✅</button>
+            <textarea id="w-note" placeholder="Notes..."></textarea>
+            <button class="btn main-btn" onclick="saveWork()">SAVE ✅</button>
         </div>
     </div>
 
-    <div id="p-rep" class="page" style="padding-bottom: 100px;">
-        <div class="card">
+    <div id="p-rep" class="page" style="overflow-y: auto; padding-bottom: 120px;">
+        <div class="card rep-card">
             <h3>Monthly Report</h3>
-            <div id="user-info-display" style="font-size:14px; color:#aaa; margin-bottom:15px; border-left:2px solid #fff; padding-left:10px;">
-                User: <span id="display-name" style="color:#fff">---</span><br>
-                Company: <span id="display-comp" style="color:#fff">---</span>
+            <div class="info-header" style="margin-bottom: 20px; padding: 10px; border-left: 3px solid #fff; background: rgba(255,255,255,0.03); border-radius: 0 10px 10px 0;">
+                <p style="margin:5px 0; font-size:16px;">Name: <b id="display-name" style="color:#fff">---</b></p>
+                <p style="margin:5px 0; font-size:16px;">Company: <b id="display-comp" style="color:#fff">---</b></p>
             </div>
             <input type="month" id="month-filter" onchange="loadLogs()">
-            <div id="logs-list" style="margin-top:15px;"></div>
-            <div style="text-align:center; padding:20px; background:rgba(255,255,255,0.05); border-radius:15px; margin:20px 0;">
-                TOTAL: <b id="total-val" style="font-size:35px;">0.0</b> Hrs
+            <div id="logs-list" style="margin-top: 20px;"></div>
+            <div style="text-align: center; padding: 25px; background: rgba(255,255,255,0.03); border-radius: 20px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                TOTAL<br>
+                <b id="total-val" style="font-size: 45px;">0.0</b> Hrs
             </div>
-            <button class="btn" onclick="generateAndSharePDF()">SHARE PDF <i class="fas fa-file-pdf"></i></button>
+            <button class="btn share-btn" onclick="generateAndSharePDF()">Share PDF <i class="fas fa-share-nodes"></i></button>
         </div>
     </div>
 
     <nav id="nav-bar" class="nav">
         <div class="nav-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus"></i><br>Add</div>
-        <div class="nav-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-chart-bar"></i><br>Report</div>
+        <div class="nav-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-file-lines"></i><br>Report</div>
     </nav>
 
+    <style>
+        /* This entire block applies ONLY after user logs in */
+        
+        /* 1. The Futuristic Moving Background Concept */
+        .f-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; /* Deep Black ground */
+            display: none; /* Only visible after login */
+            z-index: 1; overflow: hidden;
+        }
+
+        /* Moving Neon Lines (The "Rooms" feeling) */
+        .f-light-ray {
+            position: absolute; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            width: 2px; height: 150vh; top: -25vh; opacity: 0.6;
+            filter: blur(1px); box-shadow: 0 0 10px rgba(255,255,255,0.3);
+            animation: moveRays 15s linear infinite;
+        }
+        .f-light-ray.a { left: 20%; animation-delay: 0s; }
+        .f-light-ray.b { left: 50%; animation-delay: -5s; width: 3px; }
+        .f-light-ray.c { left: 80%; animation-delay: -10s; }
+
+        @keyframes moveRays {
+            0% { transform: translateY(-100%) rotate(5deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(100%) rotate(-5deg); opacity: 0; }
+        }
+
+        /* 2. Glassmorphism for In-App Cards */
+        #p-add .card, #p-rep .card {
+            background: rgba(255, 255, 255, 0.03); /* Glass look */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 10px rgba(255,255,255,0.02);
+            transition: transform 0.3s ease;
+        }
+        
+        /* White Glow on Heading Text */
+        #p-add h2, #p-rep h3 { text-shadow: 0 0 15px rgba(255, 255, 255, 0.7); color: #fff; text-transform: uppercase; font-weight: 200; }
+
+        /* 3. Futuristic White Button Concept */
+        .page.active .btn {
+            background: #fff; /* Bright White */
+            color: #000; /* Contrast Black Text */
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(255,255,255,0.5); /* Outer Glow */
+            font-size: 18px;
+        }
+        .page.active .btn:hover { box-shadow: 0 0 25px rgba(255,255,255,0.8); }
+
+        /* Modern Inputs inside Glass Cards */
+        #p-add input, #p-rep input, #p-add textarea {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: #fff;
+        }
+        #p-add input:focus { border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.3); }
+
+        /* Active Nav Bar look */
+        #nav-bar.f-nav { background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); }
+        #nav-bar.f-nav .nav-item.active { color: #fff; text-shadow: 0 0 10px #fff; }
+
+        /* Footer total section styling */
+        #p-rep #total-val { text-shadow: 0 0 15px #fff; }
+
+    </style>
+
 <script type="module">
+    // ========================================================
+    // ✅ CORE SCRIPT (Stable Version)
+    // ========================================================
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, collection, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -128,54 +203,80 @@
     let isSignUp = false;
     let cachedLogs = [];
 
+    // --- Clock Logic ---
+    function initClock() {
+        const face = document.getElementById('clock-face');
+        for (let i = 1; i <= 12; i++) {
+            const n = document.createElement('div');
+            n.className = 'clock-number';
+            n.style.transform = `rotate(${i * 30}deg)`;
+            n.innerHTML = `<span style="display:inline-block; transform:rotate(-${i * 30}deg)">${i}</span>`;
+            face.appendChild(n);
+        }
+    }
+    initClock();
+    setInterval(() => {
+        const d = new Date();
+        document.getElementById('sec-hand').style.transform = `rotate(${d.getSeconds()*6}deg)`;
+        document.getElementById('min-hand').style.transform = `rotate(${d.getMinutes()*6}deg)`;
+        document.getElementById('hour-hand').style.transform = `rotate(${(d.getHours()%12)*30 + d.getMinutes()*0.5}deg)`;
+    }, 1000);
+
     // --- Authentication Logic ---
     window.toggleMode = () => {
         isSignUp = !isSignUp;
-        document.getElementById('loginBtn').innerText = isSignUp ? "CREATE ACCOUNT" : "SIGN IN";
-        document.getElementById('toggle-txt').innerText = isSignUp ? "Back to Login" : "New? Create Account";
+        document.querySelector('#p-auth .btn').innerText = isSignUp ? "Sign Up" : "Sign In";
+        document.getElementById('toggle-txt').innerText = isSignUp ? "Back to Login" : "Sign Up";
     };
 
     window.handleAuth = async () => {
         const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        if(!e || !p) return alert("Please enter email and password");
-        
         try {
             if(isSignUp) await createUserWithEmailAndPassword(auth, e, p);
             else await signInWithEmailAndPassword(auth, e, p);
-        } catch(err) { 
-            alert("Error: " + err.message); 
-        }
+        } catch(err) { alert(err.message); }
     };
 
     window.logout = () => signOut(auth);
 
     onAuthStateChanged(auth, async (user) => {
-        const authPage = document.getElementById('p-auth');
+        const pAuth = document.getElementById('p-auth');
+        const pAdd = document.getElementById('p-add');
         const nav = document.getElementById('nav-bar');
+        const clock = document.getElementById('bg-clock');
+        const fBg = document.getElementById('f-bg-id'); // الخلفية المستقبلية
         
         if(user) {
-            authPage.classList.remove('active');
-            switchTab('add');
+            // ✅ USER LOGGED IN - Apply Futuristic Look
+            pAuth.classList.remove('active');
+            pAdd.classList.add('active');
             nav.style.display = 'flex';
-            
+            nav.classList.add('f-nav'); // Apply futuristic nav style
+            clock.style.display = 'none'; // Hide old clock
+            fBg.style.display = 'block'; // ✅ SHOW FUTURISTIC MOVING BACKGROUND
+
             const uDoc = await getDoc(doc(db, "users", user.uid));
             if(uDoc.exists()) {
-                const d = uDoc.data();
-                document.getElementById('u-name').value = d.fullname || "";
-                document.getElementById('u-comp').value = d.company || "";
-                document.getElementById('display-name').innerText = d.fullname || "User";
-                document.getElementById('display-comp').innerText = d.company || "Company";
+                const data = uDoc.data();
+                document.getElementById('u-name').value = data.fullname || "";
+                document.getElementById('u-comp').value = data.company || "";
+                document.getElementById('display-name').innerText = data.fullname || "User";
+                document.getElementById('display-comp').innerText = data.company || "Not Set";
             }
             loadLogs();
         } else {
-            authPage.classList.add('active');
-            document.getElementById('p-add').classList.remove('active');
+            // USER LOGGED OUT - Normal Static Look
+            pAuth.classList.add('active');
+            pAdd.classList.remove('active');
             document.getElementById('p-rep').classList.remove('active');
             nav.style.display = 'none';
+            nav.classList.remove('f-nav');
+            clock.style.display = 'block'; // Show old clock
+            fBg.style.display = 'none'; // ✅ HIDE MOVING BACKGROUND
         }
     });
 
-    // --- Core Functions ---
+    // --- Core Func ---
     window.switchTab = (t) => {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -185,15 +286,16 @@
 
     window.saveWork = async () => {
         const n = document.getElementById('u-name').value, c = document.getElementById('u-comp').value, d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value;
-        if(!n || !d || !h) return alert("Fill Name, Date and Hours");
+        if(!n || !d || !h) return alert("Fill Name, Date, and Hours");
         
         await setDoc(doc(db, "users", auth.currentUser.uid), { fullname: n, company: c }, { merge: true });
-        await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${d}`), { 
-            uid: auth.currentUser.uid, fullname: n, company: c, date: d, hours: parseFloat(h), month: d.slice(0, 7) 
-        });
+        await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${d}`), { uid: auth.currentUser.uid, fullname: n, company: c, date: d, hours: parseFloat(h), month: d.slice(0, 7) });
+        
         alert("Success! ✅"); 
         switchTab('rep');
     };
+
+    window.deleteEntry = async (id) => { if(confirm("Delete this session?")) await deleteDoc(doc(db, "workLogs", id)); };
 
     window.loadLogs = () => {
         const m = document.getElementById('month-filter').value || new Date().toISOString().slice(0, 7);
@@ -204,39 +306,54 @@
             snap.forEach(d => {
                 const data = d.data(); tot += data.hours;
                 cachedLogs.push([data.date, data.hours.toFixed(1)]);
-                list.innerHTML += `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #222;">
-                    <span>${data.date}</span><b>${data.hours}h</b>
-                </div>`;
+                list.innerHTML += `<div class="item-row"><div><b>${data.date}</b><br><small style="color:#777">${data.hours} hours</small></div><button onclick="deleteEntry('${d.id}')" style="background:none; border:none; color:red;"><i class="fas fa-trash"></i></button></div>`;
             });
             document.getElementById('total-val').innerText = tot.toFixed(1);
             cachedLogs.sort((a,b) => new Date(a[0]) - new Date(b[0]));
         });
     };
 
-    // --- PDF Sharing ---
+    // --- PDF Single Page (Fixed Stable) ---
     window.generateAndSharePDF = async () => {
-        if(cachedLogs.length === 0) return alert("No data to export");
+        if(cachedLogs.length === 0) return alert("No data to export!");
         const { jsPDF } = window.jspdf;
-        const docPDF = new jsPDF();
-        const monthVal = document.getElementById('month-filter').value || "Report";
+        const docPDF = new jsPDF('p', 'mm', 'a4');
+        const name = document.getElementById('u-name').value || "Employee";
+        const company = document.getElementById('u-comp').value || "Company";
+        const total = document.getElementById('total-val').innerText;
         
-        docPDF.setFontSize(20);
-        docPDF.text("Monthly Work Report", 105, 20, null, null, "center");
-        docPDF.setFontSize(12);
-        docPDF.text(`Employee: ${document.getElementById('u-name').value}`, 20, 35);
-        docPDF.text(`Total Hours: ${document.getElementById('total-val').innerText}`, 20, 42);
+        // Month name
+        const monthVal = document.getElementById('month-filter').value || new Date().toISOString().slice(0, 7);
+        const monthName = new Date(monthVal + "-01").toLocaleString('default', { month: 'long', year: 'numeric' });
+
+        docPDF.setFillColor(0, 123, 255); docPDF.rect(0, 0, 210, 35, 'F');
+        docPDF.setTextColor(255, 255, 255); docPDF.setFontSize(22);
+        docPDF.text("WORK TIME REPORT", 105, 22, null, null, "center");
+        
+        docPDF.setTextColor(40, 40, 40); docPDF.setFontSize(11); docPDF.setFont(undefined, 'bold');
+        docPDF.text(`Employee: ${name}`, 15, 45); docPDF.text(`Company: ${company}`, 15, 52);
+        docPDF.text(`Statement Period: ${monthName}`, 140, 45); docPDF.text(`Total Monthly Hours: ${total} Hrs`, 140, 52);
 
         docPDF.autoTable({
-            startY: 50,
-            head: [['Date', 'Hours']],
-            body: cachedLogs,
-            theme: 'striped'
+            startY: 60,
+            head: [['Date', 'Description', 'Hours']],
+            body: cachedLogs.map(item => [item[0], "Work Session Logged", item[1]]),
+            theme: 'striped',
+            headStyles: { fillColor: [0, 123, 255], halign: 'center' },
+            styles: { fontSize: 10, cellPadding: 4 },
+            pageBreak: 'avoid'
         });
 
+        const finalY = docPDF.lastAutoTable.finalY + 10;
+        docPDF.setFillColor(245, 245, 245); docPDF.rect(140, finalY, 55, 12, 'F');
+        docPDF.setTextColor(0, 123, 255); docPDF.setFont(undefined, 'bold');
+        docPDF.text(`TOTAL: ${total} HRS`, 167, finalY + 8, null, null, "center");
+
         const blob = docPDF.output('blob');
-        const file = new File([blob], `Report_${monthVal}.pdf`, { type: "application/pdf" });
-        if (navigator.share) await navigator.share({ files: [file], title: 'Work Report' });
-        else docPDF.save(`Report_${monthVal}.pdf`);
+        const file = new File([blob], `Report_${monthName}.pdf`, { type: "application/pdf" });
+
+        if (navigator.share) await navigator.share({ files: [file], title: 'My Work Report' });
+        else docPDF.save(`Report_${monthName}.pdf`);
     };
 </script>
 </body>
