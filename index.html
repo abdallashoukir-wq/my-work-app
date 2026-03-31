@@ -3,130 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Visionary</title>
+    <title>WorkTime Aurora</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        body { font-family: 'Inter', sans-serif; background: #000; color: #fff; margin: 0; padding: 0; overflow: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         
-        /* الخلفية v8 - محرك الخيال */
-        .v8-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at center, #111 0%, #000 100%); z-index: 1; }
-        .ray { position: absolute; background: linear-gradient(to bottom, transparent, rgba(0, 150, 255, 0.1), transparent); width: 2px; height: 100vh; animation: move 8s infinite linear; filter: blur(1px); }
-        @keyframes move { 0% { transform: translateY(-100%); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(100%); opacity: 0; } }
+        /* 🌌 خلفية الأورورا المتحركة */
+        body { 
+            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #000000);
+            background-size: 400% 400%;
+            animation: aurora 15s ease infinite;
+            color: #fff; height: 100vh; overflow: hidden;
+        }
+        @keyframes aurora { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        .page { display: none; padding: 25px; min-height: 100vh; box-sizing: border-box; position: relative; z-index: 5; flex-direction: column; align-items: center; justify-content: center; }
-        .page.active { display: flex; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* الكارت الزجاجي */
-        .glass-card { 
-            background: rgba(255, 255, 255, 0.03); 
-            width: 100%; max-width: 350px; 
-            padding: 30px; border-radius: 30px; 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            backdrop-filter: blur(25px);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+        .page { display: none; height: 100vh; padding: 30px; position: relative; z-index: 10; flex-direction: column; }
+        .page.active { display: flex; animation: slideIn 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+        @keyframes slideIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        /* الأوعية الزجاجية السائلة */
+        .liquid-card {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(30px);
+            border-radius: 40px;
+            padding: 35px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            width: 100%; max-width: 380px; align-self: center; margin: auto;
         }
 
-        h2 { font-weight: 300; letter-spacing: 3px; margin-bottom: 25px; text-transform: uppercase; font-size: 1.2rem; text-align: center; color: rgba(255,255,255,0.9); }
+        h1 { font-weight: 700; font-size: 2rem; text-align: center; margin-bottom: 30px; background: linear-gradient(to right, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        .input-group { position: relative; margin-bottom: 15px; width: 100%; }
-        input, textarea, select { 
-            width: 100%; padding: 16px; background: rgba(0, 0, 0, 0.2); 
-            border: 1px solid rgba(255,255,255,0.1); color: #fff; 
-            border-radius: 15px; font-size: 15px; box-sizing: border-box; 
-            outline: none; transition: 0.4s;
+        .f-input {
+            width: 100%; padding: 18px; margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: none; border-radius: 20px; color: #fff;
+            font-size: 16px; outline: none; transition: 0.3s;
         }
-        input:focus { border-color: rgba(0, 150, 255, 0.5); box-shadow: 0 0 15px rgba(0, 150, 255, 0.1); }
-        
-        .action-btn { 
-            background: linear-gradient(135deg, #fff 0%, #ddd 100%); color: #000; 
-            border: none; padding: 18px; width: 100%; border-radius: 15px; 
-            font-weight: 600; cursor: pointer; margin-top: 10px; 
-            display: flex; justify-content: center; align-items: center; gap: 12px; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3); transition: 0.3s;
-        }
-        .action-btn:active { transform: scale(0.96); }
+        .f-input:focus { background: rgba(255, 255, 255, 0.12); box-shadow: 0 0 20px rgba(255,255,255,0.05); }
 
-        /* نفيجيشن مودرن */
-        .nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 300px; background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(15px); display: flex; justify-content: space-around; padding: 10px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); z-index: 100; }
-        .nav-item { color: #666; padding: 10px 20px; border-radius: 20px; transition: 0.4s; cursor: pointer; text-align: center; }
-        .nav-item.active { color: #fff; background: rgba(255,255,255,0.1); }
-        .nav-item i { font-size: 1.2rem; }
+        .main-btn {
+            background: #fff; color: #000;
+            padding: 20px; border-radius: 25px;
+            border: none; font-weight: 700; font-size: 17px;
+            cursor: pointer; transition: 0.4s; width: 100%;
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+        }
+        .main-btn:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(255,255,255,0.2); }
 
-        /* تصميم التايم لاين في الريبورت */
-        .timeline-item { 
-            border-left: 2px solid rgba(0, 150, 255, 0.3); 
-            padding-left: 20px; margin-bottom: 25px; position: relative; 
+        /* نفيجيشن علوي سري */
+        .top-nav { position: absolute; top: 20px; left: 0; width: 100%; display: flex; justify-content: space-between; padding: 0 30px; }
+        .logout-icon { font-size: 24px; opacity: 0.6; cursor: pointer; }
+
+        /* قائمة التقارير الفخمة */
+        .report-item {
+            background: rgba(255,255,255,0.04);
+            margin-bottom: 15px; padding: 20px; border-radius: 25px;
+            display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid rgba(255,255,255,0.03);
         }
-        .timeline-item::before { 
-            content: ''; position: absolute; left: -7px; top: 0; 
-            width: 12px; height: 12px; background: #0096ff; border-radius: 50%; 
-            box-shadow: 0 0 10px #0096ff;
+        .date-badge { background: #fff; color: #000; padding: 5px 12px; border-radius: 12px; font-weight: 800; font-size: 12px; }
+
+        /* بار التنقل السفلي - مخفي جزئياً */
+        .dock {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(20px);
+            padding: 12px 30px; border-radius: 30px; display: flex; gap: 40px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .item-card { background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .dock-item { font-size: 22px; color: rgba(255,255,255,0.4); cursor: pointer; transition: 0.3s; }
+        .dock-item.active { color: #fff; transform: translateY(-5px); }
+
+        .total-section { text-align: center; margin-top: 20px; }
+        .total-section b { font-size: 45px; font-weight: 200; display: block; }
         
-        .total-display { font-size: 2.5rem; font-weight: 200; color: #fff; margin: 10px 0; }
-        .sig { font-size: 10px; opacity: 0.4; letter-spacing: 4px; margin-top: 40px; text-align: center; }
-        
-        .rtl { direction: rtl; text-align: right; }
+        .sig { font-size: 9px; letter-spacing: 5px; opacity: 0.3; text-align: center; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="v8-bg">
-        <div class="ray" style="left:15%"></div>
-        <div class="ray" style="left:50%; animation-delay: 2s;"></div>
-        <div class="ray" style="left:85%; animation-delay: 4s;"></div>
+    <div class="top-nav">
+        <div id="user-display" style="font-weight: 200;"></div>
+        <i class="fas fa-sign-out-alt logout-icon" onclick="logout()"></i>
     </div>
 
     <div id="p-auth" class="page active">
-        <div class="glass-card">
-            <h2>Access Portal</h2>
-            <input type="email" id="email" placeholder="Email Address">
-            <input type="password" id="pass" placeholder="Secret Key">
-            <button class="action-btn" onclick="handleAuth()">UNFOLD <i class="fas fa-unlock-alt"></i></button>
+        <div class="liquid-card">
+            <h1>AURORA</h1>
+            <input type="email" id="email" class="f-input" placeholder="Email">
+            <input type="password" id="pass" class="f-input" placeholder="Password">
+            <button class="main-btn" onclick="handleAuth()">ENTER SPACE <i class="fas fa-chevron-right"></i></button>
         </div>
-        <div class="sig">SHOUKIR ABDALLA STUDIO</div>
+        <div class="sig">DESIGNED BY SHOUKIR</div>
     </div>
 
     <div id="p-add" class="page">
-        <div class="glass-card">
-            <h2 id="l-add">LOG SESSION</h2>
-            <input type="text" id="u-name" placeholder="Employee Name">
-            <input type="text" id="u-comp" placeholder="Company Unit">
-            <input type="date" id="w-date">
-            <input type="text" id="w-loc" placeholder="Location/Site">
-            <input type="number" step="0.5" id="w-hrs" placeholder="Work Hours">
-            <textarea id="w-note" placeholder="Observations/Notes" rows="2"></textarea>
-            <button class="action-btn" onclick="saveWork()">REGISTER DATA <i class="fas fa-bolt"></i></button>
+        <div class="liquid-card">
+            <h1>LOG WORK</h1>
+            <input type="text" id="u-name" class="f-input" placeholder="Your Name">
+            <input type="text" id="u-comp" class="f-input" placeholder="Company">
+            <input type="date" id="w-date" class="f-input">
+            <input type="text" id="w-loc" class="f-input" placeholder="Location">
+            <input type="number" id="w-hrs" class="f-input" placeholder="Hours">
+            <textarea id="w-note" class="f-input" placeholder="Notes..." rows="2"></textarea>
+            <button class="main-btn" onclick="saveWork()">SYCHRONIZE <i class="fas fa-sync"></i></button>
         </div>
-        <div class="sig">SHOUKIR ABDALLA STUDIO</div>
+        <div class="sig">DESIGNED BY SHOUKIR</div>
     </div>
 
-    <div id="p-rep" class="page" style="justify-content: flex-start; padding-top: 60px;">
-        <div class="glass-card">
-            <h2 id="l-rep">ANALYTICS</h2>
-            <input type="month" id="month-filter" onchange="loadLogs()">
+    <div id="p-rep" class="page" style="padding-top: 80px;">
+        <div class="liquid-card" style="max-height: 85vh; overflow: hidden; display: flex; flex-direction: column;">
+            <h1>METRICS</h1>
+            <input type="month" id="month-filter" class="f-input" onchange="loadLogs()">
             
-            <div id="logs-list" style="max-height: 280px; overflow-y: auto; margin: 20px 0; padding-right: 10px;">
+            <div id="logs-list" style="flex: 1; overflow-y: auto; margin-bottom: 10px; padding-right: 5px;">
                 </div>
-            
-            <div style="text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
-                <div class="total-display" id="total-val">0.0</div>
-                <small style="color:#555; letter-spacing: 2px;">ACCUMULATED HOURS</small>
+
+            <div class="total-section">
+                <b id="total-val">0.0</b>
+                <span style="font-size: 10px; opacity: 0.5; letter-spacing: 2px;">TOTAL HOURS COMPLETED</span>
             </div>
-            <button class="action-btn" onclick="sharePDF()" style="margin-top: 20px;">EXPORT PDF <i class="fas fa-file-export"></i></button>
+            
+            <button class="main-btn" onclick="sharePDF()" style="margin-top: 15px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid #fff;">GENERATE PDF</button>
         </div>
-        <div class="sig">SHOUKIR ABDALLA STUDIO</div>
+        <div class="sig">DESIGNED BY SHOUKIR</div>
     </div>
 
-    <nav id="nav-bar" class="nav" style="display:none;">
-        <div class="nav-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus"></i></div>
-        <div class="nav-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-chart-pie"></i></div>
-        <div class="nav-item" onclick="logout()"><i class="fas fa-power-off"></i></div>
+    <nav id="nav-bar" class="dock" style="display:none;">
+        <div class="dock-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus-square"></i></div>
+        <div class="dock-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-layer-group"></i></div>
     </nav>
 
 <script type="module">
@@ -142,20 +150,26 @@
             switchTab('add'); document.getElementById('p-auth').classList.remove('active');
             document.getElementById('nav-bar').style.display = 'flex';
             const u = await getDoc(doc(db, "users", user.uid));
-            if(u.exists()) { document.getElementById('u-name').value = u.data().fullname || ""; document.getElementById('u-comp').value = u.data().company || ""; }
+            if(u.exists()) { 
+                document.getElementById('u-name').value = u.data().fullname || ""; 
+                document.getElementById('u-comp').value = u.data().company || ""; 
+                document.getElementById('user-display').innerText = u.data().fullname;
+            }
             loadLogs();
         } else { document.getElementById('p-auth').classList.add('active'); document.getElementById('nav-bar').style.display = 'none'; }
     });
 
-    window.handleAuth = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('pass').value); } catch(e) { alert("Access Error"); } };
+    window.handleAuth = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('pass').value); } catch(e) { alert("Access Denied"); } };
     window.logout = () => signOut(auth);
+    
     window.saveWork = async () => {
         const d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value;
-        if(!d || !h) return alert("Fill session data");
+        if(!d || !h) return alert("Fill data");
         await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${d}`), { uid: auth.currentUser.uid, date: d, hours: parseFloat(h), location: document.getElementById('w-loc').value, note: document.getElementById('w-note').value, month: d.slice(0,7) }, {merge:true});
-        alert("Session Locked! ✅"); switchTab('rep');
+        alert("Data Synchronized! ✅"); switchTab('rep');
     };
-    window.del = async (id) => { if(confirm("Remove session?")) await deleteDoc(doc(db, "workLogs", id)); };
+
+    window.del = async (id) => { if(confirm("Delete record?")) await deleteDoc(doc(db, "workLogs", id)); };
 
     let cached = [];
     window.loadLogs = () => {
@@ -166,17 +180,17 @@
             snap.forEach(d => {
                 const data = d.data(); tot += data.hours; cached.push([data.date, data.location || "-", data.note || "-", data.hours.toFixed(1)]);
                 list.innerHTML += `
-                <div class="timeline-item">
-                    <div class="item-card">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                            <span style="color:#0096ff; font-weight:bold;">${data.date}</span>
-                            <span>${data.hours}h</span>
+                <div class="report-item">
+                    <div>
+                        <span class="date-badge">${data.date}</span>
+                        <div style="font-size:11px; margin-top:8px; opacity:0.6;">
+                            <i class="fas fa-map-pin"></i> ${data.location || '-'}<br>
+                            <i class="fas fa-comment"></i> ${data.note || '-'}
                         </div>
-                        <div style="font-size:12px; color:#666;">
-                            <i class="fas fa-location-arrow"></i> ${data.location || '-'}<br>
-                            <i class="fas fa-quote-left"></i> ${data.note || '-'}
-                        </div>
-                        <i class="fas fa-times" style="color:rgba(255,0,0,0.3); position:absolute; top:15px; right:10px; cursor:pointer;" onclick="del('${d.id}')"></i>
+                    </div>
+                    <div style="text-align:right">
+                        <b style="font-size:20px;">${data.hours}h</b><br>
+                        <i class="fas fa-trash-alt" style="color:rgba(255,255,255,0.2); font-size:12px; cursor:pointer;" onclick="del('${d.id}')"></i>
                     </div>
                 </div>`;
             });
@@ -185,26 +199,34 @@
         });
     };
 
-    const fixAr = (t) => { if (!/[\u0600-\u06FF]/.test(t)) return t; return t.split(' ').map(w => w.split('').reverse().join('')).reverse().join('  '); };
-
     window.sharePDF = async () => {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        const mVal = document.getElementById('month-filter').value || "2026";
-        doc.setFillColor(30, 30, 30); doc.rect(0, 0, 210, 50, 'F');
-        doc.setTextColor(255); doc.setFontSize(24); doc.text(`WORK LOG: ${mVal}`, 15, 30);
-        doc.setTextColor(150); doc.setFontSize(10); doc.text(`Generated by WorkTime Visionary`, 15, 40);
-        doc.setTextColor(0); doc.setFontSize(14); doc.text(`Employee: ${document.getElementById('u-name').value}`, 15, 65);
-        const body = cached.map(r => [r[0], r[1], fixAr(r[2]), r[3]]);
-        doc.autoTable({ startY: 75, head: [['DATE', 'LOCATION', 'OBSERVATIONS', 'HRS']], body: body, headStyles: {fillColor: [30,30,30]} });
-        doc.text(`TOTAL ACCUMULATED: ${document.getElementById('total-val').innerText} HRS`, 15, doc.lastAutoTable.finalY + 20);
+        const mVal = document.getElementById('month-filter').value;
+        doc.setFillColor(15, 12, 41); doc.rect(0, 0, 210, 297, 'F');
+        doc.setTextColor(255); doc.setFontSize(26); doc.text("WORK REPORT", 20, 30);
+        doc.setFontSize(12); doc.setTextColor(150); doc.text(`Period: ${mVal}`, 20, 40);
+        doc.setTextColor(255); doc.text(`Employee: ${document.getElementById('u-name').value}`, 20, 60);
+        
+        doc.autoTable({ 
+            startY: 70, 
+            head: [['Date', 'Location', 'Notes', 'Hours']], 
+            body: cached,
+            theme: 'plain',
+            headStyles: { textColor: [255,255,255], fontStyle: 'bold' },
+            bodyStyles: { textColor: [200,200,200] },
+            alternateRowStyles: { fillColor: [25, 25, 50] }
+        });
+        
+        doc.text(`TOTAL: ${document.getElementById('total-val').innerText} HRS`, 20, doc.lastAutoTable.finalY + 20);
         const blob = doc.output('blob'); const file = new File([blob], `Report.pdf`, { type: 'application/pdf' });
         if (navigator.share) await navigator.share({ files: [file] }); else doc.save(`Report.pdf`);
     };
 
     window.switchTab = (t) => {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById('p-'+t).classList.add('active'); document.getElementById('t-'+t).classList.add('active');
+        document.querySelectorAll('.dock-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('p-'+t).classList.add('active'); 
+        document.getElementById('t-'+t).classList.add('active');
     };
 </script>
 </body>
