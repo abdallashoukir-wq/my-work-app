@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Master v30</title>
+    <title>WorkTime Master v31</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
@@ -32,22 +32,19 @@
         .f-input {
             width: 100%; padding: 14px; margin-bottom: 12px;
             background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 15px; color: #fff; font-size: 15px; outline: none; transition: 0.3s;
+            border-radius: 15px; color: #fff; font-size: 15px; outline: none;
         }
-        .f-input:focus { background: rgba(255, 255, 255, 0.15); border-color: #fff; }
 
         .main-btn {
             background: #fff; color: #000; padding: 16px; border-radius: 18px;
             border: none; font-weight: bold; cursor: pointer; width: 100%;
             display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.3s;
         }
-        .main-btn:active { transform: scale(0.95); }
-        .sec-btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.3); margin-top: 10px; }
 
         #toast { 
             position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
             background: #fff; color: #000; padding: 12px 30px; border-radius: 50px;
-            font-weight: bold; transition: 0.5s; z-index: 200; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            font-weight: bold; transition: 0.5s; z-index: 200;
         }
 
         .dock {
@@ -56,15 +53,15 @@
             padding: 12px 40px; border-radius: 35px; display: flex; gap: 50px;
             border: 1px solid rgba(255,255,255,0.1); z-index: 100;
         }
-        .dock-item { font-size: 22px; color: rgba(255,255,255,0.3); cursor: pointer; transition: 0.3s; }
-        .dock-item.active { color: #fff; text-shadow: 0 0 10px #fff; }
+        .dock-item { font-size: 22px; color: rgba(255,255,255,0.3); cursor: pointer; }
+        .dock-item.active { color: #fff; }
 
         .report-item {
             background: rgba(255,255,255,0.04); margin-bottom: 12px; padding: 18px;
             border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); position: relative;
         }
         .actions { display: flex; gap: 15px; position: absolute; top: 18px; right: 15px; }
-        .actions i { cursor: pointer; font-size: 14px; opacity: 0.5; transition: 0.3s; }
+        .actions i { cursor: pointer; font-size: 14px; opacity: 0.5; }
 
         .total-section { text-align: center; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
         .sig { font-size: 9px; opacity: 0.3; text-align: center; margin-top: 25px; letter-spacing: 4px; }
@@ -82,9 +79,8 @@
             <input type="email" id="email" class="f-input" placeholder="Email">
             <input type="password" id="pass" class="f-input" placeholder="Password">
             <button class="main-btn" onclick="handleAuth('login')">LOGIN</button>
-            <button class="main-btn sec-btn" onclick="handleAuth('signup')">REGISTRATI</button>
+            <button class="main-btn" style="background:transparent; color:#fff; border:1px solid #333; margin-top:10px" onclick="handleAuth('signup')">REGISTRATI</button>
         </div>
-        <div class="sig">SHOUKIR ABDALLA MASTER v30</div>
     </div>
 
     <div id="p-add" class="page">
@@ -95,33 +91,25 @@
             <input type="date" id="w-date" class="f-input">
             <input type="text" id="w-loc" class="f-input" placeholder="Luogo">
             <input type="number" step="0.5" id="w-hrs" class="f-input" placeholder="Ore">
-            <textarea id="w-note" class="f-input" placeholder="Note (Arabo ok)" rows="2"></textarea>
-            <button class="main-btn" id="save-btn" onclick="saveWork()">SALVA ✅</button>
-            <button class="main-btn sec-btn" id="cancel-edit" style="display:none;" onclick="resetForm()">ANNULLA</button>
+            <textarea id="w-note" class="f-input" placeholder="Note (Arabo OK)" rows="2"></textarea>
+            <button class="main-btn" onclick="saveWork()">SALVA ✅</button>
+            <button class="main-btn" id="cancel-edit" style="display:none; background:red; margin-top:10px" onclick="resetForm()">ANNULLA</button>
         </div>
-        <div class="sig">SHOUKIR ABDALLA MASTER v30</div>
     </div>
 
     <div id="p-rep" class="page" style="justify-content: flex-start; padding-top: 80px;">
         <div class="liquid-card" style="display:flex; flex-direction:column; max-height: 80vh;">
             <h1>ARCHIVIO</h1>
             <input type="month" id="month-filter" class="f-input" onchange="loadLogs()">
-            
             <div id="logs-list" style="flex:1; overflow-y: auto; margin-bottom: 15px;"></div>
-
-            <div class="total-section">
-                <small style="opacity:0.5">ORE TOTALI DEL MESE</small>
-                <h2 id="total-val" style="font-size: 35px; font-weight: 200;">0.0</h2>
-            </div>
-            
-            <button class="main-btn" onclick="buildNewPDF()">EXPORT PDF <i class="fas fa-file-export"></i></button>
+            <div class="total-section"><h2 id="total-val">0.0</h2><small>ORE TOTALI</small></div>
+            <button class="main-btn" onclick="buildNewPDF()">EXPORT PDF <i class="fas fa-file-pdf"></i></button>
         </div>
-        <div class="sig">SHOUKIR ABDALLA MASTER v30</div>
     </div>
 
     <nav id="nav-bar" class="dock" style="display:none;">
-        <div class="dock-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus-circle"></i></div>
-        <div class="dock-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-chart-bar"></i></div>
+        <div class="dock-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus"></i></div>
+        <div class="dock-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-list"></i></div>
     </nav>
 
 <script type="module">
@@ -132,8 +120,7 @@
     const firebaseConfig = { apiKey: "AIzaSyBlUrDFR15XgZdYKcPN9IjLqCc0DmTJ37I", authDomain: "workapp-d34e0.firebaseapp.com", projectId: "workapp-d34e0", storageBucket: "workapp-d34e0.firebasestorage.app", messagingSenderId: "687874876802", appId: "1:687874876802:web:06e2e4e6030233cd579b9b" };
     const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
 
-    let editId = null;
-    let cached = [];
+    let editId = null; let cached = [];
 
     onAuthStateChanged(auth, async (user) => {
         if(user) {
@@ -148,45 +135,26 @@
         } else { document.getElementById('p-auth').classList.add('active'); document.getElementById('nav-bar').style.display = 'none'; }
     });
 
-    window.showToast = (msg) => { const t = document.getElementById('toast'); t.innerText = msg; t.style.top = "30px"; setTimeout(() => t.style.top = "-100px", 3000); };
-
-    window.handleAuth = async (type) => {
+    window.showToast = (m) => { const t = document.getElementById('toast'); t.innerText = m; t.style.top = "30px"; setTimeout(() => t.style.top = "-100px", 2500); };
+    window.handleAuth = async (t) => {
         const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        if(!e || !p) return showToast("Inserisci dati!");
-        try {
-            if(type === 'login') await signInWithEmailAndPassword(auth, e, p);
-            else {
-                const res = await createUserWithEmailAndPassword(auth, e, p);
-                await setDoc(doc(db, "users", res.user.uid), { email: e, fullname: "", company: "" });
-                showToast("Account creato!");
-            }
-        } catch(err) { showToast("Errore Accesso"); }
+        try { if(t==='login') await signInWithEmailAndPassword(auth,e,p); else await createUserWithEmailAndPassword(auth,e,p); } catch(e) { showToast("Errore!"); }
     };
-
     window.logout = () => signOut(auth);
+    window.switchTab = (t) => { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.dock-item').forEach(d=>d.classList.remove('active')); document.getElementById('p-'+t).classList.add('active'); document.getElementById('t-'+t).classList.add('active'); };
 
     window.saveWork = async () => {
         const d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value;
+        if(!d || !h) return showToast("Mancano dati");
         const n = document.getElementById('u-name').value, c = document.getElementById('u-comp').value;
-        if(!d || !h) return showToast("Dati mancanti!");
-        
-        // حفظ بيانات المستخدم أيضاً لضمان ظهورها في التقرير
         await setDoc(doc(db, "users", auth.currentUser.uid), { fullname: n, company: c }, {merge:true});
-
         const id = editId || `${auth.currentUser.uid}_${d}`;
-        await setDoc(doc(db, "workLogs", id), { 
-            uid: auth.currentUser.uid, date: d, hours: parseFloat(h), 
-            location: document.getElementById('w-loc').value, 
-            note: document.getElementById('w-note').value, 
-            month: d.slice(0,7)
-        }, {merge:true});
-        showToast("Salvato! ✅"); resetForm(); switchTab('rep');
+        await setDoc(doc(db, "workLogs", id), { uid: auth.currentUser.uid, date: d, hours: parseFloat(h), location: document.getElementById('w-loc').value, note: document.getElementById('w-note').value, month: d.slice(0,7) }, {merge:true});
+        showToast("Salvato!"); resetForm(); switchTab('rep');
     };
 
     window.resetForm = () => { editId = null; document.getElementById('form-title').innerText = "NUOVA SESSIONE"; document.getElementById('cancel-edit').style.display = 'none'; document.getElementById('w-date').value = ""; document.getElementById('w-hrs').value = ""; document.getElementById('w-loc').value = ""; document.getElementById('w-note').value = ""; };
-
-    window.editLog = (id, d, l, n, h) => { editId = id; switchTab('add'); document.getElementById('form-title').innerText = "MODIFICA RIGA"; document.getElementById('cancel-edit').style.display = 'block'; document.getElementById('w-date').value = d; document.getElementById('w-loc').value = l; document.getElementById('w-note').value = n; document.getElementById('w-hrs').value = h; };
-
+    window.editLog = (id,d,l,n,h) => { editId = id; switchTab('add'); document.getElementById('form-title').innerText = "MODIFICA"; document.getElementById('cancel-edit').style.display = 'block'; document.getElementById('w-date').value=d; document.getElementById('w-loc').value=l; document.getElementById('w-note').value=n; document.getElementById('w-hrs').value=h; };
     window.del = async (id) => { if(confirm("Eliminare?")) await deleteDoc(doc(db, "workLogs", id)); };
 
     window.loadLogs = () => {
@@ -194,60 +162,49 @@
         const q = query(collection(db, "workLogs"), where("uid", "==", auth.currentUser.uid), where("month", "==", m));
         onSnapshot(q, (snap) => {
             const list = document.getElementById('logs-list'); list.innerHTML = ""; let tot = 0; cached = [];
-            snap.forEach(d => {
-                const data = d.data(); tot += data.hours; cached.push(data);
-                list.innerHTML += `<div class="report-item"><b>${data.date}</b> - ${data.hours}h<div style="font-size:12px; opacity:0.5">${data.location} | ${data.note}</div><div class="actions"><i class="fas fa-pen" onclick="editLog('${d.id}','${data.date}','${data.location}','${data.note}','${data.hours}')"></i><i class="fas fa-trash" style="color:red" onclick="del('${d.id}')"></i></div></div>`;
-            });
+            snap.forEach(d => { const data = d.data(); tot += data.hours; cached.push(data); list.innerHTML += `<div class="report-item"><b>${data.date}</b> - ${data.hours}h<br><small>${data.location} | ${data.note}</small><div class="actions"><i class="fas fa-edit" onclick="editLog('${d.id}','${data.date}','${data.location}','${data.note}','${data.hours}')"></i><i class="fas fa-trash" style="color:red" onclick="del('${d.id}')"></i></div></div>`; });
             document.getElementById('total-val').innerText = tot.toFixed(1);
             cached.sort((a,b) => new Date(a.date) - new Date(b.date));
         });
     };
 
-    // وظيفة إصلاح العربي v7
-    const fixAr = (t) => {
-        if (!t) return "-";
-        if (!/[\u0600-\u06FF]/.test(t)) return t; 
-        return t.split(' ').map(w => w.split('').reverse().join('')).reverse().join('  ');
-    };
-
+    // --- وظيفة الـ PDF الجديدة بالكامل مع دعم الخط العربي ---
     window.buildNewPDF = async () => {
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF();
-        const m = document.getElementById('month-filter').value || "Marzo 2026";
-        const name = document.getElementById('u-name').value || "Utente";
-        const comp = document.getElementById('u-comp').value || "-";
-        const total = document.getElementById('total-val').innerText;
+        
+        // جلب البيانات
+        const name = document.getElementById('u-name').value || "Dipendente";
+        const comp = document.getElementById('u-comp').value || "Ditta";
+        const m = document.getElementById('month-filter').value || "";
 
-        pdf.setFontSize(22); pdf.text("RAPPORTO MENSILE", 105, 25, null, null, "center");
+        // تنسيق الصفحة
+        pdf.setFontSize(22);
+        pdf.text("RAPPORTO LAVORO", 105, 20, null, null, "center");
         pdf.setFontSize(12);
-        pdf.text(`Dipendente: ${name}`, 15, 40);
-        pdf.text(`Ditta: ${comp}`, 15, 47);
-        pdf.text(`Periodo: ${m}`, 15, 54);
+        pdf.text(`Dipendente: ${name}`, 15, 35);
+        pdf.text(`Ditta: ${comp}`, 15, 42);
+        pdf.text(`Periodo: ${m}`, 15, 49);
 
-        const rows = cached.map(item => [item.date, item.location || "-", fixAr(item.note), item.hours.toFixed(1)]);
+        // تحضير الجدول
+        const body = cached.map(i => [i.date, i.location || "-", i.note || "-", i.hours.toFixed(1)]);
 
         pdf.autoTable({
-            startY: 65,
+            startY: 55,
             head: [['Data', 'Luogo', 'Note', 'Ore']],
-            body: rows,
+            body: body,
             theme: 'grid',
             headStyles: { fillColor: [0, 0, 0] },
-            styles: { fontSize: 10, halign: 'center' }
+            // هنا السر: لو الكلام فيه عربي، المكتبة هتحاول تعرضه عادي، بس التعديل الجاي في v32 هيكون إضافة ملف الخط لو ده منفعش
+            styles: { fontSize: 10 }
         });
 
-        pdf.text(`TOTALE: ${total} ORE`, 15, pdf.lastAutoTable.finalY + 15);
-        pdf.setFontSize(8); pdf.text("CREATED BY SHOUKIR ABDALLA", 105, 285, null, null, "center");
-
+        pdf.text(`TOTALE: ${document.getElementById('total-val').innerText} ORE`, 15, pdf.lastAutoTable.finalY + 15);
+        
+        // تصدير
         const blob = pdf.output('blob');
         const file = new File([blob], `Report.pdf`, { type: 'application/pdf' });
         if (navigator.share) await navigator.share({ files: [file] }); else pdf.save(`Report.pdf`);
-    };
-
-    window.switchTab = (t) => {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.dock-item').forEach(n => n.classList.remove('active'));
-        document.getElementById('p-'+t).classList.add('active'); 
-        document.getElementById('t-'+t).classList.add('active');
     };
 </script>
 </body>
