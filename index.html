@@ -3,129 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Aurora Gold</title>
+    <title>WorkTime Master v28</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
-        
         body { 
             background: linear-gradient(-45deg, #0a0a1a, #1a1a3a, #000000);
-            background-size: 400% 400%;
-            animation: aurora 10s ease infinite;
+            background-size: 400% 400%; animation: aurora 15s ease infinite;
             color: #fff; height: 100vh; overflow: hidden;
         }
         @keyframes aurora { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
         .page { display: none; height: 100vh; padding: 20px; position: relative; z-index: 10; flex-direction: column; align-items: center; justify-content: center; }
-        .page.active { display: flex; }
+        .page.active { display: flex; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .liquid-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border-radius: 30px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 100%; max-width: 360px;
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(25px);
+            border-radius: 30px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%; max-width: 380px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        h1 { font-size: 1.5rem; text-align: center; margin-bottom: 20px; letter-spacing: 2px; }
+        h1 { font-size: 1.6rem; text-align: center; margin-bottom: 20px; letter-spacing: 3px; font-weight: 300; }
 
         .f-input {
             width: 100%; padding: 14px; margin-bottom: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; color: #fff;
-            font-size: 15px; outline: none;
+            background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px; color: #fff; font-size: 15px; outline: none; transition: 0.3s;
         }
+        .f-input:focus { background: rgba(255, 255, 255, 0.15); border-color: #fff; }
 
         .main-btn {
-            background: #fff; color: #000;
-            padding: 16px; border-radius: 15px;
-            border: none; font-weight: bold;
-            cursor: pointer; width: 100%;
-            display: flex; justify-content: center; align-items: center; gap: 10px;
+            background: #fff; color: #000; padding: 16px; border-radius: 18px;
+            border: none; font-weight: bold; cursor: pointer; width: 100%;
+            display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.3s;
+        }
+        .main-btn:active { transform: scale(0.95); }
+        .sec-btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.3); margin-top: 10px; }
+
+        /* Toast Notification */
+        #toast { 
+            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+            background: #fff; color: #000; padding: 12px 30px; border-radius: 50px;
+            font-weight: bold; transition: 0.5s; z-index: 200; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
 
-        /* Dock Navigation */
+        /* Navigation Dock */
         .dock {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(15px);
-            padding: 10px 30px; border-radius: 25px; display: flex; gap: 40px;
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(20px);
+            padding: 12px 40px; border-radius: 35px; display: flex; gap: 50px;
             border: 1px solid rgba(255,255,255,0.1); z-index: 100;
         }
-        .dock-item { font-size: 20px; color: rgba(255,255,255,0.3); cursor: pointer; }
-        .dock-item.active { color: #fff; }
+        .dock-item { font-size: 22px; color: rgba(255,255,255,0.3); cursor: pointer; transition: 0.3s; }
+        .dock-item.active { color: #fff; text-shadow: 0 0 10px #fff; }
 
         .report-item {
-            background: rgba(255,255,255,0.03);
-            margin-bottom: 10px; padding: 15px; border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.05); position: relative;
+            background: rgba(255,255,255,0.04); margin-bottom: 12px; padding: 18px;
+            border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); position: relative;
         }
-        
-        .total-box { text-align: center; margin-top: 15px; border-top: 1px solid #333; padding-top: 10px; }
-        .sig { font-size: 10px; opacity: 0.3; text-align: center; margin-top: 20px; letter-spacing: 3px; }
-        .logout-btn { position: fixed; top: 20px; right: 20px; z-index: 20; color: #fff; background: none; border: none; font-size: 20px; }
+        .actions { display: flex; gap: 15px; position: absolute; top: 18px; right: 15px; }
+        .actions i { cursor: pointer; font-size: 14px; opacity: 0.5; transition: 0.3s; }
+        .actions i:hover { opacity: 1; }
+
+        .total-section { text-align: center; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+        .sig { font-size: 9px; opacity: 0.3; text-align: center; margin-top: 25px; letter-spacing: 4px; }
+        .logout { position: fixed; top: 25px; right: 25px; z-index: 50; color: #fff; opacity: 0.5; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <button class="logout-btn" onclick="logout()"><i class="fas fa-power-off"></i></button>
+    <div id="toast">Operazione completata!</div>
+    <i class="fas fa-power-off logout" onclick="logout()"></i>
 
     <div id="p-auth" class="page active">
         <div class="liquid-card">
-            <h1>LOGIN</h1>
+            <h1>WORKTIME</h1>
             <input type="email" id="email" class="f-input" placeholder="Email">
             <input type="password" id="pass" class="f-input" placeholder="Password">
-            <button class="main-btn" onclick="handleAuth()">ENTRA</button>
+            <button class="main-btn" onclick="handleAuth('login')">LOGIN</button>
+            <button class="main-btn sec-btn" onclick="handleAuth('signup')">REGISTRATI</button>
         </div>
-        <div class="sig">CREATED BY SHOUKIR ABDALLA</div>
+        <div class="sig">SHOUKIR ABDALLA MASTER v28</div>
     </div>
 
     <div id="p-add" class="page">
         <div class="liquid-card">
-            <h1>REGISTRA ORE</h1>
+            <h1 id="form-title">NUOVA SESSIONE</h1>
             <input type="text" id="u-name" class="f-input" placeholder="Nome">
             <input type="text" id="u-comp" class="f-input" placeholder="Ditta">
             <input type="date" id="w-date" class="f-input">
             <input type="text" id="w-loc" class="f-input" placeholder="Luogo">
-            <input type="number" id="w-hrs" class="f-input" placeholder="Ore">
-            <textarea id="w-note" class="f-input" placeholder="Note" rows="2"></textarea>
-            <button class="main-btn" onclick="saveWork()">SALVA ✅</button>
+            <input type="number" step="0.5" id="w-hrs" class="f-input" placeholder="Ore">
+            <textarea id="w-note" class="f-input" placeholder="Note (العربية مدعومة)" rows="2"></textarea>
+            <button class="main-btn" id="save-btn" onclick="saveWork()">SALVA DATI ✅</button>
+            <button class="main-btn sec-btn" id="cancel-edit" style="display:none;" onclick="resetForm()">ANNULLA</button>
         </div>
-        <div class="sig">CREATED BY SHOUKIR ABDALLA</div>
+        <div class="sig">SHOUKIR ABDALLA MASTER v28</div>
     </div>
 
-    <div id="p-rep" class="page" style="justify-content: flex-start; padding-top: 70px;">
-        <div class="liquid-card">
-            <h1>RAPPORTO</h1>
+    <div id="p-rep" class="page" style="justify-content: flex-start; padding-top: 80px;">
+        <div class="liquid-card" style="display:flex; flex-direction:column; max-height: 80vh;">
+            <h1>ARCHIVIO</h1>
             <input type="month" id="month-filter" class="f-input" onchange="loadLogs()">
             
-            <div id="logs-list" style="max-height: 250px; overflow-y: auto; margin-bottom: 10px;"></div>
+            <div id="logs-list" style="flex:1; overflow-y: auto; margin-bottom: 15px;"></div>
 
-            <div class="total-box">
-                <small>TOTALE ORE</small>
-                <h2 id="total-val">0.0</h2>
+            <div class="total-section">
+                <small style="opacity:0.5">ORE TOTALI DEL MESE</small>
+                <h2 id="total-val" style="font-size: 35px; font-weight: 200;">0.0</h2>
             </div>
             
-            <button class="main-btn" onclick="sharePDF()" style="margin-top: 10px;">PDF REPORT <i class="fas fa-file-pdf"></i></button>
+            <button class="main-btn" onclick="sharePDF()">EXPORT PDF <i class="fas fa-file-export"></i></button>
         </div>
-        <div class="sig">CREATED BY SHOUKIR ABDALLA</div>
+        <div class="sig">SHOUKIR ABDALLA MASTER v28</div>
     </div>
 
     <nav id="nav-bar" class="dock" style="display:none;">
-        <div class="dock-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus"></i></div>
-        <div class="dock-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-list-ul"></i></div>
+        <div class="dock-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus-circle"></i></div>
+        <div class="dock-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-chart-bar"></i></div>
     </nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, query, where, onSnapshot, deleteDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = { apiKey: "AIzaSyBlUrDFR15XgZdYKcPN9IjLqCc0DmTJ37I", authDomain: "workapp-d34e0.firebaseapp.com", projectId: "workapp-d34e0", storageBucket: "workapp-d34e0.firebasestorage.app", messagingSenderId: "687874876802", appId: "1:687874876802:web:06e2e4e6030233cd579b9b" };
     const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+
+    let editId = null;
 
     onAuthStateChanged(auth, async (user) => {
         if(user) {
@@ -137,70 +147,105 @@
                 document.getElementById('u-comp').value = u.data().company || ""; 
             }
             loadLogs();
-        } else { 
-            document.getElementById('p-auth').classList.add('active'); 
-            document.getElementById('nav-bar').style.display = 'none'; 
-        }
+        } else { document.getElementById('p-auth').classList.add('active'); document.getElementById('nav-bar').style.display = 'none'; }
     });
 
-    window.handleAuth = async () => { 
+    window.showToast = (msg) => { const t = document.getElementById('toast'); t.innerText = msg; t.style.top = "30px"; setTimeout(() => t.style.top = "-100px", 3000); };
+
+    window.handleAuth = async (type) => {
         const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        try { await signInWithEmailAndPassword(auth, e, p); } catch(err) { alert("Errore Login"); } 
+        if(!e || !p) return showToast("Inserisci dati!");
+        try {
+            if(type === 'login') await signInWithEmailAndPassword(auth, e, p);
+            else {
+                const res = await createUserWithEmailAndPassword(auth, e, p);
+                await setDoc(doc(db, "users", res.user.uid), { email: e, fullname: "", company: "" });
+                showToast("Account creato!");
+            }
+        } catch(err) { showToast("Errore: " + err.message); }
     };
 
     window.logout = () => signOut(auth);
 
     window.saveWork = async () => {
         const d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value;
-        if(!d || !h) return alert("Mancano dati!");
-        await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${d}`), { 
+        if(!d || !h) return showToast("Mancano ore o data!");
+        const id = editId || `${auth.currentUser.uid}_${d}`;
+        await setDoc(doc(db, "workLogs", id), { 
             uid: auth.currentUser.uid, date: d, hours: parseFloat(h), 
             location: document.getElementById('w-loc').value, 
             note: document.getElementById('w-note').value, 
-            month: d.slice(0,7) 
+            month: d.slice(0,7), timestamp: new Date()
         }, {merge:true});
-        alert("Salvato! ✅"); switchTab('rep');
+        showToast(editId ? "Modificato! ✅" : "Salvato! ✅");
+        resetForm(); switchTab('rep');
     };
 
-    window.del = async (id) => { if(confirm("Eliminare riga?")) await deleteDoc(doc(db, "workLogs", id)); };
+    window.resetForm = () => {
+        editId = null; document.getElementById('form-title').innerText = "NUOVA SESSIONE";
+        document.getElementById('cancel-edit').style.display = 'none';
+        document.getElementById('w-date').value = ""; document.getElementById('w-hrs').value = "";
+        document.getElementById('w-loc').value = ""; document.getElementById('w-note').value = "";
+    };
 
-    let cachedData = [];
+    window.editLog = (id, d, l, n, h) => {
+        editId = id; switchTab('add');
+        document.getElementById('form-title').innerText = "MODIFICA RIGA";
+        document.getElementById('cancel-edit').style.display = 'block';
+        document.getElementById('w-date').value = d; document.getElementById('w-loc').value = l;
+        document.getElementById('w-note').value = n; document.getElementById('w-hrs').value = h;
+    };
+
+    window.del = async (id) => { if(confirm("Eliminare?")) { await deleteDoc(doc(db, "workLogs", id)); showToast("Eliminato"); } };
+
+    let cached = [];
     window.loadLogs = () => {
         const m = document.getElementById('month-filter').value || new Date().toISOString().slice(0,7);
         const q = query(collection(db, "workLogs"), where("uid", "==", auth.currentUser.uid), where("month", "==", m));
         onSnapshot(q, (snap) => {
-            const list = document.getElementById('logs-list'); list.innerHTML = ""; let tot = 0; cachedData = [];
-            snap.forEach(d => {
-                const data = d.data(); tot += data.hours;
-                cachedData.push([data.date, data.location || "-", data.note || "-", data.hours.toFixed(1)]);
+            const list = document.getElementById('logs-list'); list.innerHTML = ""; let tot = 0; cached = [];
+            let items = []; snap.forEach(d => items.push({id: d.id, ...d.data()}));
+            items.sort((a,b) => new Date(b.date) - new Date(a.date)); // ترتيب الأحدث فوق
+
+            items.forEach(data => {
+                tot += data.hours; cached.push([data.date, data.location || "-", data.note || "-", data.hours.toFixed(1)]);
                 list.innerHTML += `
                 <div class="report-item">
-                    <div style="display:flex; justify-content:space-between"><b>${data.date}</b> <span>${data.hours}h</span></div>
-                    <div style="font-size:12px; opacity:0.6; margin-top:5px;">${data.location} | ${data.note}</div>
-                    <i class="fas fa-trash-alt" style="position:absolute; top:15px; right:15px; color:red; cursor:pointer;" onclick="del('${d.id}')"></i>
+                    <b>${data.date}</b> <span style="margin-left:10px; color:#fff;">${data.hours}h</span>
+                    <div style="font-size:12px; opacity:0.5; margin-top:5px;">${data.location} | ${data.note}</div>
+                    <div class="actions">
+                        <i class="fas fa-pen" onclick="editLog('${data.id}','${data.date}','${data.location}','${data.note}','${data.hours}')"></i>
+                        <i class="fas fa-trash" style="color:#ff4444" onclick="del('${data.id}')"></i>
+                    </div>
                 </div>`;
             });
             document.getElementById('total-val').innerText = tot.toFixed(1);
-            cachedData.sort((a,b) => new Date(a[0]) - new Date(b[0]));
+            cached.sort((a,b) => new Date(a[0]) - new Date(b[0])); // ترتيب الـ PDF من الأقدم للأحدث
         });
     };
+
+    // وظيفة إصلاح العربي v6 v7
+    const fixAr = (t) => { if (!/[\u0600-\u06FF]/.test(t)) return t; return t.split(' ').map(w => w.split('').reverse().join('')).reverse().join('  '); };
 
     window.sharePDF = async () => {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
         const mVal = document.getElementById('month-filter').value;
-        doc.setFontSize(20); doc.text("RAPPORTO ORE", 105, 20, null, null, "center");
+        doc.setFontSize(22); doc.text("RAPPORTO LAVORO", 105, 20, null, null, "center");
         doc.setFontSize(12); doc.text(`Dipendente: ${document.getElementById('u-name').value}`, 15, 35);
-        doc.text(`Mese: ${mVal}`, 15, 42);
+        doc.text(`Azienda: ${document.getElementById('u-comp').value}`, 15, 42);
+        doc.text(`Periodo: ${mVal}`, 15, 49);
         
+        const body = cached.map(r => [r[0], r[1], fixAr(r[2]), r[3]]);
         doc.autoTable({ 
-            startY: 50, head: [['Data', 'Luogo', 'Note', 'Ore']], body: cachedData,
-            theme: 'grid', headStyles: { fillColor: [0, 0, 0] }
+            startY: 55, head: [['Data', 'Luogo', 'Note', 'Ore']], body: body,
+            theme: 'grid', headStyles: { fillColor: [0, 0, 0] },
+            styles: { fontSize: 10 }
         });
         
         doc.text(`TOTALE: ${document.getElementById('total-val').innerText} ORE`, 15, doc.lastAutoTable.finalY + 15);
-        doc.setFontSize(10); doc.text("CREATED BY SHOUKIR ABDALLA", 105, 285, null, null, "center");
+        doc.setFontSize(8); doc.text("CREATED BY SHOUKIR ABDALLA", 105, 285, null, null, "center");
         
-        const blob = doc.output('blob'); const file = new File([blob], `Report.pdf`, { type: 'application/pdf' });
+        const blob = doc.output('blob'); const file = new File([blob], `Report_${mVal}.pdf`, { type: 'application/pdf' });
         if (navigator.share) await navigator.share({ files: [file] }); else doc.save(`Report.pdf`);
     };
 
