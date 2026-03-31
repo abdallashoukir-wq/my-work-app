@@ -3,138 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Aurora</title>
+    <title>WorkTime Aurora Gold</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
         
-        /* 🌌 خلفية الأورورا المتحركة */
         body { 
-            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #000000);
+            background: linear-gradient(-45deg, #0a0a1a, #1a1a3a, #000000);
             background-size: 400% 400%;
-            animation: aurora 15s ease infinite;
+            animation: aurora 10s ease infinite;
             color: #fff; height: 100vh; overflow: hidden;
         }
         @keyframes aurora { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        .page { display: none; height: 100vh; padding: 30px; position: relative; z-index: 10; flex-direction: column; }
-        .page.active { display: flex; animation: slideIn 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
-        @keyframes slideIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .page { display: none; height: 100vh; padding: 20px; position: relative; z-index: 10; flex-direction: column; align-items: center; justify-content: center; }
+        .page.active { display: flex; }
 
-        /* الأوعية الزجاجية السائلة */
         .liquid-card {
-            background: rgba(255, 255, 255, 0.07);
-            backdrop-filter: blur(30px);
-            border-radius: 40px;
-            padding: 35px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 25px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            width: 100%; max-width: 380px; align-self: center; margin: auto;
+            width: 100%; max-width: 360px;
         }
 
-        h1 { font-weight: 700; font-size: 2rem; text-align: center; margin-bottom: 30px; background: linear-gradient(to right, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h1 { font-size: 1.5rem; text-align: center; margin-bottom: 20px; letter-spacing: 2px; }
 
         .f-input {
-            width: 100%; padding: 18px; margin-bottom: 15px;
+            width: 100%; padding: 14px; margin-bottom: 12px;
             background: rgba(255, 255, 255, 0.05);
-            border: none; border-radius: 20px; color: #fff;
-            font-size: 16px; outline: none; transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; color: #fff;
+            font-size: 15px; outline: none;
         }
-        .f-input:focus { background: rgba(255, 255, 255, 0.12); box-shadow: 0 0 20px rgba(255,255,255,0.05); }
 
         .main-btn {
             background: #fff; color: #000;
-            padding: 20px; border-radius: 25px;
-            border: none; font-weight: 700; font-size: 17px;
-            cursor: pointer; transition: 0.4s; width: 100%;
+            padding: 16px; border-radius: 15px;
+            border: none; font-weight: bold;
+            cursor: pointer; width: 100%;
             display: flex; justify-content: center; align-items: center; gap: 10px;
         }
-        .main-btn:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(255,255,255,0.2); }
 
-        /* نفيجيشن علوي سري */
-        .top-nav { position: absolute; top: 20px; left: 0; width: 100%; display: flex; justify-content: space-between; padding: 0 30px; }
-        .logout-icon { font-size: 24px; opacity: 0.6; cursor: pointer; }
-
-        /* قائمة التقارير الفخمة */
-        .report-item {
-            background: rgba(255,255,255,0.04);
-            margin-bottom: 15px; padding: 20px; border-radius: 25px;
-            display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid rgba(255,255,255,0.03);
-        }
-        .date-badge { background: #fff; color: #000; padding: 5px 12px; border-radius: 12px; font-weight: 800; font-size: 12px; }
-
-        /* بار التنقل السفلي - مخفي جزئياً */
+        /* Dock Navigation */
         .dock {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(0,0,0,0.3); backdrop-filter: blur(20px);
-            padding: 12px 30px; border-radius: 30px; display: flex; gap: 40px;
-            border: 1px solid rgba(255,255,255,0.1);
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(15px);
+            padding: 10px 30px; border-radius: 25px; display: flex; gap: 40px;
+            border: 1px solid rgba(255,255,255,0.1); z-index: 100;
         }
-        .dock-item { font-size: 22px; color: rgba(255,255,255,0.4); cursor: pointer; transition: 0.3s; }
-        .dock-item.active { color: #fff; transform: translateY(-5px); }
+        .dock-item { font-size: 20px; color: rgba(255,255,255,0.3); cursor: pointer; }
+        .dock-item.active { color: #fff; }
 
-        .total-section { text-align: center; margin-top: 20px; }
-        .total-section b { font-size: 45px; font-weight: 200; display: block; }
+        .report-item {
+            background: rgba(255,255,255,0.03);
+            margin-bottom: 10px; padding: 15px; border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05); position: relative;
+        }
         
-        .sig { font-size: 9px; letter-spacing: 5px; opacity: 0.3; text-align: center; margin-top: 20px; }
+        .total-box { text-align: center; margin-top: 15px; border-top: 1px solid #333; padding-top: 10px; }
+        .sig { font-size: 10px; opacity: 0.3; text-align: center; margin-top: 20px; letter-spacing: 3px; }
+        .logout-btn { position: fixed; top: 20px; right: 20px; z-index: 20; color: #fff; background: none; border: none; font-size: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="top-nav">
-        <div id="user-display" style="font-weight: 200;"></div>
-        <i class="fas fa-sign-out-alt logout-icon" onclick="logout()"></i>
-    </div>
+    <button class="logout-btn" onclick="logout()"><i class="fas fa-power-off"></i></button>
 
     <div id="p-auth" class="page active">
         <div class="liquid-card">
-            <h1>AURORA</h1>
+            <h1>LOGIN</h1>
             <input type="email" id="email" class="f-input" placeholder="Email">
             <input type="password" id="pass" class="f-input" placeholder="Password">
-            <button class="main-btn" onclick="handleAuth()">ENTER SPACE <i class="fas fa-chevron-right"></i></button>
+            <button class="main-btn" onclick="handleAuth()">ENTRA</button>
         </div>
-        <div class="sig">DESIGNED BY SHOUKIR</div>
+        <div class="sig">CREATED BY SHOUKIR ABDALLA</div>
     </div>
 
     <div id="p-add" class="page">
         <div class="liquid-card">
-            <h1>LOG WORK</h1>
-            <input type="text" id="u-name" class="f-input" placeholder="Your Name">
-            <input type="text" id="u-comp" class="f-input" placeholder="Company">
+            <h1>REGISTRA ORE</h1>
+            <input type="text" id="u-name" class="f-input" placeholder="Nome">
+            <input type="text" id="u-comp" class="f-input" placeholder="Ditta">
             <input type="date" id="w-date" class="f-input">
-            <input type="text" id="w-loc" class="f-input" placeholder="Location">
-            <input type="number" id="w-hrs" class="f-input" placeholder="Hours">
-            <textarea id="w-note" class="f-input" placeholder="Notes..." rows="2"></textarea>
-            <button class="main-btn" onclick="saveWork()">SYCHRONIZE <i class="fas fa-sync"></i></button>
+            <input type="text" id="w-loc" class="f-input" placeholder="Luogo">
+            <input type="number" id="w-hrs" class="f-input" placeholder="Ore">
+            <textarea id="w-note" class="f-input" placeholder="Note" rows="2"></textarea>
+            <button class="main-btn" onclick="saveWork()">SALVA ✅</button>
         </div>
-        <div class="sig">DESIGNED BY SHOUKIR</div>
+        <div class="sig">CREATED BY SHOUKIR ABDALLA</div>
     </div>
 
-    <div id="p-rep" class="page" style="padding-top: 80px;">
-        <div class="liquid-card" style="max-height: 85vh; overflow: hidden; display: flex; flex-direction: column;">
-            <h1>METRICS</h1>
+    <div id="p-rep" class="page" style="justify-content: flex-start; padding-top: 70px;">
+        <div class="liquid-card">
+            <h1>RAPPORTO</h1>
             <input type="month" id="month-filter" class="f-input" onchange="loadLogs()">
             
-            <div id="logs-list" style="flex: 1; overflow-y: auto; margin-bottom: 10px; padding-right: 5px;">
-                </div>
+            <div id="logs-list" style="max-height: 250px; overflow-y: auto; margin-bottom: 10px;"></div>
 
-            <div class="total-section">
-                <b id="total-val">0.0</b>
-                <span style="font-size: 10px; opacity: 0.5; letter-spacing: 2px;">TOTAL HOURS COMPLETED</span>
+            <div class="total-box">
+                <small>TOTALE ORE</small>
+                <h2 id="total-val">0.0</h2>
             </div>
             
-            <button class="main-btn" onclick="sharePDF()" style="margin-top: 15px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid #fff;">GENERATE PDF</button>
+            <button class="main-btn" onclick="sharePDF()" style="margin-top: 10px;">PDF REPORT <i class="fas fa-file-pdf"></i></button>
         </div>
-        <div class="sig">DESIGNED BY SHOUKIR</div>
+        <div class="sig">CREATED BY SHOUKIR ABDALLA</div>
     </div>
 
     <nav id="nav-bar" class="dock" style="display:none;">
-        <div class="dock-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus-square"></i></div>
-        <div class="dock-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-layer-group"></i></div>
+        <div class="dock-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus"></i></div>
+        <div class="dock-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-list-ul"></i></div>
     </nav>
 
 <script type="module">
@@ -153,71 +135,71 @@
             if(u.exists()) { 
                 document.getElementById('u-name').value = u.data().fullname || ""; 
                 document.getElementById('u-comp').value = u.data().company || ""; 
-                document.getElementById('user-display').innerText = u.data().fullname;
             }
             loadLogs();
-        } else { document.getElementById('p-auth').classList.add('active'); document.getElementById('nav-bar').style.display = 'none'; }
+        } else { 
+            document.getElementById('p-auth').classList.add('active'); 
+            document.getElementById('nav-bar').style.display = 'none'; 
+        }
     });
 
-    window.handleAuth = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('pass').value); } catch(e) { alert("Access Denied"); } };
-    window.logout = () => signOut(auth);
-    
-    window.saveWork = async () => {
-        const d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value;
-        if(!d || !h) return alert("Fill data");
-        await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${d}`), { uid: auth.currentUser.uid, date: d, hours: parseFloat(h), location: document.getElementById('w-loc').value, note: document.getElementById('w-note').value, month: d.slice(0,7) }, {merge:true});
-        alert("Data Synchronized! ✅"); switchTab('rep');
+    window.handleAuth = async () => { 
+        const e = document.getElementById('email').value, p = document.getElementById('pass').value;
+        try { await signInWithEmailAndPassword(auth, e, p); } catch(err) { alert("Errore Login"); } 
     };
 
-    window.del = async (id) => { if(confirm("Delete record?")) await deleteDoc(doc(db, "workLogs", id)); };
+    window.logout = () => signOut(auth);
 
-    let cached = [];
+    window.saveWork = async () => {
+        const d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value;
+        if(!d || !h) return alert("Mancano dati!");
+        await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${d}`), { 
+            uid: auth.currentUser.uid, date: d, hours: parseFloat(h), 
+            location: document.getElementById('w-loc').value, 
+            note: document.getElementById('w-note').value, 
+            month: d.slice(0,7) 
+        }, {merge:true});
+        alert("Salvato! ✅"); switchTab('rep');
+    };
+
+    window.del = async (id) => { if(confirm("Eliminare riga?")) await deleteDoc(doc(db, "workLogs", id)); };
+
+    let cachedData = [];
     window.loadLogs = () => {
         const m = document.getElementById('month-filter').value || new Date().toISOString().slice(0,7);
         const q = query(collection(db, "workLogs"), where("uid", "==", auth.currentUser.uid), where("month", "==", m));
         onSnapshot(q, (snap) => {
-            const list = document.getElementById('logs-list'); list.innerHTML = ""; let tot = 0; cached = [];
+            const list = document.getElementById('logs-list'); list.innerHTML = ""; let tot = 0; cachedData = [];
             snap.forEach(d => {
-                const data = d.data(); tot += data.hours; cached.push([data.date, data.location || "-", data.note || "-", data.hours.toFixed(1)]);
+                const data = d.data(); tot += data.hours;
+                cachedData.push([data.date, data.location || "-", data.note || "-", data.hours.toFixed(1)]);
                 list.innerHTML += `
                 <div class="report-item">
-                    <div>
-                        <span class="date-badge">${data.date}</span>
-                        <div style="font-size:11px; margin-top:8px; opacity:0.6;">
-                            <i class="fas fa-map-pin"></i> ${data.location || '-'}<br>
-                            <i class="fas fa-comment"></i> ${data.note || '-'}
-                        </div>
-                    </div>
-                    <div style="text-align:right">
-                        <b style="font-size:20px;">${data.hours}h</b><br>
-                        <i class="fas fa-trash-alt" style="color:rgba(255,255,255,0.2); font-size:12px; cursor:pointer;" onclick="del('${d.id}')"></i>
-                    </div>
+                    <div style="display:flex; justify-content:space-between"><b>${data.date}</b> <span>${data.hours}h</span></div>
+                    <div style="font-size:12px; opacity:0.6; margin-top:5px;">${data.location} | ${data.note}</div>
+                    <i class="fas fa-trash-alt" style="position:absolute; top:15px; right:15px; color:red; cursor:pointer;" onclick="del('${d.id}')"></i>
                 </div>`;
             });
             document.getElementById('total-val').innerText = tot.toFixed(1);
-            cached.sort((a,b) => new Date(a[0]) - new Date(b[0]));
+            cachedData.sort((a,b) => new Date(a[0]) - new Date(b[0]));
         });
     };
 
     window.sharePDF = async () => {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
         const mVal = document.getElementById('month-filter').value;
-        doc.setFillColor(15, 12, 41); doc.rect(0, 0, 210, 297, 'F');
-        doc.setTextColor(255); doc.setFontSize(26); doc.text("WORK REPORT", 20, 30);
-        doc.setFontSize(12); doc.setTextColor(150); doc.text(`Period: ${mVal}`, 20, 40);
-        doc.setTextColor(255); doc.text(`Employee: ${document.getElementById('u-name').value}`, 20, 60);
+        doc.setFontSize(20); doc.text("RAPPORTO ORE", 105, 20, null, null, "center");
+        doc.setFontSize(12); doc.text(`Dipendente: ${document.getElementById('u-name').value}`, 15, 35);
+        doc.text(`Mese: ${mVal}`, 15, 42);
         
         doc.autoTable({ 
-            startY: 70, 
-            head: [['Date', 'Location', 'Notes', 'Hours']], 
-            body: cached,
-            theme: 'plain',
-            headStyles: { textColor: [255,255,255], fontStyle: 'bold' },
-            bodyStyles: { textColor: [200,200,200] },
-            alternateRowStyles: { fillColor: [25, 25, 50] }
+            startY: 50, head: [['Data', 'Luogo', 'Note', 'Ore']], body: cachedData,
+            theme: 'grid', headStyles: { fillColor: [0, 0, 0] }
         });
         
-        doc.text(`TOTAL: ${document.getElementById('total-val').innerText} HRS`, 20, doc.lastAutoTable.finalY + 20);
+        doc.text(`TOTALE: ${document.getElementById('total-val').innerText} ORE`, 15, doc.lastAutoTable.finalY + 15);
+        doc.setFontSize(10); doc.text("CREATED BY SHOUKIR ABDALLA", 105, 285, null, null, "center");
+        
         const blob = doc.output('blob'); const file = new File([blob], `Report.pdf`, { type: 'application/pdf' });
         if (navigator.share) await navigator.share({ files: [file] }); else doc.save(`Report.pdf`);
     };
