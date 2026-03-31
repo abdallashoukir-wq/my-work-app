@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Master v31</title>
+    <title>WorkTime Master v32</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
@@ -54,7 +54,7 @@
             border: 1px solid rgba(255,255,255,0.1); z-index: 100;
         }
         .dock-item { font-size: 22px; color: rgba(255,255,255,0.3); cursor: pointer; }
-        .dock-item.active { color: #fff; }
+        .dock-item.active { color: #fff; text-shadow: 0 0 10px #fff; }
 
         .report-item {
             background: rgba(255,255,255,0.04); margin-bottom: 12px; padding: 18px;
@@ -108,8 +108,8 @@
     </div>
 
     <nav id="nav-bar" class="dock" style="display:none;">
-        <div class="dock-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus"></i></div>
-        <div class="dock-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-list"></i></div>
+        <div class="dock-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus-circle"></i></div>
+        <div class="dock-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-chart-bar"></i></div>
     </nav>
 
 <script type="module">
@@ -168,17 +168,13 @@
         });
     };
 
-    // --- وظيفة الـ PDF الجديدة بالكامل مع دعم الخط العربي ---
     window.buildNewPDF = async () => {
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF();
-        
-        // جلب البيانات
         const name = document.getElementById('u-name').value || "Dipendente";
         const comp = document.getElementById('u-comp').value || "Ditta";
         const m = document.getElementById('month-filter').value || "";
 
-        // تنسيق الصفحة
         pdf.setFontSize(22);
         pdf.text("RAPPORTO LAVORO", 105, 20, null, null, "center");
         pdf.setFontSize(12);
@@ -186,8 +182,14 @@
         pdf.text(`Ditta: ${comp}`, 15, 42);
         pdf.text(`Periodo: ${m}`, 15, 49);
 
-        // تحضير الجدول
-        const body = cached.map(i => [i.date, i.location || "-", i.note || "-", i.hours.toFixed(1)]);
+        // وظيفة معالجة العربي للـ PDF
+        const fixAr = (t) => {
+            if (!t) return "-";
+            if (!/[\u0600-\u06FF]/.test(t)) return t; 
+            return t.split('').reverse().join(''); 
+        };
+
+        const body = cached.map(i => [i.date, i.location || "-", fixAr(i.note), i.hours.toFixed(1)]);
 
         pdf.autoTable({
             startY: 55,
@@ -195,13 +197,11 @@
             body: body,
             theme: 'grid',
             headStyles: { fillColor: [0, 0, 0] },
-            // هنا السر: لو الكلام فيه عربي، المكتبة هتحاول تعرضه عادي، بس التعديل الجاي في v32 هيكون إضافة ملف الخط لو ده منفعش
-            styles: { fontSize: 10 }
+            styles: { fontSize: 10, font: "helvetica" }
         });
 
         pdf.text(`TOTALE: ${document.getElementById('total-val').innerText} ORE`, 15, pdf.lastAutoTable.finalY + 15);
         
-        // تصدير
         const blob = pdf.output('blob');
         const file = new File([blob], `Report.pdf`, { type: 'application/pdf' });
         if (navigator.share) await navigator.share({ files: [file] }); else pdf.save(`Report.pdf`);
