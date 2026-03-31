@@ -3,113 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WorkTime Pro v23</title>
+    <title>WorkTime Modern Dark</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; margin: 0; padding: 0; overflow: hidden; }
+        :root { --neon: #ffffff; --bg: #000000; --card: rgba(255, 255, 255, 0.05); }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #fff; margin: 0; padding: 0; overflow: hidden; }
+        
+        /* ✨ الطابق الثابت: الخلفية v8 */
         .v8-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1; }
         .ray { position: absolute; background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.06), transparent); width: 1px; height: 100vh; animation: move 10s infinite linear; }
         @keyframes move { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+
         .page { display: none; padding: 20px; min-height: 100vh; box-sizing: border-box; position: relative; z-index: 5; flex-direction: column; align-items: center; justify-content: center; }
         .page.active { display: flex; }
-        .card { background: rgba(255, 255, 255, 0.03); width: 100%; max-width: 350px; padding: 20px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); }
-        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; background: rgba(255,255,255,0.05); border: 1px solid #333; color: #fff; border-radius: 10px; font-size: 14px; box-sizing: border-box; outline: none; }
-        .btn { background: #fff; color: #000; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 100; }
-        .nav-item { color: #555; text-align: center; flex: 1; font-size: 12px; cursor: pointer; }
-        .nav-item.active { color: #fff; }
         
-        /* تصميم سجلات التقرير المحدث */
-        .log-box { background: rgba(255,255,255,0.02); padding: 10px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #222; position: relative; }
-        .log-header { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 5px; margin-bottom: 5px; }
-        .log-body { font-size: 12px; color: #aaa; line-height: 1.4; }
-        .del-btn { color: #ff4444; cursor: pointer; position: absolute; top: 10px; right: 10px; font-size: 16px; }
+        .card { background: var(--card); width: 100%; max-width: 340px; padding: 25px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(20px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        .sig { font-weight: bold; margin-top: 20px; font-size: 13px; text-transform: uppercase; text-align: center; opacity: 0.6; width: 100%; }
-        .top-bar { position: fixed; top: 15px; right: 15px; z-index: 20; display: flex; gap: 10px; }
+        input, textarea, select { width: 100%; padding: 15px; margin: 10px 0; background: rgba(255,255,255,0.03); border: 1px solid #333; color: #fff; border-radius: 14px; font-size: 15px; box-sizing: border-box; transition: 0.3s; }
+        input:focus { border-color: var(--neon); background: rgba(255,255,255,0.07); }
+        
+        .btn { background: #fff; color: #000; border: none; padding: 16px; width: 100%; border-radius: 14px; font-weight: bold; cursor: pointer; margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.3s; }
+        .btn:active { transform: scale(0.98); opacity: 0.8; }
+
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 100; }
+        .nav-item { color: #555; text-align: center; flex: 1; font-size: 12px; cursor: pointer; transition: 0.3s; }
+        .nav-item.active { color: #fff; text-shadow: 0 0 10px #fff; }
+
+        .log-box { background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; margin-bottom: 12px; border: 1px solid #222; position: relative; }
+        .log-info { font-size: 13px; color: #888; margin-top: 5px; }
+        .del-btn { color: #ff4444; position: absolute; top: 15px; right: 15px; cursor: pointer; }
+
+        .sig { font-weight: bold; margin-top: 25px; font-size: 12px; text-transform: uppercase; text-align: center; opacity: 0.5; letter-spacing: 2px; }
+        .top-bar { position: fixed; top: 15px; right: 15px; z-index: 20; }
         .rtl { direction: rtl; text-align: right; }
     </style>
 </head>
 <body>
+
     <div class="v8-bg"><div class="ray" style="left:20%"></div><div class="ray" style="left:80%"></div></div>
-    
+
     <div class="top-bar">
-        <select id="lang-select" onchange="setLang(this.value)" style="width: auto; padding: 5px;">
-            <option value="it">IT</option><option value="en">EN</option><option value="ar">AR</option>
-        </select>
-        <button onclick="logout()" style="background:none; border:none; color:#fff;"><i class="fas fa-power-off"></i></button>
+        <button onclick="logout()" style="background:none; border:none; color:#fff; font-size: 20px;"><i class="fas fa-power-off"></i></button>
     </div>
 
     <div id="p-auth" class="page active">
         <div class="card">
-            <h1 style="text-align:center; font-weight:200;">WORKTIME</h1>
-            <input type="email" id="email" placeholder="Email"><input type="password" id="pass" placeholder="Password">
-            <button class="btn" onclick="handleAuth()">LOGIN</button>
+            <h1 style="text-align:center; font-weight:200; letter-spacing:5px;">WORKTIME</h1>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="pass" placeholder="Password">
+            <button class="btn" onclick="handleAuth()">LOGIN <i class="fas fa-arrow-right"></i></button>
         </div>
         <div class="sig">CREATED BY SHOUKIR ABDALLA</div>
     </div>
 
     <div id="p-add" class="page">
         <div class="card">
-            <h2 id="l-add" style="text-align:center;">ADD HOURS</h2>
-            <input type="text" id="u-name" placeholder="Name"><input type="text" id="u-comp" placeholder="Company">
-            <input type="date" id="w-date"><input type="text" id="w-loc" placeholder="Location">
-            <input type="number" step="0.5" id="w-hrs" placeholder="Hours"><textarea id="w-note" placeholder="Notes" rows="2"></textarea>
-            <button class="btn" onclick="saveWork()" id="l-save">SAVE ✅</button>
+            <h2 style="text-align:center; font-size:18px;">REGISTRAZIONE</h2>
+            <input type="text" id="u-name" placeholder="Nome">
+            <input type="text" id="u-comp" placeholder="Ditta">
+            <input type="date" id="w-date">
+            <input type="text" id="w-loc" placeholder="Luogo di lavoro">
+            <input type="number" step="0.5" id="w-hrs" placeholder="Ore lavorate">
+            <textarea id="w-note" placeholder="Note (anche in Arabo)" rows="2"></textarea>
+            <button class="btn" onclick="saveWork()">SALVA <i class="fas fa-check"></i></button>
         </div>
         <div class="sig">CREATED BY SHOUKIR ABDALLA</div>
     </div>
 
-    <div id="p-rep" class="page" style="justify-content: flex-start; padding-top: 70px;">
+    <div id="p-rep" class="page" style="justify-content: flex-start; padding-top: 80px;">
         <div class="card">
-            <h2 id="l-rep" style="text-align:center;">REPORT</h2>
+            <h2 style="text-align:center; font-size:18px;">RAPPORTO MENSILE</h2>
             <input type="month" id="month-filter" onchange="loadLogs()">
             
-            <div id="logs-list" style="max-height: 300px; overflow-y: auto; margin: 10px 0;">
-                </div>
+            <div id="logs-list" style="max-height: 260px; overflow-y: auto; margin: 15px 0;"></div>
             
-            <div style="text-align:center; border-top:1px solid #333; padding-top:10px;">
-                <small id="l-tot" style="letter-spacing:1px">TOTAL HOURS</small><br>
-                <b id="total-val" style="font-size:35px; color:#fff;">0.0</b>
+            <div style="text-align: center; border-top: 1px solid #333; padding-top: 15px;">
+                <small style="color:#777;">TOTALE ORE</small><br>
+                <b id="total-val" style="font-size: 38px;">0.0</b>
             </div>
-            
             <button class="btn" onclick="sharePDF()">SHARE PDF <i class="fas fa-share-nodes"></i></button>
         </div>
         <div class="sig">CREATED BY SHOUKIR ABDALLA</div>
     </div>
 
     <nav id="nav-bar" class="nav" style="display:none;">
-        <div class="nav-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus"></i><br>ADD</div>
-        <div class="nav-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-file-alt"></i><br>REPORT</div>
+        <div class="nav-item active" id="t-add" onclick="switchTab('add')"><i class="fas fa-plus-circle fa-lg"></i><br>ADD</div>
+        <div class="nav-item" id="t-rep" onclick="switchTab('rep')"><i class="fas fa-file-invoice fa-lg"></i><br>REPORT</div>
     </nav>
 
 <script type="module">
-    // [طابق المخرجات - Firebase & Logic]
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, collection, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = { apiKey: "AIzaSyBlUrDFR15XgZdYKcPN9IjLqCc0DmTJ37I", authDomain: "workapp-d34e0.firebaseapp.com", projectId: "workapp-d34e0", storageBucket: "workapp-d34e0.firebasestorage.app", messagingSenderId: "687874876802", appId: "1:687874876802:web:06e2e4e6030233cd579b9b" };
     const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
-
-    const langs = {
-        it: { add: "REGISTRA ORE", rep: "RAPPORTO", save: "SALVA ✅", tot: "TOTALE ORE", m: ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"] },
-        en: { add: "ADD HOURS", rep: "REPORT", save: "SAVE ✅", tot: "TOTAL HOURS", m: ["January","February","March","April","May","June","July","August","September","October","November","December"] },
-        ar: { add: "إضافة ساعات", rep: "التقرير", save: "حفظ ✅", tot: "إجمالي الساعات", m: ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"] }
-    };
-
-    let curL = 'it';
-    window.setLang = (l) => {
-        curL = l; document.body.className = l === 'ar' ? 'rtl' : '';
-        document.getElementById('l-add').innerText = langs[l].add;
-        document.getElementById('l-rep').innerText = langs[l].rep;
-        document.getElementById('l-save').innerText = langs[l].save;
-        document.getElementById('l-tot').innerText = langs[l].tot;
-        loadLogs();
-    };
 
     onAuthStateChanged(auth, async (user) => {
         if(user) {
@@ -125,11 +116,11 @@
     window.logout = () => signOut(auth);
     window.saveWork = async () => {
         const d = document.getElementById('w-date').value, h = document.getElementById('w-hrs').value;
-        if(!d || !h) return alert("Missing fields");
+        if(!d || !h) return alert("Dati mancanti!");
         await setDoc(doc(db, "workLogs", `${auth.currentUser.uid}_${d}`), { uid: auth.currentUser.uid, date: d, hours: parseFloat(h), location: document.getElementById('w-loc').value, note: document.getElementById('w-note').value, month: d.slice(0,7) }, {merge:true});
-        alert("Saved! ✅"); switchTab('rep');
+        alert("Salvato! ✅"); switchTab('rep');
     };
-    window.del = async (id) => { if(confirm("Delete record?")) await deleteDoc(doc(db, "workLogs", id)); };
+    window.del = async (id) => { if(confirm("Eliminare?")) await deleteDoc(doc(db, "workLogs", id)); };
 
     let cached = [];
     window.loadLogs = () => {
@@ -138,21 +129,11 @@
         onSnapshot(q, (snap) => {
             const list = document.getElementById('logs-list'); list.innerHTML = ""; let tot = 0; cached = [];
             snap.forEach(d => {
-                const data = d.data(); tot += data.hours;
-                cached.push([data.date, data.location || "-", data.note || "-", data.hours.toFixed(1)]);
-                
-                // عرض البيانات كاملة في صفحة التقرير
-                list.innerHTML += `
-                <div class="log-box">
-                    <div class="log-header">
-                        <span><b>${data.date}</b></span>
-                        <span style="margin-right:25px"><b>${data.hours}h</b></span>
-                    </div>
-                    <div class="log-body">
-                        <i class="fas fa-map-marker-alt"></i> ${data.location || 'No location'}<br>
-                        <i class="fas fa-sticky-note"></i> ${data.note || 'No notes'}
-                    </div>
-                    <i class="fas fa-trash-alt del-btn" onclick="del('${d.id}')"></i>
+                const data = d.data(); tot += data.hours; cached.push([data.date, data.location || "-", data.note || "-", data.hours.toFixed(1)]);
+                list.innerHTML += `<div class="log-box">
+                    <div style="display:flex; justify-content:space-between"><b>${data.date}</b> <b>${data.hours}h</b></div>
+                    <div class="log-info"><i class="fas fa-map-marker-alt"></i> ${data.location || '-'}<br><i class="fas fa-pen"></i> ${data.note || '-'}</div>
+                    <i class="fas fa-trash del-btn" onclick="del('${d.id}')"></i>
                 </div>`;
             });
             document.getElementById('total-val').innerText = tot.toFixed(1);
@@ -160,21 +141,19 @@
         });
     };
 
-    // معالجة العربي للـ PDF
     const fixAr = (t) => { if (!/[\u0600-\u06FF]/.test(t)) return t; return t.split(' ').map(w => w.split('').reverse().join('')).reverse().join('  '); };
 
     window.sharePDF = async () => {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        const mVal = document.getElementById('month-filter').value || "2026-01";
-        const mName = langs[curL].m[parseInt(mVal.split('-')[1])-1];
-        doc.setFillColor(0, 123, 255); doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255); doc.setFontSize(22); doc.text(`${mName.toUpperCase()} ${mVal.split('-')[0]}`, 105, 25, null, null, "center");
-        doc.setTextColor(0); doc.setFontSize(14); doc.text(`Employee: ${document.getElementById('u-name').value}`, 15, 55);
+        const mVal = document.getElementById('month-filter').value || "2026-03";
+        doc.setFillColor(0, 0, 0); doc.rect(0, 0, 210, 40, 'F');
+        doc.setTextColor(255); doc.setFontSize(22); doc.text(`RAPPORTO ORE ${mVal}`, 105, 25, null, null, "center");
+        doc.setTextColor(0); doc.setFontSize(14); doc.text(`Dipendente: ${document.getElementById('u-name').value}`, 15, 55);
         const body = cached.map(r => [r[0], r[1], fixAr(r[2]), r[3]]);
-        doc.autoTable({ startY: 70, head: [['Date', 'Location', 'Notes', 'Hrs']], body: body, theme: 'grid' });
-        doc.text(`TOTAL: ${document.getElementById('total-val').innerText} HRS`, 15, doc.lastAutoTable.finalY + 15);
-        doc.setFontSize(12); doc.text("CREATED BY SHOUKIR ABDALLA", 105, 285, null, null, "center");
-        const blob = doc.output('blob'); const file = new File([blob], `Report.pdf`, { type: 'application/pdf' });
+        doc.autoTable({ startY: 70, head: [['Data', 'Luogo', 'Note', 'Ore']], body: body, theme: 'grid', headStyles: {fillColor: [0,0,0]} });
+        doc.text(`TOTALE: ${document.getElementById('total-val').innerText} ORE`, 15, doc.lastAutoTable.finalY + 15);
+        doc.setFontSize(10); doc.text("CREATED BY SHOUKIR ABDALLA", 105, 285, null, null, "center");
+        const blob = doc.output('blob'); const file = new File([blob], `Report_${mVal}.pdf`, { type: 'application/pdf' });
         if (navigator.share) await navigator.share({ files: [file] }); else doc.save(`Report.pdf`);
     };
 
